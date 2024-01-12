@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
+	"stockmarket/template"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"golang.org/x/time/rate"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -16,25 +17,6 @@ import (
 type User struct {
 	ID   uint   `gorm:"primaryKey"`
 	Name string `gorm:"not null"`
-}
-
-func writeCookie(c echo.Context, username string) error {
-	cookie := new(http.Cookie)
-	cookie.Name = "username"
-	cookie.Value = username
-	cookie.Expires = time.Now().Add(24 * time.Hour)
-	c.SetCookie(cookie)
-	return c.String(http.StatusOK, "write a cookie")
-}
-
-func readCookie(c echo.Context) error {
-	cookie, err := c.Cookie("username")
-	if err != nil {
-		return err
-	}
-	fmt.Println(cookie.Name)
-	fmt.Println(cookie.Value)
-	return c.String(http.StatusOK, "read a cookie")
 }
 
 // e.GET("/users/:id", getUser)
@@ -80,8 +62,33 @@ func main() {
 		log.Fatal(err)
 	}
 
-	e.Static("/", "static")
+	// e.Static("/", "static")
 
-	// Start the Echo server
-	e.Start(":8080")
+	// Little bit of middlewares for housekeeping
+	e.Pre(middleware.RemoveTrailingSlash())
+	e.Use(middleware.Recover())
+	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(
+		rate.Limit(20),
+	)))
+
+	e.Static("/static", "static")
+
+	//This will initiate our template renderer
+	template.NewTemplateRenderer(e, "pages/*.html")
+
+	e.GET("/hello", func(c echo.Context) error {
+		return c.Render(http.StatusOK, "index", nil)
+	})
+
+	e.GET("/get-info", func(c echo.Context) error {
+		res := map[string]interface{}{
+			"Name":  "Sam",
+			"Phone": "+447565328118",
+			"Email": "sf@gmail.com",
+		}
+		return c.Render(http.StatusOK, "name_card", res)
+	})
+
+	e.Logger.Fatal(e.Start(":4040"))
+
 }
