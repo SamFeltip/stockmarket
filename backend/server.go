@@ -1,23 +1,21 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"os"
+	"stockmarket/models"
+	templ "stockmarket/templates"
+	pages "stockmarket/templates/pages"
+	users "stockmarket/templates/users"
 
 	"github.com/gin-gonic/gin"
 	"github.com/labstack/echo/v4"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
-
-// Define a GORM model
-type User struct {
-	ID   uint   `gorm:"primaryKey"`
-	Name string `gorm:"not null"`
-}
 
 // e.GET("/users/:id", getUser)
 func getUser(c echo.Context) error {
@@ -51,44 +49,56 @@ func main() {
 	fmt.Println("Connected to the PostgreSQL database!")
 
 	// Perform migrations
-	err = db.AutoMigrate(&User{})
+	err = db.AutoMigrate(&models.User{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	r := gin.Default()
-	r.LoadHTMLGlob("templates/**/*")
 
-	// html := template.Must(template.ParseFiles("templates/base/index.html"))
-	// r.SetHTMLTemplate(html)
+	r.GET("/", func(c *gin.Context) {
+		user := models.User{
+			Name: "Sam",
+		}
+
+		pageComponent := pages.Greeting(user)
+		baseComponent := templ.Base("root", pageComponent)
+
+		baseComponent.Render(context.Background(), c.Writer)
+	})
 
 	r.GET("/hello", func(c *gin.Context) {
 
-		_, err := template.ParseFiles("templates/base/index.html", "templates/pages/index.html")
+		pageComponent := pages.Welcome()
+		baseComponent := templ.Base("welcome user!", pageComponent)
 
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		c.HTML(http.StatusOK, "layout", gin.H{
-			"Title": "Homes",
-		})
+		baseComponent.Render(context.Background(), c.Writer)
 	})
 
 	r.GET("/users/:id", func(c *gin.Context) {
 		id := c.Param("id")
-		c.HTML(http.StatusOK, "users/index", gin.H{
-			"Title": "User Page",
-			"ID":    id,
-		})
+
+		// get user from gorm db context with id
+		var user models.User
+		db.First(&user, id)
+
+		pageComponent := users.Show(user)
+		baseComponent := templ.Base("User - id", pageComponent)
+
+		baseComponent.Render(context.Background(), c.Writer)
 	})
 
-	r.GET("/get-info", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "users/name_card", gin.H{
-			"Name":  "Sam",
-			"Phone": "+447565328118",
-			"Email": "sf@gmail.com",
-		})
+	r.GET("/user-card/:id", func(c *gin.Context) {
+		id := c.Param("id")
+
+		// get user from gorm db context with id
+		var user models.User
+		db.First(&user, id)
+
+		userComponent := users.Card(user)
+
+		userComponent.Render(context.Background(), c.Writer)
+
 	})
 
 	r.Run(":4040")
