@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
-	"stockmarket/template"
+	"os"
 
+	"github.com/gin-gonic/gin"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"golang.org/x/time/rate"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -26,21 +26,15 @@ func getUser(c echo.Context) error {
 	return c.String(http.StatusOK, id)
 }
 
+func readFileAsString(fileName string) (string, error) {
+	content, err := os.ReadFile(fileName)
+	if err != nil {
+		return "", err
+	}
+	return string(content), nil
+}
+
 func main() {
-	e := echo.New()
-
-	// Root level middleware
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-
-	// Group level middleware
-	g := e.Group("/admin")
-	g.Use(middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
-		if username == "joe" && password == "secret" {
-			return true, nil
-		}
-		return false, nil
-	}))
 
 	dsn := "host=localhost user=me password=def78-brglger-45y$u3g dbname=postgres port=5433 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -62,33 +56,43 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// e.Static("/", "static")
+	r := gin.Default()
+	r.LoadHTMLGlob("templates/**/*")
 
-	// Little bit of middlewares for housekeeping
-	e.Pre(middleware.RemoveTrailingSlash())
-	e.Use(middleware.Recover())
-	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(
-		rate.Limit(20),
-	)))
+	// html := template.Must(template.ParseFiles("templates/base/index.html"))
+	// r.SetHTMLTemplate(html)
 
-	e.Static("/static", "static")
+	r.GET("/hello", func(c *gin.Context) {
 
-	//This will initiate our template renderer
-	template.NewTemplateRenderer(e, "pages/*.html")
+		_, err := template.ParseFiles("templates/base/index.html", "templates/pages/index.html")
 
-	e.GET("/hello", func(c echo.Context) error {
-		return c.Render(http.StatusOK, "index", nil)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		c.HTML(http.StatusOK, "layout", gin.H{
+			"Title": "Homes",
+		})
 	})
 
-	e.GET("/get-info", func(c echo.Context) error {
-		res := map[string]interface{}{
+	r.GET("/users/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		c.HTML(http.StatusOK, "users/index", gin.H{
+			"Title": "User Page",
+			"ID":    id,
+		})
+	})
+
+	r.GET("/get-info", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "users/name_card", gin.H{
 			"Name":  "Sam",
 			"Phone": "+447565328118",
 			"Email": "sf@gmail.com",
-		}
-		return c.Render(http.StatusOK, "name_card", res)
+		})
 	})
 
-	e.Logger.Fatal(e.Start(":4040"))
+	r.Run(":4040")
+
+	// e.Logger.Fatal(e.Start(":4040"))
 
 }

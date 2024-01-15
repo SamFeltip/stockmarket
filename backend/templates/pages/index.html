@@ -1,0 +1,7 @@
+{{define "body"}}
+<h1>Hello, World!</h1>
+
+<div id="user-info"></div>
+
+<button hx-get="/get-info" hx-target="#user-info" hx-swap="innerHTML">Reveal Info</button>
+{{end}}
