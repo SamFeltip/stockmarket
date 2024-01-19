@@ -7,5 +7,9 @@ templ Card(user models.User) {
     <p>User Personal Information:</p>
 	<ol>
 		<li>Name: {user.Name}</li>
+		// li > img src= user.Profile
+		<li>
+			<img src={user.ProfileRoot} width="100px"/>
+		</li>
 	</ol>
 }

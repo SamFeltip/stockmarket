@@ -1,6 +1,7 @@
 package users
 
 import (
+	"fmt"
 	"stockmarket/models"
 
 	"github.com/gin-gonic/gin"
@@ -28,11 +29,18 @@ func Show(c *gin.Context, db *gorm.DB) models.User {
 
 func New(c *gin.Context, db *gorm.DB) models.User {
 	name := c.PostForm("name")
+	profile := c.PostForm("profile")
 	password := c.PostForm("password")
 
+	// print profile
+	fmt.Println(profile)
+
+	filePath := "/static/imgs/" + profile + "profile.png"
+
 	user := models.User{
-		Name:     name,
-		Password: password,
+		Name:        name,
+		Password:    password,
+		ProfileRoot: filePath,
 	}
 
 	db.Create(&user)
