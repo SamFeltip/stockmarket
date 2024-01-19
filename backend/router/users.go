@@ -2,7 +2,6 @@ package router
 
 import (
 	"context"
-	"net/http"
 	controllers "stockmarket/controllers/users"
 	templates "stockmarket/templates/users"
 
@@ -37,11 +36,9 @@ func CreateUserRoutes(db *gorm.DB, r *gin.Engine) {
 
 	r.POST("/users/new", func(c *gin.Context) {
 
-		user := controllers.New(c, db)
+		user := controllers.Create(c, db)
 		userComponent := templates.Card(user)
-		userComponent.Render(context.Background(), c.Writer)
-
-		c.Redirect(http.StatusMovedPermanently, "/users")
+		RenderWithTemplate(userComponent, "User - id", c)
 
 	})
 }

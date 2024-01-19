@@ -14,6 +14,7 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 
 	CreateUserRoutes(db, r)
 	CreatePageRoutes(db, r)
+	CreateGameRoutes(db, r)
 
 	return r
 }

@@ -27,7 +27,7 @@ func Show(c *gin.Context, db *gorm.DB) models.User {
 
 }
 
-func New(c *gin.Context, db *gorm.DB) models.User {
+func Create(c *gin.Context, db *gorm.DB) models.User {
 	name := c.PostForm("name")
 	profile := c.PostForm("profile")
 	password := c.PostForm("password")

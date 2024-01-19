@@ -1,0 +1,25 @@
+package games
+
+templ New() {
+    <div class="container">
+        <form action="/games/new" method="post">
+            <div class="form-group">
+                <label for="difficulty">Difficulty</label>
+                <select class="form-control" name="difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+            // input: set a 4 digit string as "name"
+            <div class="form-group">
+                <label for="name">Name</label>
+
+                <input type="text" class="form-control" name="name" placeholder="Enter name"/>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+    </div>
+}

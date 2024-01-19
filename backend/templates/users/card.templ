@@ -4,12 +4,10 @@ import (
     "stockmarket/models"
 )
 templ Card(user models.User) {
-    <p>User Personal Information:</p>
-	<ol>
-		<li>Name: {user.Name}</li>
-		// li > img src= user.Profile
-		<li>
-			<img src={user.ProfileRoot} width="100px"/>
-		</li>
-	</ol>
+	<div class="card" style="width: 6rem;">
+		<img src={user.ProfileRoot} class="card-img-top" alt={user.Name + " profile"}/>
+		<div class="card-body">
+			<h5 class="text-center card-title">{user.Name}</h5>
+		</div>
+	</div>
 }
