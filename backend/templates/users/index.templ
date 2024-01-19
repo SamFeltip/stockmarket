@@ -1,0 +1,14 @@
+package users
+
+import (
+    "stockmarket/models"
+)
+
+templ Index(users []models.User) {
+    <div>
+    for _, user := range users {
+        @Card(user)
+    }
+    </div>
+}
+

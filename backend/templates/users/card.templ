@@ -1,0 +1,11 @@
+package users
+
+import (
+    "stockmarket/models"
+)
+templ Card(user models.User) {
+    <p>User Personal Information:</p>
+	<ol>
+		<li>Name: {user.Name}</li>
+	</ol>
+}

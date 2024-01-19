@@ -1,0 +1,22 @@
+package pages
+
+import (
+    "stockmarket/models"
+)
+templ Welcome() {
+    <h1>Hello, World!</h1>
+
+    <div id="user-info"></div>
+
+    <button hx-get="/user-card/1" hx-target="#user-info" hx-swap="innerHTML">Reveal Info</button>
+}
+ 
+templ Hello(name string) {
+  <div>Hello, { name }</div>
+} 
+
+templ Greeting(user models.User) {
+  <div class="greeting"> 
+    @Hello(user.Name)
+  </div>
+}
