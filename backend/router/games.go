@@ -31,7 +31,11 @@ func CreateGameRoutes(db *gorm.DB, r *gin.Engine) {
 
 		game := controllers.Create(c, db)
 
-		c.Redirect(http.StatusMovedPermanently, fmt.Sprintf("/games/show/%d?status=waiting", game.ID))
+		show_url := fmt.Sprintf("/games/show/%s", game.ID)
+
+		fmt.Println(show_url)
+
+		c.Redirect(http.StatusMovedPermanently, show_url)
 
 	})
 }

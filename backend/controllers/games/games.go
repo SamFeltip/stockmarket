@@ -15,7 +15,13 @@ func Show(c *gin.Context, db *gorm.DB) templ.Component {
 	id := c.Param("id")
 
 	var game models.Game
-	db.Where("lower(id) = lower(?)", id).First(&game)
+	err := db.Where("lower(id) = lower(?)", id).First(&game).Error
+
+	if err != nil {
+		fmt.Println("error fetching game:", err)
+		pageComponent := templates.NoGame()
+		return pageComponent
+	}
 
 	if game.Status == "playing" {
 		pageComponent := templates.Playing(game)
@@ -45,6 +51,7 @@ func Create(c *gin.Context, db *gorm.DB) models.Game {
 	game := models.Game{
 		ID:         code,
 		Difficulty: difficulty,
+		Status:     "waiting",
 	}
 
 	db.Create(&game)
