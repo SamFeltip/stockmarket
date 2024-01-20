@@ -1,8 +1,10 @@
 package games
 
 import (
+	"fmt"
 	"stockmarket/models"
 	templates "stockmarket/templates/games"
+	"strconv"
 
 	"github.com/a-h/templ"
 	"github.com/gin-gonic/gin"
@@ -13,7 +15,17 @@ func Show(c *gin.Context, db *gorm.DB) templ.Component {
 	id := c.Param("id")
 
 	var game models.Game
-	db.First(&game, id)
+	db.Where("lower(id) = lower(?)", id).First(&game)
+
+	if game.Status == "playing" {
+		pageComponent := templates.Playing(game)
+		return pageComponent
+	}
+
+	if game.Status == "showing" {
+		pageComponent := templates.Showing(game)
+		return pageComponent
+	}
 
 	pageComponent := templates.Waiting(game)
 	return pageComponent
@@ -21,11 +33,17 @@ func Show(c *gin.Context, db *gorm.DB) templ.Component {
 }
 
 func Create(c *gin.Context, db *gorm.DB) models.Game {
-	name := c.PostForm("name")
-	difficulty := c.PostForm("difficulty")
+	code := c.PostForm("code")
+	difficultyStr := c.PostForm("difficulty")
+
+	difficulty, err := strconv.Atoi(difficultyStr)
+	if err != nil {
+		// handle error, e.g. return an error response
+		fmt.Println("couldnt convert to int")
+	}
 
 	game := models.Game{
-		Name:       name,
+		ID:         code,
 		Difficulty: difficulty,
 	}
 

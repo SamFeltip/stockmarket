@@ -22,7 +22,7 @@ func CreateGameRoutes(db *gorm.DB, r *gin.Engine) {
 
 	r.GET("/games/new", func(c *gin.Context) {
 
-		pageComponent := templates.New()
+		pageComponent := templates.Create()
 		RenderWithTemplate(pageComponent, "Signup", c)
 
 	})
