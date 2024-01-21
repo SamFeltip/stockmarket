@@ -27,11 +27,16 @@ func CreateAuthRoutes(db *gorm.DB, r *gin.Engine) {
 
 	r.POST("/signup", func(c *gin.Context) { controller.Signup(c, db) })
 
-	r.POST("/login", func(c *gin.Context) { controller.Login(c, db) })
+	r.POST("/login", func(c *gin.Context) { controller.Login(c, db, controller.SignupBody{}) })
 
 	r.GET(
 		"/validate",
 		func(c *gin.Context) { middleware.RequireAuth(c, db) },
-		func(c *gin.Context) { controller.Validate(c) },
+		controller.Validate,
+	)
+
+	r.POST(
+		"/logout",
+		controller.Logout,
 	)
 }

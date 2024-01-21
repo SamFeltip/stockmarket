@@ -3,18 +3,16 @@ package authorisation
 templ Signup() {
 	<div class="container">
 		<h1>Sign Up</h1>
-		<form action="/users/new" method="post">
-			
-            <label for="profile">Image</label>
+		<form id="signup">
+			<label for="profile">Image</label>
 			<!-- 5 pictures to click on (select) -->
-            <select class="form-control" id="profile" name="profile">
-                <option value="1" selected>1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-            </select>
-
+			<select class="form-control" id="profile" name="profile" required>
+				<option value="1" selected>1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+			</select>
 			<label for="name">Username</label>
 			<input class="form-control" type="text" id="name" name="name" required/>
 			<br/>
@@ -22,6 +20,11 @@ templ Signup() {
 			<input class="form-control" type="password" id="password" name="password" required/>
 			<br/>
 			<button class="btn btn-primary" type="submit">Submit</button>
+			<div>
+				Already got an account? sign in
+				<a href="/login">here</a>
+			</div>
 		</form>
 	</div>
+	<script src="/static/js/signup/form.js" defer></script>
 }

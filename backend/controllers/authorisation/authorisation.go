@@ -10,24 +10,36 @@ import (
 	"gorm.io/gorm"
 )
 
+type SignupBody struct {
+	Name     string `form:"Name"`
+	Password string `form:"Password"`
+	Profile  string `form:"Profile"`
+}
+
 // [POST] /signup
 func Signup(c *gin.Context, db *gorm.DB) {
 
-	var body struct {
-		Name     string
-		Profile  string
-		Password string
-	}
+	var body SignupBody
 
 	if c.Bind(&body) != nil {
+		fmt.Println("Failed to read body on signup")
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read body",
 		})
 		return
 	}
 
+	if body.Name == "" || body.Password == "" {
+		fmt.Println("missing name or password on signup")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Missing name or password",
+		})
+		return
+	}
+
 	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
 	if err != nil {
+		fmt.Println("Failed to hash password: ", err)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to hash password",
 		})
@@ -37,37 +49,46 @@ func Signup(c *gin.Context, db *gorm.DB) {
 
 	filePath := "/static/imgs/" + body.Profile + "profile.png"
 
-	fmt.Println(filePath)
-
 	user := models.User{Name: body.Name, Password: string(hash), ProfileRoot: filePath}
-	result := db.Create(&user)
+	err = db.Create(&user).Error
 
-	if result.Error != nil {
+	if err != nil {
+		fmt.Println("Failed to find user", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "failed to create new user",
+			"error": "username is taken",
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"error": nil})
+	fmt.Println("user signed up successfully")
+	Login(c, db, body)
 
 }
 
-func Login(c *gin.Context, db *gorm.DB) {
+func Login(c *gin.Context, db *gorm.DB, signupBody SignupBody) {
 
-	var body struct {
-		Name     string
-		Password string
+	var loginBody struct {
+		Name     string `form:"Name"`
+		Password string `form:"Password"`
+	}
+	var err error
+
+	if signupBody.Name != "" {
+		loginBody.Name = signupBody.Name
+		loginBody.Password = signupBody.Password
+	} else {
+		err = c.Bind(&loginBody)
 	}
 
-	if c.Bind(&body) != nil {
+	if err != nil {
+		fmt.Println("Failed to read body on login")
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read body",
 		})
 		return
 	}
 
-	user, err := models.DoesUserExist(db, body.Name)
+	user, err := models.DoesUserExist(db, loginBody.Name)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -76,7 +97,7 @@ func Login(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginBody.Password))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to compare password",
@@ -95,6 +116,7 @@ func Login(c *gin.Context, db *gorm.DB) {
 	c.SetSameSite(http.SameSiteStrictMode)
 	c.SetCookie("Authorisation", token, 3600, "", "", false, true)
 
+	fmt.Println("user logged in successfully")
 	c.JSON(http.StatusOK, gin.H{"error": nil})
 }
 
@@ -104,4 +126,9 @@ func Validate(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"current_user": user,
 	})
+}
+
+func Logout(c *gin.Context) {
+	c.SetCookie("Authorisation", "", -1, "", "", false, true)
+	c.JSON(http.StatusOK, gin.H{"error": nil})
 }
