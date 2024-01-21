@@ -1,7 +1,6 @@
 package users
 
 import (
-	"fmt"
 	"stockmarket/models"
 
 	"github.com/gin-gonic/gin"
@@ -27,23 +26,39 @@ func Show(c *gin.Context, db *gorm.DB) models.User {
 
 }
 
-func Create(c *gin.Context, db *gorm.DB) models.User {
-	name := c.PostForm("name")
-	profile := c.PostForm("profile")
-	password := c.PostForm("password")
+// func Create(c *gin.Context, db *gorm.DB) (models.User, error) {
+// 	// name := c.PostForm("name")
+// 	// profile := c.PostForm("profile")
+// 	// password := c.PostForm("password")
 
-	// print profile
-	fmt.Println(profile)
+// 	_, err = models.DoesUserExist(db, name)
 
-	filePath := "/static/imgs/" + profile + "profile.png"
+// 	if !errors.Is(err, gorm.ErrRecordNotFound) {
+// 		return models.User{}, errors.New("user already exists")
+// 	}
 
-	user := models.User{
-		Name:        name,
-		Password:    password,
-		ProfileRoot: filePath,
-	}
+// 	filePath := "/static/imgs/" + profile + "profile.png"
 
-	db.Create(&user)
+// 	user := models.User{
+// 		Name:        name,
+// 		Password:    password,
+// 		ProfileRoot: filePath,
+// 	}
 
-	return user // passed into templates
-}
+// 	db.Create(&user)
+
+// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+// 		"ID":  user.ID,
+// 		"exp": time.Now().Add(time.Hour).Unix(),
+// 	})
+
+// 	tokenString, err := token.SignedString([]byte("your-secret-key"))
+
+// 	if err != nil {
+// 		return models.User{}, err
+// 	}
+
+// 	c.SetCookie("token", tokenString, 3600, "", "", false, true)
+
+// 	return user, nil // passed into templates
+// }

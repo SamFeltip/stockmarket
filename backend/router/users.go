@@ -34,11 +34,18 @@ func CreateUserRoutes(db *gorm.DB, r *gin.Engine) {
 
 	})
 
-	r.POST("/users/new", func(c *gin.Context) {
+	// r.POST("/users/new", func(c *gin.Context) {
 
-		user := controllers.Create(c, db)
-		userComponent := templates.Card(user)
-		RenderWithTemplate(userComponent, "User - id", c)
+	// 	user, err := controllers.Create(c, db)
 
-	})
+	// 	if err != nil {
+	// 		fmt.Println("error creating user:", err)
+	// 		userComponent := templates.Card(user)
+	// 		RenderWithTemplate(userComponent, "error!", c)
+	// 	}
+
+	// 	userComponent := templates.Card(user)
+	// 	RenderWithTemplate(userComponent, "User - id", c)
+
+	// })
 }

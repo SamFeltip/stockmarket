@@ -19,10 +19,4 @@ func CreatePageRoutes(db *gorm.DB, r *gin.Engine) {
 		RenderWithTemplate(pageComponent, "Stockmarket", c)
 	})
 
-	r.GET("/signup", func(c *gin.Context) {
-
-		pageComponent := templates.Signup()
-		RenderWithTemplate(pageComponent, "Signup", c)
-
-	})
 }
