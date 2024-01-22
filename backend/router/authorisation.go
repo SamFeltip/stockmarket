@@ -2,7 +2,6 @@ package router
 
 import (
 	controller "stockmarket/controllers/authorisation"
-	"stockmarket/middleware"
 	templates "stockmarket/templates/authorisation"
 
 	"github.com/gin-gonic/gin"
@@ -31,12 +30,18 @@ func CreateAuthRoutes(db *gorm.DB, r *gin.Engine) {
 
 	r.GET(
 		"/validate",
-		func(c *gin.Context) { middleware.RequireAuth(c, db) },
 		controller.Validate,
 	)
 
-	r.POST(
+	r.GET(
 		"/logout",
-		controller.Logout,
-	)
+		func(c *gin.Context) {
+			c.SetCookie("Authorisation", "", -1, "", "", false, true)
+
+			pageComponent := templates.Logout()
+
+			RenderWithTemplate(pageComponent, "Logout", c)
+
+		})
+
 }

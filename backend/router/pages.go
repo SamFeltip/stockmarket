@@ -1,7 +1,7 @@
 package router
 
 import (
-	"stockmarket/models"
+	"stockmarket/middleware"
 	templates "stockmarket/templates/pages"
 
 	"github.com/gin-gonic/gin"
@@ -10,13 +10,12 @@ import (
 
 func CreatePageRoutes(db *gorm.DB, r *gin.Engine) {
 
-	r.GET("/", func(c *gin.Context) {
-		user := models.User{
-			Name: "Sam",
-		}
+	r.GET("/",
+		func(c *gin.Context) { middleware.SoftAuth(c, db) },
+		func(c *gin.Context) {
 
-		pageComponent := templates.Greeting(user)
-		RenderWithTemplate(pageComponent, "Stockmarket", c)
-	})
+			pageComponent := templates.Greeting()
+			RenderWithTemplate(pageComponent, "Stockmarket", c)
+		})
 
 }

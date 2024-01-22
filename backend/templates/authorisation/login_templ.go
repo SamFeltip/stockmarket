@@ -10,6 +10,42 @@ import "context"
 import "io"
 import "bytes"
 
+func loginForm() templ.ComponentScript {
+	return templ.ComponentScript{
+		Name: `__templ_loginForm_d616`,
+		Function: `function __templ_loginForm_d616(){let signup = document.querySelector("form#login")
+    signup.addEventListener("submit", function (event) {
+        event.preventDefault()
+        let body = {
+            Name: signup.querySelector("#name").value,
+            Password: signup.querySelector("#password").value,
+        }
+
+        console.log(body)
+
+        // set post to /signup with form body. if response.json contains error, show in alert. else redirect to "/"
+        fetch("/login", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error != null) {
+                alert(data.error)
+                return
+            }
+
+            window.location.href = "/"
+        })
+    })}`,
+		Call:       templ.SafeScript(`__templ_loginForm_d616`),
+		CallInline: templ.SafeScriptInline(`__templ_loginForm_d616`),
+	}
+}
+
 func Login() templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -41,16 +77,11 @@ func Login() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</button></form></div><script src=\"/static/js/login/form.js\" defer>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</button></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var4 := ``
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</script>")
+		templ_7745c5c3_Err = loginForm().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -1,15 +1,46 @@
 package authorisation
 
-templ Login(){
-    <div class="container">
-        <h1>Login</h1>
-        <form id="login">
-            <input id="name" class="form-control" type="text" name="name" placeholder="Username" />
-            <br />
-            <input id="password" class="form-control" type="password" name="password" placeholder="Password" />
-            <br />
-            <button class="btn btn-primary" type="submit">Login</button>
-        </form>
-    </div>
-    <script src="/static/js/login/form.js" defer></script>
+script loginForm() {
+    let signup = document.querySelector("form#login")
+    signup.addEventListener("submit", function (event) {
+        event.preventDefault()
+        let body = {
+            Name: signup.querySelector("#name").value,
+            Password: signup.querySelector("#password").value,
+        }
+
+        console.log(body)
+
+        // set post to /signup with form body. if response.json contains error, show in alert. else redirect to "/"
+        fetch("/login", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error != null) {
+                alert(data.error)
+                return
+            }
+
+            window.location.href = "/"
+        })
+    })
+}
+
+templ Login() {
+	<div class="container">
+		<h1>Login</h1>
+		<form id="login">
+			<input id="name" class="form-control" type="text" name="name" placeholder="Username"/>
+			<br/>
+			<input id="password" class="form-control" type="password" name="password" placeholder="Password"/>
+			<br/>
+			<button class="btn btn-primary" type="submit">Login</button>
+		</form>
+	</div>
+	@loginForm()
 }

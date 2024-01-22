@@ -20,7 +20,7 @@ type User struct {
 func DoesUserExist(db *gorm.DB, username string) (User, error) {
 
 	var user User
-	err := db.Where("name = ?", username).First(&user).Error
+	err := db.Where("lower(name) = lower(?)", username).First(&user).Error
 
 	return user, err
 }

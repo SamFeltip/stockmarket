@@ -12,18 +12,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func RequireAuth(c *gin.Context, db *gorm.DB) {
+func TestAuth(c *gin.Context, db *gorm.DB) (models.User, error) {
 
 	// Get the cookie of req
 	tokenString, err := c.Cookie("Authorisation")
 
 	if err != nil {
 		fmt.Println("unauthorised: ", err)
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "no auth cookie",
-		})
-		c.AbortWithStatus(http.StatusUnauthorized)
-		return
+		return models.User{}, err
 	}
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -35,28 +31,23 @@ func RequireAuth(c *gin.Context, db *gorm.DB) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
 
+	if err != nil {
+		fmt.Println("invalid token: ", err)
+		return models.User{}, err
+	}
+
 	claims, ok := token.Claims.(jwt.MapClaims)
 
-	fmt.Println(claims)
-	fmt.Println(ok)
-
 	if !ok || !token.Valid {
-		fmt.Println("invalid token: ", err)
-		c.AbortWithStatus(http.StatusUnauthorized)
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "invalid token",
-		})
-		c.AbortWithStatus(http.StatusUnauthorized)
-		return
+		fmt.Println("invalid token: ")
+
+		return models.User{}, fmt.Errorf("invalid token")
 	}
 
 	if float64(time.Now().Unix()) > claims["exp"].(float64) {
-		fmt.Println("expired cookie: ", err)
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "expired session",
-		})
-		c.AbortWithStatus(http.StatusUnauthorized)
-		return
+		fmt.Println("expired cookie: ")
+		c.Redirect(http.StatusFound, "/login")
+		return models.User{}, fmt.Errorf("expired cookie")
 	}
 
 	// find user with token sub
@@ -65,14 +56,36 @@ func RequireAuth(c *gin.Context, db *gorm.DB) {
 
 	if err != nil {
 		fmt.Println("could not find user: ", err)
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "invalid user session",
-		})
-		c.AbortWithStatus(http.StatusUnauthorized)
+		return models.User{}, err
+	}
+
+	return user, nil
+}
+
+func RequireAuth(c *gin.Context, db *gorm.DB) {
+
+	user, err := TestAuth(c, db)
+
+	if err != nil {
+		fmt.Println("could not find user: ", err)
+		c.Redirect(http.StatusFound, "/login")
 		return
 	}
 
 	c.Set("user", user)
 
 	c.Next()
+}
+
+func SoftAuth(c *gin.Context, db *gorm.DB) {
+
+	user, err := TestAuth(c, db)
+
+	if err != nil {
+		fmt.Println("could not find user: ", err)
+	}
+
+	c.Set("user", user)
+	c.Next()
+
 }

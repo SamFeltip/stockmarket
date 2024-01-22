@@ -22,6 +22,11 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 }
 
 func RenderWithTemplate(pageComponent templ.Component, title string, c *gin.Context) {
-	baseComponent := page.Base(title, pageComponent)
-	baseComponent.Render(context.Background(), c.Writer)
+
+	user, _ := c.Get("user")
+
+	ctx := context.WithValue(context.Background(), page.CurrentUser, user)
+
+	baseComponent := page.Base(title, pageComponent, c)
+	baseComponent.Render(ctx, c.Writer)
 }

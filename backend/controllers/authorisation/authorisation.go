@@ -127,8 +127,3 @@ func Validate(c *gin.Context) {
 		"current_user": user,
 	})
 }
-
-func Logout(c *gin.Context) {
-	c.SetCookie("Authorisation", "", -1, "", "", false, true)
-	c.JSON(http.StatusOK, gin.H{"error": nil})
-}
