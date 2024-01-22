@@ -30,7 +30,7 @@ func CreateGameRoutes(db *gorm.DB, r *gin.Engine) {
 		func(c *gin.Context) {
 
 			pageComponent := templates.Create()
-			RenderWithTemplate(pageComponent, "Signup", c)
+			RenderWithTemplate(pageComponent, "Create new game", c)
 
 		})
 
@@ -46,6 +46,18 @@ func CreateGameRoutes(db *gorm.DB, r *gin.Engine) {
 			fmt.Println(show_url)
 
 			c.Redirect(http.StatusMovedPermanently, show_url)
+
+		})
+
+	r.GET(
+		"/games",
+		func(c *gin.Context) { middleware.RequireAuth(c, db) },
+		func(c *gin.Context) {
+
+			// get all games
+			pageComponent := controllers.Index(c, db)
+
+			RenderWithTemplate(pageComponent, "Show games", c)
 
 		})
 }

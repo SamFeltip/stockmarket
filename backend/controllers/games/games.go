@@ -12,15 +12,33 @@ import (
 )
 
 func Show(c *gin.Context, db *gorm.DB) templ.Component {
-	id := c.Param("id")
+	gameID := c.Param("id")
 
 	var game models.Game
-	err := db.Where("lower(id) = lower(?)", id).First(&game).Error
+	err := db.Model(&game).Preload("Players").Where("lower(id) = lower(?)", gameID).First(&game).Error
 
 	if err != nil {
 		fmt.Println("error fetching game:", err)
 		pageComponent := templates.NoGame()
 		return pageComponent
+	}
+
+	cu, _ := c.Get("user")
+	current_user := cu.(models.User)
+
+	player, err := models.GetPlayer(game, current_user, db)
+
+	if err != nil {
+		fmt.Println("error fetching player:", err)
+
+		if err == gorm.ErrRecordNotFound {
+			player = models.Player{
+				GameID: game.ID,
+				UserID: current_user.ID,
+			}
+			db.Create(&player)
+			game.Players = append(game.Players, player)
+		}
 	}
 
 	if game.Status == "playing" {
@@ -61,4 +79,15 @@ func Create(c *gin.Context, db *gorm.DB) models.Game {
 
 func New(c *gin.Context, db *gorm.DB) {
 
+}
+
+func Index(c *gin.Context, db *gorm.DB) templ.Component {
+
+	// get all games from gorm
+	var games []models.Game
+	db.Find(&games)
+
+	pageComponent := templates.Index(games)
+
+	return pageComponent // passed into templates
 }
