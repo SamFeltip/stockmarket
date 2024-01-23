@@ -9,13 +9,14 @@ import (
 	"github.com/a-h/templ"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func Show(c *gin.Context, db *gorm.DB) templ.Component {
 	gameID := c.Param("id")
 
 	var game models.Game
-	err := db.Model(&game).Preload("Players").Where("lower(id) = lower(?)", gameID).First(&game).Error
+	err := db.Model(&game).Preload(clause.Associations).Where("lower(id) = lower(?)", gameID).First(&game).Error
 
 	if err != nil {
 		fmt.Println("error fetching game:", err)

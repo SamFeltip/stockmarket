@@ -11,7 +11,7 @@ import (
 // Define a GORM model
 type User struct {
 	gorm.Model
-	ID          uint   `gorm:"primaryKey"`
+	ID          uint
 	Name        string `gorm:"not null;unique"`
 	Password    string `gorm:"not null"`
 	ProfileRoot string `gorm:"not null"`

@@ -11,10 +11,10 @@ import (
 func CreatePageRoutes(db *gorm.DB, r *gin.Engine) {
 
 	r.GET("/",
-		func(c *gin.Context) { middleware.SoftAuth(c, db) },
+		func(c *gin.Context) { middleware.RequireAuth(c, db) },
 		func(c *gin.Context) {
 
-			pageComponent := templates.Greeting()
+			pageComponent := templates.Index()
 			RenderWithTemplate(pageComponent, "Stockmarket", c)
 		})
 

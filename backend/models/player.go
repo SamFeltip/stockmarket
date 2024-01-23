@@ -5,9 +5,9 @@ import "gorm.io/gorm"
 type Player struct {
 	ID       uint
 	GameID   string
-	Game     Game `gorm:"foreignkey:GameID"`
+	Game     Game
 	UserID   uint
-	User     User `gorm:"foreignkey:UserID"`
+	User     User
 	Position int
 }
 
