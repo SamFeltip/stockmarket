@@ -122,6 +122,11 @@ func Login(c *gin.Context, db *gorm.DB, signupBody SignupBody) {
 
 func Validate(c *gin.Context) {
 	cu, _ := c.Get("user")
+
+	if cu == nil {
+		cu = models.User{}
+	}
+
 	user := cu.(models.User)
 
 	c.JSON(http.StatusOK, gin.H{

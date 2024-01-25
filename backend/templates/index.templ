@@ -8,6 +8,8 @@ templ DeferedScripts() {
 
 templ Scripts() {
 	<script src="https://unpkg.com/htmx.org@1.9.5" integrity="sha384-xcuj3WpfgjlKF+FXhSQFQ0ZNr39ln+hwjN3npfM9VBnUskLolQAcN80McRIVOPuO" crossorigin="anonymous"></script>
+	<script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
+	
 }
 
 templ Styles() {
@@ -68,4 +70,10 @@ templ Base(title string, body templ.Component, c *gin.Context) {
 			@DeferedScripts()
 		</body>
 	</html>
+}
+
+templ Card(name string){
+	<div hx-swap-oob="beforeend:#notifications">
+		<p>{name}</p>
+	</div>
 }
