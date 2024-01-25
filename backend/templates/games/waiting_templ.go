@@ -82,7 +82,7 @@ func Waiting(game models.Game) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		for _, player := range game.Players {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"card\"><div class=\"card-header\"><img class=\"rounded\" style=\"object-fit: cover;\" width=\"120px\" height=\"120px\" src=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"card\"><img class=\"rounded card-img-top\" style=\"object-fit: cover; width: 120px; height: 120px\" src=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -98,14 +98,14 @@ func Waiting(game models.Game) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div><div class=\"card-body\"><h2>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div class=\"card-body\"><h2>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(player.User.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 19, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 18, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {

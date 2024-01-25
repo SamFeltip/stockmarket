@@ -13,9 +13,8 @@ templ Waiting(game models.Game) {
 		<div class="d-flex flex-row justify-content-center gap-3">
 			for _, player := range game.Players {
 				<div class="card">
-					<div class="card-header">
-						<img class="rounded" style="object-fit: cover;" width="120px" height="120px" src={ player.User.ProfileRoot } alt={ player.User.Name }/>
-					</div>
+                    <img class="rounded card-img-top" style="object-fit: cover; width: 120px; height: 120px" src={ player.User.ProfileRoot } alt={ player.User.Name }/>
+
 					<div class="card-body">
 						<h2>{ player.User.Name }</h2>
 					</div>
