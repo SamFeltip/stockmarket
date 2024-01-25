@@ -1,0 +1,16 @@
+package games
+
+templ Create() {
+    <div>
+        <h1>Create a game</h1>
+        <form action="/games/new" method="post">
+            <select name="difficulty">
+                <option value="0">Easy</option>
+                <option value="1">Medium</option>
+                <option value="2">Hard</option>
+            </select>
+            <input type="text" name="code" placeholder="code"/>
+            <input type="submit" value="Create" />
+        </form>
+    </div>
+}

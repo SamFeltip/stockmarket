@@ -1,0 +1,56 @@
+package authorisation
+
+script loginForm() {
+    let signup = document.querySelector("form#login")
+    signup.addEventListener("submit", function (event) {
+        event.preventDefault()
+        let body = {
+            Name: signup.querySelector("#name").value,
+            Password: signup.querySelector("#password").value,
+        }
+
+        console.log(body)
+
+        // set post to /signup with form body. if response.json contains error, show in alert. else redirect to "/"
+        fetch("/login", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error != null) {
+                alert(data.error)
+                return
+            }
+
+            window.location.href = "/"
+        })
+    })
+}
+
+templ Login() {
+	<div class="container d-flex justify-content-center">
+        <div class="card w-100" style="max-width: 40rem">
+
+            <div class="card-header text-center">
+                <h1>Stockmarket!</h1>
+            </div>
+            <div class="card-body">
+                <form id="login">
+                    <input id="name" class="form-control mb-2" type="text" name="name" placeholder="Username"/>
+                    <input id="password" class="form-control mb-4" type="password" name="password" placeholder="Password"/>
+                    <div style="display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 1rem;">
+                        <a href="/signup" class="btn btn-secondary">Create account</a>
+                        <button class="btn btn-primary" type="submit">Login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+	</div>
+	@loginForm()
+}

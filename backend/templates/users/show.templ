@@ -1,0 +1,16 @@
+package users
+
+import (
+    "stockmarket/models"
+)
+
+templ Show(user models.User) {
+        <h1>Show user</h1>
+        if user.Name == "" { 
+            <p>user not found</p>
+        } else {
+            <div>
+                @Card(user)
+            </div>
+        }
+}

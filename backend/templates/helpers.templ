@@ -1,0 +1,26 @@
+package templates
+
+import(
+    "stockmarket/models"
+)
+
+type contextKey string
+var CurrentUser contextKey = "current_user"
+
+func GetCurrentUser(ctx context.Context) models.User {
+    user, ok := ctx.Value(CurrentUser).(models.User)
+    if ok {
+        return user
+    }
+    
+	return models.User{}
+}
+
+func IsLoggedIn(ctx context.Context) bool {
+    user, ok := ctx.Value(CurrentUser).(models.User)
+    return ok && user != models.User{}
+}
+
+templ helper(){
+    <h1>this is a helper! it's only here to stop compiler errors. what a world.</h1>
+}

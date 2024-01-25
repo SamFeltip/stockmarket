@@ -1,0 +1,49 @@
+package games
+
+import (
+	"stockmarket/models"
+	"strconv"
+)
+
+templ Waiting(game models.Game) {
+	<div class="container text-center">
+        <p>Lobby code:</p>
+		<h1>{ game.ID }</h1>
+		<div>Waiting for players to join ({ strconv.Itoa(len(game.Players)) } / 6)</div>
+		<div class="d-flex flex-row justify-content-center gap-3">
+			for _, player := range game.Players {
+				<div class="card">
+					<div class="card-header">
+						<img class="rounded" style="object-fit: cover;" width="120px" height="120px" src={ player.User.ProfileRoot } alt={ player.User.Name }/>
+					</div>
+					<div class="card-body">
+						<h2>{ player.User.Name }</h2>
+					</div>
+				</div>
+			}
+		</div>
+		<div>
+			<p>Game length</p>
+            <form hx-trigger="change" hx-post="/games/cmd/difficulty" hx-swap="none">
+                <div class="radio-row">
+                    <input type="hidden" name="gameID" value={game.ID}/>
+                    <input type="radio" class="btn-check" name="game-length" id="option1" autocomplete="off" value="1" checked?={game.Difficulty == 1}/>
+                    <label class="btn" for="option1">Short</label>
+
+                    <input type="radio" class="btn-check" name="game-length" id="option2" autocomplete="off" value="2" checked?={game.Difficulty == 2}/>
+                    <label class="btn" for="option2">Medium</label>
+
+                    <input type="radio" class="btn-check" name="game-length" id="option3" autocomplete="off" value="3" checked?={game.Difficulty == 3}/>
+                    <label class="btn" for="option3">Large</label>
+                </div>
+            </form>
+            <p>Launch game when all players have joined</p>
+            <div style="d-flex flex-row w-100 justify-content-center gap-3">
+                <a href="/" class="btn btn-secondary w-100" style="max-width: 14rem;">Back</a>
+                <a class="btn btn-primary w-100" style="max-width: 14rem;" hx-post="/games/cmd/start" hx-swap="none">Launch Game</a>
+            </div>
+            
+		</div>
+		
+	</div>
+}

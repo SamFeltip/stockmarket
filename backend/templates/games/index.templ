@@ -1,0 +1,30 @@
+package games
+
+import(
+    "stockmarket/models"
+)
+
+templ Index(games []models.Game){
+    <div class="container">
+        <div class="d-flex justify-content-between pb-3">
+            <h1>Games</h1>
+            <a class="d-flex align-items-center btn btn-primary" href="/games/new">New Game</a>
+        </div>
+        for _, game := range games {
+            <div class="row border rounded px-3 py-4">
+                <div class="col-md-4">
+                    <h2>ID: {game.ID}</h2>
+                    <p>
+                        <strong>Players:</strong>
+                        <p>coming soon!</p>
+                    </p>
+                    <p>
+                        <a class="btn btn-default btn-outline-secondary" href={templ.URL("/games/show/" + game.ID)}>
+                            View Game
+                        </a>
+                    </p>
+                </div>
+            </div>
+        }
+    </div>
+}

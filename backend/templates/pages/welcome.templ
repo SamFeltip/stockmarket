@@ -1,0 +1,25 @@
+package pages
+
+import (
+	"stockmarket/templates"
+)
+
+templ Welcome() {
+    <h1>Hello, World!</h1>
+
+    <div id="user-info"></div>
+
+    <button hx-get="/user-card/1" hx-target="#user-info" hx-swap="innerHTML">Reveal Info</button>
+}
+ 
+templ Hello(name string) {
+  
+}
+
+templ Greeting() {
+	if templates.IsLoggedIn(ctx) {
+		<div>Hello, { templates.GetCurrentUser(ctx).Name }</div>
+	} else {
+		<div>Hello, Guest</div>
+	}
+}

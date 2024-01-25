@@ -1,0 +1,5 @@
+.config
+backend/.DS_Store
+backend/.env
+backend/tmp/*
+tmp/*
