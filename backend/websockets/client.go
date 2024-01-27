@@ -6,10 +6,8 @@ package websockets
 
 import (
 	"bytes"
-	"context"
-	"encoding/json"
 	"fmt"
-	page "stockmarket/templates"
+	"stockmarket/controllers"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -58,17 +56,6 @@ func NewClient(hub *Hub, conn *websocket.Conn) *Client {
 	}
 }
 
-type Response struct {
-	ChatMessage string `json:"chat_message"`
-	Headers     struct {
-		HXRequest     string `json:"HX-Request"`
-		HXTrigger     string `json:"HX-Trigger"`
-		HXTriggerName string `json:"HX-Trigger-Name"`
-		HXTarget      string `json:"HX-Target"`
-		HXCurrentURL  string `json:"HX-Current-URL"`
-	} `json:"HEADERS"`
-}
-
 // ReadPump pumps messages from the websocket connection to the Hub.
 //
 // The application runs ReadPump in a per-connection goroutine. The application
@@ -99,17 +86,11 @@ func (c *Client) ReadPump() {
 
 		fmt.Println("message recieved:", string(message))
 
-		// convery msg to json
-		var response Response
-		err = json.Unmarshal(message, &response)
+		buffer, err := controllers.CreateWebsocketBuffer(message)
 		if err != nil {
-			fmt.Println("Failed to parse message:", err)
+			fmt.Println("Failed to create html template for response:", err)
 			break
 		}
-
-		cardComponent := page.Card(response.ChatMessage)
-		buffer := &bytes.Buffer{}
-		cardComponent.Render(context.Background(), buffer)
 
 		c.Hub.broadcast <- buffer //send a html template on the hub's broadcast channel
 	}

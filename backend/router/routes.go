@@ -2,11 +2,9 @@ package router
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"stockmarket/models"
 	page "stockmarket/templates"
-	"stockmarket/websockets"
 
 	"github.com/a-h/templ"
 	"github.com/gin-gonic/gin"
@@ -19,33 +17,9 @@ var wsupgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-// serveWs handles websocket requests from the peer.
-func serveWs(hub *websockets.Hub, w http.ResponseWriter, r *http.Request) {
-	conn, err := wsupgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	client := websockets.NewClient(hub, conn)
-	client.Hub.Register <- client
-
-	// Allow collection of memory referenced by the caller by doing all work in
-	// new goroutines.
-	go client.WritePump()
-	go client.ReadPump()
-}
-
 func SetupRoutes(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 	r.LoadHTMLFiles("sockets.html")
-
-	hub := websockets.NewHub()
-	go hub.Run()
-
-	r.GET("/ws", func(c *gin.Context) {
-		serveWs(hub, c.Writer, c.Request)
-	})
 
 	//router.LoadHTMLFiles("templates/template1.html", "templates/template2.html")
 	r.GET("/sockets", func(c *gin.Context) {
@@ -54,6 +28,7 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 
 	CreateAuthRoutes(db, r)
 
+	CreateWebsocketRoutes(db, r)
 	CreatePageRoutes(db, r)
 	CreateUserRoutes(db, r)
 	CreateGameRoutes(db, r)
