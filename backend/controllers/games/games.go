@@ -26,20 +26,13 @@ func Show(c *gin.Context, db *gorm.DB) templ.Component {
 	cu, _ := c.Get("user")
 	current_user := cu.(models.User)
 
-	player, err := models.GetPlayer(game, current_user, db)
+	player, err := current_user.SetActiveGame(game, db)
 
 	if err != nil {
-		fmt.Println("error fetching player:", err)
-
-		if err == gorm.ErrRecordNotFound {
-			player = models.Player{
-				Game: game,
-				User: current_user,
-			}
-			db.Create(&player)
-			game.Players = append(game.Players, player)
-		}
+		fmt.Println("error setting active game:", err)
 	}
+
+	game.Players = append(game.Players, player)
 
 	if game.Status == "playing" {
 		pageComponent := templates.Playing(game)

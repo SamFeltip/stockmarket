@@ -10,6 +10,7 @@ type Player struct {
 	UserID   uint
 	User     User
 	Position int
+	Active   bool
 }
 
 func GetPlayer(game Game, user User, db *gorm.DB) (Player, error) {

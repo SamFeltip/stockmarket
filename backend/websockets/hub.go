@@ -1,7 +1,5 @@
 package websockets
 
-import "bytes"
-
 // Hub maintains the set of active clients and broadcasts messages to the
 // clients.
 type Hub struct {
@@ -9,7 +7,7 @@ type Hub struct {
 	clients map[*Client]bool
 
 	// Inbound messages from the clients.
-	broadcast chan *bytes.Buffer
+	broadcast chan *BroadcastMessage
 
 	// Register requests from the clients.
 	Register chan *Client
@@ -20,7 +18,7 @@ type Hub struct {
 
 func NewHub() *Hub {
 	return &Hub{
-		broadcast:  make(chan *bytes.Buffer),
+		broadcast:  make(chan *BroadcastMessage),
 		Register:   make(chan *Client),
 		unregister: make(chan *Client),
 		clients:    make(map[*Client]bool),
@@ -37,8 +35,17 @@ func (h *Hub) Run() {
 				delete(h.clients, client)
 				close(client.send)
 			}
-		case message := <-h.broadcast:
+		case broadcastMessage := <-h.broadcast:
+			message := broadcastMessage.Buffer
+			gameID := broadcastMessage.gameID
+
 			for client := range h.clients {
+
+				// only send message to clients in the same game
+				if client.gameID != gameID {
+					continue
+				}
+
 				select {
 				case client.send <- message:
 				default:

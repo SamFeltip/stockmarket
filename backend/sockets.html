@@ -16,10 +16,7 @@
 <body>
 	<h1>Sockets!</h1>
 
-	<div hx-ext="ws" ws-connect="/ws" hx-target="#notifications" hx-trigger="load">
-		<div id="notifications">
-			New message received
-		</div>
+	<div id="notifications" hx-ext="ws" ws-connect="/ws" hx-trigger="load">
 
 		<form id="form" ws-send>
 			<input type="hidden" name="template" value="chat_message">

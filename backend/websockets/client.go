@@ -46,12 +46,24 @@ type Client struct {
 
 	// Buffered channel of outbound messages.
 	send chan *bytes.Buffer
+
+	gameID string
+	userID uint
 }
 
-func NewClient(hub *Hub, conn *websocket.Conn) *Client {
+type BroadcastMessage struct {
+	userID uint
+	gameID string
+	Buffer *bytes.Buffer
+}
+
+func NewClient(hub *Hub, conn *websocket.Conn, userID uint, gameID string) *Client {
 	return &Client{
-		Hub:  hub,
-		conn: conn,
+		Hub:    hub,
+		conn:   conn,
+		userID: userID,
+		gameID: gameID,
+
 		send: make(chan *bytes.Buffer),
 	}
 }
@@ -92,7 +104,13 @@ func (c *Client) ReadPump() {
 			break
 		}
 
-		c.Hub.broadcast <- buffer //send a html template on the hub's broadcast channel
+		broadcastMessage := BroadcastMessage{
+			userID: c.userID,
+			gameID: c.gameID,
+			Buffer: buffer,
+		}
+
+		c.Hub.broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 	}
 }
 

@@ -31,9 +31,11 @@ func CreateWebsocketBuffer(message []byte) (*bytes.Buffer, error) {
 		return nil, fmt.Errorf("failed to parse message as request: %v", string(message))
 	}
 
-	// switch statement for different request.requests
 	var component templ.Component
 
+	// updating game state (buy, sell, pass)
+	// joining game
+	// leaving game
 	switch request.Template {
 	case "chat_message":
 		component = page.Card(request.Message)

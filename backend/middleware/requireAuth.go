@@ -77,6 +77,30 @@ func RequireAuth(c *gin.Context, db *gorm.DB) {
 	c.Next()
 }
 
+func RequireAuthWebsocket(c *gin.Context, db *gorm.DB) {
+
+	user, err := TestAuth(c, db)
+
+	if err != nil {
+		fmt.Println("could not find user: ", err)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	game, err := user.ActiveGame(db)
+	if err != nil {
+		fmt.Println("user is not participating in a game")
+		// write a http response and return
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "not participating in a game"})
+		return
+	}
+
+	c.Set("user", user)
+	c.Set("game", game)
+
+	c.Next()
+}
+
 func SoftAuth(c *gin.Context, db *gorm.DB) {
 
 	user, err := TestAuth(c, db)

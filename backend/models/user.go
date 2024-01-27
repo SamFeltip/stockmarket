@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -23,6 +24,30 @@ func DoesUserExist(db *gorm.DB, username string) (User, error) {
 	err := db.Where("lower(name) = lower(?)", username).First(&user).Error
 
 	return user, err
+}
+
+func (user *User) ActiveGame(db *gorm.DB) (Game, error) {
+	var player Player
+	err := db.Preload("Games").Where("user_id = ? AND active = ?", user.ID, true).First(&player).Error
+
+	return player.Game, err
+}
+
+func (user *User) SetActiveGame(game Game, db *gorm.DB) (Player, error) {
+
+	player, err := models.GetPlayer(game, user, db)
+
+	if err != nil {
+		fmt.Println("error fetching player:", err)
+
+		if err == gorm.ErrRecordNotFound {
+			player = models.Player{
+				Game: game,
+				User: current_user,
+			}
+			db.Create(&player)
+		}
+	}
 }
 
 func GenerateSessionToken(user User) (string, error) {
