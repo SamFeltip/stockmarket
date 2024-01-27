@@ -28,26 +28,41 @@ func DoesUserExist(db *gorm.DB, username string) (User, error) {
 
 func (user *User) ActiveGame(db *gorm.DB) (Game, error) {
 	var player Player
-	err := db.Preload("Games").Where("user_id = ? AND active = ?", user.ID, true).First(&player).Error
+	fmt.Println("finding active game", user.ID)
+	err := db.Preload("Game").Where("user_id = ? AND active = ?", user.ID, true).First(&player).Error
 
 	return player.Game, err
 }
 
-func (user *User) SetActiveGame(game Game, db *gorm.DB) (Player, error) {
+func (current_user *User) SetActiveGame(game Game, db *gorm.DB) (Player, error) {
 
-	player, err := models.GetPlayer(game, user, db)
+	player, find_err := GetPlayer(&game, current_user, db)
 
-	if err != nil {
-		fmt.Println("error fetching player:", err)
-
-		if err == gorm.ErrRecordNotFound {
-			player = models.Player{
-				Game: game,
-				User: current_user,
-			}
-			db.Create(&player)
+	if find_err == gorm.ErrRecordNotFound {
+		fmt.Println("could not find player, creating:", find_err)
+		player = Player{
+			Game:   game,
+			User:   *current_user,
+			Active: true,
 		}
+		create_err := db.Create(&player).Error
+
+		if create_err != nil {
+			fmt.Println("error creating player:", create_err)
+			return Player{}, find_err
+		}
+	} else if find_err != nil {
+		fmt.Println("unexpected error fetching player:", find_err)
+		return Player{}, find_err
 	}
+
+	// set all players of user to inactive
+	db.Model(&Player{}).Where("user_id = ?", current_user.ID).Update("active", false)
+
+	player.Active = true
+	db.Save(&player)
+
+	return player, nil
 }
 
 func GenerateSessionToken(user User) (string, error) {

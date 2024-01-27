@@ -13,7 +13,7 @@ type Player struct {
 	Active   bool
 }
 
-func GetPlayer(game Game, user User, db *gorm.DB) (Player, error) {
+func GetPlayer(game *Game, user *User, db *gorm.DB) (Player, error) {
 
 	var player Player
 	err := db.Where("game_id = ? AND user_id = ?", game.ID, user.ID).First(&player).Error

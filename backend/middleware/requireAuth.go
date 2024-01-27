@@ -89,7 +89,7 @@ func RequireAuthWebsocket(c *gin.Context, db *gorm.DB) {
 
 	game, err := user.ActiveGame(db)
 	if err != nil {
-		fmt.Println("user is not participating in a game")
+		fmt.Println("user is not participating in a game", err)
 		// write a http response and return
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "not participating in a game"})
 		return
