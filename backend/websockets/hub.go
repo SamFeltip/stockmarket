@@ -1,4 +1,4 @@
-package router
+package websockets
 
 import "bytes"
 
@@ -12,25 +12,25 @@ type Hub struct {
 	broadcast chan *bytes.Buffer
 
 	// Register requests from the clients.
-	register chan *Client
+	Register chan *Client
 
 	// Unregister requests from clients.
 	unregister chan *Client
 }
 
-func newHub() *Hub {
+func NewHub() *Hub {
 	return &Hub{
 		broadcast:  make(chan *bytes.Buffer),
-		register:   make(chan *Client),
+		Register:   make(chan *Client),
 		unregister: make(chan *Client),
 		clients:    make(map[*Client]bool),
 	}
 }
 
-func (h *Hub) run() {
+func (h *Hub) Run() {
 	for {
 		select {
-		case client := <-h.register:
+		case client := <-h.Register:
 			h.clients[client] = true
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {

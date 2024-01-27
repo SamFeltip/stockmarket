@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package router
+package websockets
 
 import (
 	"bytes"
@@ -41,13 +41,21 @@ var upgrader = websocket.Upgrader{
 
 // Client is a middleman between the websocket connection and the hub.
 type Client struct {
-	hub *Hub
+	Hub *Hub
 
 	// The websocket connection.
 	conn *websocket.Conn
 
 	// Buffered channel of outbound messages.
 	send chan *bytes.Buffer
+}
+
+func NewClient(hub *Hub, conn *websocket.Conn) *Client {
+	return &Client{
+		Hub:  hub,
+		conn: conn,
+		send: make(chan *bytes.Buffer),
+	}
 }
 
 type Response struct {
@@ -61,14 +69,14 @@ type Response struct {
 	} `json:"HEADERS"`
 }
 
-// readPump pumps messages from the websocket connection to the hub.
+// ReadPump pumps messages from the websocket connection to the Hub.
 //
-// The application runs readPump in a per-connection goroutine. The application
+// The application runs ReadPump in a per-connection goroutine. The application
 // ensures that there is at most one reader on a connection by executing all
 // reads from this goroutine.
-func (c *Client) readPump() {
+func (c *Client) ReadPump() {
 	defer func() {
-		c.hub.unregister <- c
+		c.Hub.unregister <- c
 		c.conn.Close()
 	}()
 	c.conn.SetReadLimit(maxMessageSize)
@@ -77,6 +85,18 @@ func (c *Client) readPump() {
 
 	for {
 		_, message, err := c.conn.ReadMessage()
+		if err != nil {
+			// if message is websocket: close 1001 (going away)
+			if websocket.IsCloseError(err, websocket.CloseGoingAway) {
+				fmt.Println("Websocket closed:", err)
+				break
+			} else {
+				fmt.Println("Failed to read message:", err)
+			}
+
+			break
+		}
+
 		fmt.Println("message recieved:", string(message))
 
 		// convery msg to json
@@ -91,16 +111,16 @@ func (c *Client) readPump() {
 		buffer := &bytes.Buffer{}
 		cardComponent.Render(context.Background(), buffer)
 
-		c.hub.broadcast <- buffer //send a html template on the hub's broadcast channel
+		c.Hub.broadcast <- buffer //send a html template on the hub's broadcast channel
 	}
 }
 
-// writePump pumps messages from the hub to the websocket connection.
+// WritePump pumps messages from the hub to the websocket connection.
 //
-// A goroutine running writePump is started for each connection. The
+// A goroutine running WritePump is started for each connection. The
 // application ensures that there is at most one writer to a connection by
 // executing all writes from this goroutine.
-func (c *Client) writePump() {
+func (c *Client) WritePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
