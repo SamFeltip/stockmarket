@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"stockmarket/models"
 	page "stockmarket/templates"
@@ -20,18 +21,8 @@ var wsupgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-type Response struct {
-	ChatMessage string `json:"chat_message"`
-	Headers     struct {
-		HXRequest     string `json:"HX-Request"`
-		HXTrigger     string `json:"HX-Trigger"`
-		HXTriggerName string `json:"HX-Trigger-Name"`
-		HXTarget      string `json:"HX-Target"`
-		HXCurrentURL  string `json:"HX-Current-URL"`
-	} `json:"HEADERS"`
-}
-
 func wshandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("connection made")
 	conn, err := wsupgrader.Upgrade(w, r, nil)
 
 	if err != nil {
@@ -61,16 +52,43 @@ func wshandler(w http.ResponseWriter, r *http.Request) {
 		cardComponent.Render(context.Background(), buffer)
 
 		// websocket.TextMessage.Send(websocket.TextMessage, buffer.Bytes())
-		conn.WriteMessage(websocket.TextMessage, buffer.Bytes())
+		err = conn.WriteMessage(websocket.TextMessage, buffer.Bytes())
+		if err != nil {
+			fmt.Println("Failed to send message:", err)
+			continue
+		}
+
 	}
+
+	fmt.Println("connection completed")
+}
+
+// serveWs handles websocket requests from the peer.
+func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
+	conn, err := wsupgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	client := &Client{hub: hub, conn: conn, send: make(chan *bytes.Buffer)}
+	client.hub.register <- client
+
+	// Allow collection of memory referenced by the caller by doing all work in
+	// new goroutines.
+	go client.writePump()
+	go client.readPump()
 }
 
 func SetupRoutes(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 	r.LoadHTMLFiles("sockets.html")
 
+	hub := newHub()
+	go hub.run()
+
 	r.GET("/ws", func(c *gin.Context) {
-		wshandler(c.Writer, c.Request)
+		// wshandler(c.Writer, c.Request)
+		serveWs(hub, c.Writer, c.Request)
 	})
 
 	//router.LoadHTMLFiles("templates/template1.html", "templates/template2.html")
