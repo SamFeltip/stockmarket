@@ -25,14 +25,14 @@ func GetPlayer(game *Game, user *User, db *gorm.DB) (Player, error) {
 	return player, err
 }
 
-func PlayerLeft(userID uint, gameID string, db *gorm.DB) (Player, error) {
+func PlayerLeft(userID uint, gameID string, db *gorm.DB) error {
 
 	var player Player
 	err := db.Where("game_id = ? AND user_id = ?", gameID, userID).First(&player).Error
 
 	if err != nil {
 		fmt.Println("could not fetch player")
-		return Player{}, err
+		return err
 	}
 
 	player.Active = false
@@ -40,10 +40,10 @@ func PlayerLeft(userID uint, gameID string, db *gorm.DB) (Player, error) {
 
 	if err != nil {
 		fmt.Println("could not update player to inactive")
-		return Player{}, err
+		return err
 	}
 
-	return player, err
+	return err
 }
 
 // sort array of players by ID bubble sort

@@ -53,6 +53,7 @@ func Show(c *gin.Context) templ.Component {
 	cu, _ := c.Get("user")
 	current_user := cu.(models.User)
 
+	fmt.Println("setting active game", current_user.Name)
 	err = current_user.SetActiveGame(game, db)
 
 	if err != nil {
@@ -64,9 +65,6 @@ func Show(c *gin.Context) templ.Component {
 		fmt.Printf("Error reloading game: %v", err)
 		return templates.NoGame()
 	}
-
-	// game.Players = append(game.Players, player)
-	fmt.Println("broadcast an update: ", game.ID)
 
 	err = BroadcastUpdatePlayersList(game.Players)
 

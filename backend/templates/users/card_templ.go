@@ -46,7 +46,7 @@ func CardList(players []models.Player) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" class=\"rounded card-img-top grayscale\"")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" class=\"rounded card-img-top darker\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

@@ -20,7 +20,7 @@ templ CardList(players []models.Player) {
 				if player.Active {
 					class="rounded card-img-top"
 				} else {
-					class="rounded card-img-top grayscale"
+					class="rounded card-img-top darker"
 				}
 				style="object-fit: cover; width: 120px; height: 120px" 
 				src={ player.User.ProfileRoot } 
