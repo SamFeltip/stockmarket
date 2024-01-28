@@ -104,7 +104,6 @@ func RequireAuthWebsocket(c *gin.Context) {
 	c.Next()
 }
 
-// not used yet!
 func SoftAuth(c *gin.Context) {
 
 	user, err := TestAuth(c)

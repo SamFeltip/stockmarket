@@ -14,7 +14,10 @@ var db *gorm.DB
 func SetupDb() *gorm.DB {
 
 	dsn := "host=localhost user=me password=def78-brglger-45y$u3g dbname=postgres port=5433 sslmode=disable"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	newdb, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+	db = newdb
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,5 +52,7 @@ func SetupDb() *gorm.DB {
 }
 
 func GetDb() *gorm.DB {
+
 	return db
+
 }

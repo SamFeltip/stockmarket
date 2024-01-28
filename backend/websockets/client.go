@@ -57,7 +57,7 @@ type BroadcastMessage struct {
 	Buffer *bytes.Buffer
 }
 
-func NewClient(hub *Hub, conn *websocket.Conn, userID uint, gameID string) *Client {
+func NewClient(conn *websocket.Conn, userID uint, gameID string) *Client {
 	return &Client{
 		Hub:    hub,
 		conn:   conn,

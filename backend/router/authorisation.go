@@ -2,6 +2,7 @@ package router
 
 import (
 	controller "stockmarket/controllers/authorisation"
+	"stockmarket/middleware"
 	templates "stockmarket/templates/authorisation"
 
 	"github.com/gin-gonic/gin"
@@ -29,6 +30,7 @@ func CreateAuthRoutes() {
 
 	r.GET(
 		"/validate",
+		func(c *gin.Context) { middleware.SoftAuth(c) },
 		controller.Validate,
 	)
 

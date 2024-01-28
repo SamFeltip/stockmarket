@@ -1,5 +1,7 @@
 package websockets
 
+var hub *Hub
+
 // Hub maintains the set of active clients and broadcasts messages to the
 // clients.
 type Hub struct {
@@ -16,13 +18,21 @@ type Hub struct {
 	unregister chan *Client
 }
 
-func NewHub() *Hub {
-	return &Hub{
+func InitializeHub() *Hub {
+	hub = &Hub{
 		broadcast:  make(chan *BroadcastMessage),
 		Register:   make(chan *Client),
 		unregister: make(chan *Client),
 		clients:    make(map[*Client]bool),
 	}
+
+	go hub.Run()
+
+	return hub
+}
+
+func GetHub() *Hub {
+	return hub
 }
 
 func (h *Hub) Run() {
