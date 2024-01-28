@@ -78,15 +78,13 @@ func Waiting(game models.Game) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"d-flex flex-row justify-content-center gap-3\" id=\"player-list\" hx-ext=\"ws\" ws-connect=\"/ws\" hx-trigger=\"load\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div id=\"player-list\" class=\"d-flex flex-row justify-content-center gap-3\" hx-ext=\"ws\" ws-connect=\"/ws\" hx-trigger=\"load\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for _, player := range game.Players {
-			templ_7745c5c3_Err = userTemplates.Card(player.User).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
+		templ_7745c5c3_Err = userTemplates.CardList(game.Players).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div><p>")
 		if templ_7745c5c3_Err != nil {

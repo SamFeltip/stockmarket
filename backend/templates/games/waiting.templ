@@ -11,11 +11,12 @@ templ Waiting(game models.Game) {
         <p>Lobby code:</p>
 		<h1>{ game.ID }</h1>
 		<div>Waiting for players to join ({ strconv.Itoa(len(game.Players)) } / 6)</div>
-		<div class="d-flex flex-row justify-content-center gap-3" id="player-list" hx-ext="ws" ws-connect="/ws" hx-trigger="load">
-			for _, player := range game.Players {
-				@userTemplates.Card(player.User)
-			}
-		</div>
+
+        // 
+        <div id="player-list" class="d-flex flex-row justify-content-center gap-3" hx-ext="ws" ws-connect="/ws" hx-trigger="load">
+            @userTemplates.CardList(game.Players)
+        </div>
+        
 		<div>
 			<p>Game length</p>
             <form hx-trigger="change" hx-post="/games/cmd/difficulty" hx-swap="none">

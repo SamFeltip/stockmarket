@@ -12,19 +12,31 @@ import (
 // 	</div>
 // }
 
-templ Card(user models.User) {
-	<div class="card">
-		<img class="rounded card-img-top" style="object-fit: cover; width: 120px; height: 120px" src={ user.ProfileRoot } alt={ user.Name }/>
+templ CardList(players []models.Player) {
 
-		<div class="card-body">
-			<h2>{ user.Name }</h2>
+	for _, player := range models.SortPlayers(players) {
+		<div class="card">
+			<img 
+				if player.Active {
+					class="rounded card-img-top"
+				} else {
+					class="rounded card-img-top grayscale"
+				}
+				style="object-fit: cover; width: 120px; height: 120px" 
+				src={ player.User.ProfileRoot } 
+				alt={ player.User.Name }
+			/>
+
+			<div class="card-body">
+				<h2>{ player.User.Name }</h2>
+			</div>
 		</div>
-	</div>
+	}
 }
 
-templ CardSocket(user models.User){
+templ CardListSocket(players []models.Player){
 
-	<div hx-swap-oob="beforeend:#player-list">
-		@Card(user)
+	<div hx-swap-oob="innerHTML:#player-list">
+		@CardList(players)
 	</div>
 }

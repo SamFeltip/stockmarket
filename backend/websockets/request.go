@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	websocketModels "stockmarket/models/websockets"
-	"stockmarket/templates"
 
 	"github.com/a-h/templ"
 )
@@ -27,7 +26,8 @@ func HandleWebsocketRequest(message []byte) (*bytes.Buffer, error) {
 	// leaving game
 	switch request.Template {
 	case "chat_message":
-		component = templates.Card(request.Message)
+		// component = templates.Card(request.Message)
+		fmt.Println("chat message:", request.Message)
 	}
 
 	if component == nil {

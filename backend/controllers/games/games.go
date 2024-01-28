@@ -17,16 +17,17 @@ import (
 	"gorm.io/gorm"
 )
 
-func BroadcastNewPlayer(player models.Player) error {
+func BroadcastUpdatePlayersList(players []models.Player) error {
 
-	userCard := userTemplates.CardSocket(player.User)
+	userCardList := userTemplates.CardListSocket(players)
 
 	buffer := &bytes.Buffer{}
-	userCard.Render(context.Background(), buffer)
+	userCardList.Render(context.Background(), buffer)
+
+	latestPlayer := players[len(players)-1]
 
 	broadcastMessage := websocketModels.BroadcastMessage{
-		UserID: player.UserID,
-		GameID: player.GameID,
+		GameID: latestPlayer.GameID,
 		Buffer: buffer,
 	}
 
@@ -52,15 +53,22 @@ func Show(c *gin.Context) templ.Component {
 	cu, _ := c.Get("user")
 	current_user := cu.(models.User)
 
-	player, err := current_user.SetActiveGame(game, db)
+	err = current_user.SetActiveGame(game, db)
 
 	if err != nil {
 		fmt.Println("error setting active game:", err)
 	}
 
-	game.Players = append(game.Players, player)
+	err = game.UpdateORM(db)
+	if err != nil {
+		fmt.Printf("Error reloading game: %v", err)
+		return templates.NoGame()
+	}
 
-	err = BroadcastNewPlayer(player)
+	// game.Players = append(game.Players, player)
+	fmt.Println("broadcast an update: ", game.ID)
+
+	err = BroadcastUpdatePlayersList(game.Players)
 
 	if err != nil {
 		fmt.Println("error broadcasting new player:", err)

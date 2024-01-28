@@ -25,7 +25,6 @@ type Client struct {
 }
 
 type BroadcastMessage struct {
-	UserID uint
 	GameID string
 	Buffer *bytes.Buffer
 }

@@ -23,3 +23,8 @@ func GetGame(gameID string, db *gorm.DB) (Game, error) {
 	return game, err
 
 }
+
+func (game *Game) UpdateORM(db *gorm.DB) error {
+	err := db.Preload("Players").Preload("Players.User").Where("lower(id) = lower(?)", game.ID).First(&game).Error
+	return err
+}

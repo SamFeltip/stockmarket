@@ -34,7 +34,7 @@ func (user *User) ActiveGame(db *gorm.DB) (Game, error) {
 	return player.Game, err
 }
 
-func (current_user *User) SetActiveGame(game Game, db *gorm.DB) (Player, error) {
+func (current_user *User) SetActiveGame(game Game, db *gorm.DB) error {
 
 	player, find_err := GetPlayer(&game, current_user, db)
 
@@ -49,11 +49,11 @@ func (current_user *User) SetActiveGame(game Game, db *gorm.DB) (Player, error) 
 
 		if create_err != nil {
 			fmt.Println("error creating player:", create_err)
-			return Player{}, find_err
+			return find_err
 		}
 	} else if find_err != nil {
 		fmt.Println("unexpected error fetching player:", find_err)
-		return Player{}, find_err
+		return find_err
 	}
 
 	// set all players of user to inactive
@@ -62,7 +62,7 @@ func (current_user *User) SetActiveGame(game Game, db *gorm.DB) (Player, error) 
 	player.Active = true
 	db.Save(&player)
 
-	return player, nil
+	return nil
 }
 
 func GenerateSessionToken(user User) (string, error) {

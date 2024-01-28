@@ -7,7 +7,7 @@ import (
 templ Index(users []models.User) {
     <div>
     for _, user := range users {
-        @Card(user)
+        <p>{user.Name}</p>
     }
     </div>
 }

@@ -3,6 +3,8 @@ package websockets
 import (
 	"encoding/json"
 	"fmt"
+	"stockmarket/database"
+	models "stockmarket/models"
 	websocketModels "stockmarket/models/websockets"
 	"time"
 
@@ -47,18 +49,24 @@ func ReadPump(c *websocketModels.Client) {
 	c.Conn.SetReadDeadline(time.Now().Add(pongWait))
 	c.Conn.SetPongHandler(func(string) error { c.Conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 
+	db := database.GetDb()
+
 	for {
 		_, message, err := c.Conn.ReadMessage()
 		if err != nil {
 			// if message is websocket: close 1001 (going away)
-			if gorrilaws.IsCloseError(err, gorrilaws.CloseGoingAway) {
-				fmt.Println("Websocket closed:", err)
-
-				fmt.Println("details:", c.UserID, c.GameID)
-				//models.PlayerLeft(c.UserID, c.GameID)
-
-			} else {
+			if !gorrilaws.IsCloseError(err, gorrilaws.CloseGoingAway) {
 				fmt.Println("Failed to read message:", err)
+				break
+			}
+
+			fmt.Println("Websocket closed:", err)
+
+			fmt.Println("details:", c.UserID, c.GameID)
+			_, err := models.PlayerLeft(c.UserID, c.GameID, db)
+
+			if err != nil {
+				fmt.Println("error setting player to inactive:", err)
 			}
 
 			break
