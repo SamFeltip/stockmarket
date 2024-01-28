@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"stockmarket/database"
 	"stockmarket/models"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"gorm.io/gorm"
 )
 
-func TestAuth(c *gin.Context, db *gorm.DB) (models.User, error) {
+func TestAuth(c *gin.Context) (models.User, error) {
+
+	db := database.GetDb()
 
 	// Get the cookie of req
 	tokenString, err := c.Cookie("Authorisation")
@@ -62,9 +64,9 @@ func TestAuth(c *gin.Context, db *gorm.DB) (models.User, error) {
 	return user, nil
 }
 
-func RequireAuth(c *gin.Context, db *gorm.DB) {
+func RequireAuth(c *gin.Context) {
 
-	user, err := TestAuth(c, db)
+	user, err := TestAuth(c)
 
 	if err != nil {
 		fmt.Println("could not find user: ", err)
@@ -77,9 +79,10 @@ func RequireAuth(c *gin.Context, db *gorm.DB) {
 	c.Next()
 }
 
-func RequireAuthWebsocket(c *gin.Context, db *gorm.DB) {
+func RequireAuthWebsocket(c *gin.Context) {
+	db := database.GetDb()
 
-	user, err := TestAuth(c, db)
+	user, err := TestAuth(c)
 
 	if err != nil {
 		fmt.Println("could not find user: ", err)
@@ -101,9 +104,10 @@ func RequireAuthWebsocket(c *gin.Context, db *gorm.DB) {
 	c.Next()
 }
 
-func SoftAuth(c *gin.Context, db *gorm.DB) {
+// not used yet!
+func SoftAuth(c *gin.Context) {
 
-	user, err := TestAuth(c, db)
+	user, err := TestAuth(c)
 
 	if err != nil {
 		fmt.Println("could not find user: ", err)
@@ -114,9 +118,11 @@ func SoftAuth(c *gin.Context, db *gorm.DB) {
 
 }
 
-func AuthCurrentPlayer(c *gin.Context, db *gorm.DB) {
+func AuthCurrentPlayer(c *gin.Context) {
+	db := database.GetDb()
+
 	c.Request.ParseForm()
-	user, err := TestAuth(c, db)
+	user, err := TestAuth(c)
 	if err != nil {
 		fmt.Println("invalid credentials")
 		c.JSON(http.StatusForbidden, gin.H{

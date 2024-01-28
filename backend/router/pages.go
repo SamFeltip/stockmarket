@@ -5,13 +5,12 @@ import (
 	templates "stockmarket/templates/pages"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func CreatePageRoutes(db *gorm.DB, r *gin.Engine) {
+func CreatePageRoutes() {
 
 	r.GET("/",
-		func(c *gin.Context) { middleware.RequireAuth(c, db) },
+		func(c *gin.Context) { middleware.RequireAuth(c) },
 		func(c *gin.Context) {
 
 			pageComponent := templates.Index()

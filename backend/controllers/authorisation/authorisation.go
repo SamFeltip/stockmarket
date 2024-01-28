@@ -3,11 +3,11 @@ package authorisation
 import (
 	"fmt"
 	"net/http"
+	"stockmarket/database"
 	"stockmarket/models"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 type SignupBody struct {
@@ -17,8 +17,9 @@ type SignupBody struct {
 }
 
 // [POST] /signup
-func Signup(c *gin.Context, db *gorm.DB) {
+func Signup(c *gin.Context) {
 
+	db := database.GetDb()
 	var body SignupBody
 
 	if c.Bind(&body) != nil {
@@ -61,11 +62,12 @@ func Signup(c *gin.Context, db *gorm.DB) {
 	}
 
 	fmt.Println("user signed up successfully")
-	Login(c, db, body)
+	Login(c, body)
 
 }
 
-func Login(c *gin.Context, db *gorm.DB, signupBody SignupBody) {
+func Login(c *gin.Context, signupBody SignupBody) {
+	db := database.GetDb()
 
 	var loginBody struct {
 		Name     string `form:"Name"`

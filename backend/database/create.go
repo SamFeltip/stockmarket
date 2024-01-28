@@ -9,6 +9,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var db *gorm.DB
+
 func SetupDb() *gorm.DB {
 
 	dsn := "host=localhost user=me password=def78-brglger-45y$u3g dbname=postgres port=5433 sslmode=disable"
@@ -44,4 +46,8 @@ func SetupDb() *gorm.DB {
 
 	return db
 
+}
+
+func GetDb() *gorm.DB {
+	return db
 }

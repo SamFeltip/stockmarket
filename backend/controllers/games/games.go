@@ -2,6 +2,7 @@ package games
 
 import (
 	"fmt"
+	"stockmarket/database"
 	"stockmarket/models"
 	templates "stockmarket/templates/games"
 	"strconv"
@@ -11,7 +12,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func Show(c *gin.Context, db *gorm.DB) templ.Component {
+func Show(c *gin.Context) templ.Component {
+	db := database.GetDb()
+
 	gameID := c.Param("id")
 
 	var game models.Game
@@ -49,7 +52,9 @@ func Show(c *gin.Context, db *gorm.DB) templ.Component {
 
 }
 
-func Create(c *gin.Context, db *gorm.DB) models.Game {
+func Create(c *gin.Context) models.Game {
+	db := database.GetDb()
+
 	code := c.PostForm("code")
 	difficultyStr := c.PostForm("difficulty")
 
@@ -77,7 +82,8 @@ func New(c *gin.Context, db *gorm.DB) {
 
 }
 
-func Index(c *gin.Context, db *gorm.DB) templ.Component {
+func Index(c *gin.Context) templ.Component {
+	db := database.GetDb()
 
 	// get all games from gorm
 	var games []models.Game

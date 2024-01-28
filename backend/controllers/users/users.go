@@ -1,13 +1,15 @@
 package users
 
 import (
+	"stockmarket/database"
 	"stockmarket/models"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func Index(c *gin.Context, db *gorm.DB) []models.User {
+func Index(c *gin.Context) []models.User {
+
+	db := database.GetDb()
 
 	// get all users from gorm
 	var users []models.User
@@ -16,7 +18,10 @@ func Index(c *gin.Context, db *gorm.DB) []models.User {
 	return users // passed into templates
 }
 
-func Show(c *gin.Context, db *gorm.DB) models.User {
+func Show(c *gin.Context) models.User {
+
+	db := database.GetDb()
+
 	id := c.Param("id")
 
 	var user models.User

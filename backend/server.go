@@ -22,8 +22,8 @@ func init() {
 
 func main() {
 
-	db := database.SetupDb()
-	r := router.SetupRoutes(db)
+	database.SetupDb()
+	r := router.SetupRoutes()
 	r.Static("/static", "./static")
 	var port = os.Getenv("PORT")
 

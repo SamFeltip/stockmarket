@@ -9,7 +9,6 @@ import (
 	"github.com/a-h/templ"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"gorm.io/gorm"
 )
 
 var wsupgrader = websocket.Upgrader{
@@ -17,8 +16,10 @@ var wsupgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func SetupRoutes(db *gorm.DB) *gin.Engine {
-	r := gin.Default()
+var r *gin.Engine
+
+func SetupRoutes() *gin.Engine {
+	r = gin.Default()
 	r.LoadHTMLFiles("sockets.html")
 
 	//router.LoadHTMLFiles("templates/template1.html", "templates/template2.html")
@@ -26,12 +27,12 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 		c.HTML(http.StatusOK, "sockets.html", nil)
 	})
 
-	CreateAuthRoutes(db, r)
+	CreateAuthRoutes()
 
-	CreateWebsocketRoutes(db, r)
-	CreatePageRoutes(db, r)
-	CreateUserRoutes(db, r)
-	CreateGameRoutes(db, r)
+	CreateWebsocketRoutes()
+	CreatePageRoutes()
+	CreateUserRoutes()
+	CreateGameRoutes()
 
 	return r
 }

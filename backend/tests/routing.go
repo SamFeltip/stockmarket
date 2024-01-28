@@ -11,8 +11,7 @@ import (
 )
 
 func TestHelloEndpoint(t *testing.T) {
-	db := database.SetupDb()
-	router := router.SetupRoutes(db) // Assuming SetupRouter initializes your router with all the routes
+	router := router.SetupRoutes() // Assuming SetupRouter initializes your router with all the routes
 
 	req, _ := http.NewRequest(http.MethodGet, "/hello", nil)
 	resp := httptest.NewRecorder()
@@ -24,8 +23,8 @@ func TestHelloEndpoint(t *testing.T) {
 }
 
 func TestUserCardEndpoint(t *testing.T) {
-	db := database.SetupDb()
-	r := router.SetupRoutes(db)
+	database.SetupDb()
+	r := router.SetupRoutes()
 
 	req, _ := http.NewRequest(http.MethodGet, "/users/card/1", nil)
 	resp := httptest.NewRecorder()
@@ -37,8 +36,8 @@ func TestUserCardEndpoint(t *testing.T) {
 }
 
 func TestUsersEndpoint(t *testing.T) {
-	db := database.SetupDb()
-	r := router.SetupRoutes(db)
+	database.SetupDb()
+	r := router.SetupRoutes()
 
 	req, _ := http.NewRequest(http.MethodGet, "/users/show/1", nil)
 	resp := httptest.NewRecorder()

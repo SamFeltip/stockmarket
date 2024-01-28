@@ -5,10 +5,9 @@ import (
 	templates "stockmarket/templates/authorisation"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func CreateAuthRoutes(db *gorm.DB, r *gin.Engine) {
+func CreateAuthRoutes() {
 
 	r.GET("/signup", func(c *gin.Context) {
 
@@ -24,9 +23,9 @@ func CreateAuthRoutes(db *gorm.DB, r *gin.Engine) {
 
 	})
 
-	r.POST("/signup", func(c *gin.Context) { controller.Signup(c, db) })
+	r.POST("/signup", func(c *gin.Context) { controller.Signup(c) })
 
-	r.POST("/login", func(c *gin.Context) { controller.Login(c, db, controller.SignupBody{}) })
+	r.POST("/login", func(c *gin.Context) { controller.Login(c, controller.SignupBody{}) })
 
 	r.GET(
 		"/validate",

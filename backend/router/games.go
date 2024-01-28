@@ -4,23 +4,23 @@ import (
 	"fmt"
 	"net/http"
 	controllers "stockmarket/controllers/games"
+	"stockmarket/database"
 	"stockmarket/middleware"
 	"stockmarket/models"
 	templates "stockmarket/templates/games"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func CreateGameRoutes(db *gorm.DB, r *gin.Engine) {
+func CreateGameRoutes() {
 
 	r.GET(
 		"/games/show/:id",
-		func(c *gin.Context) { middleware.RequireAuth(c, db) },
+		func(c *gin.Context) { middleware.RequireAuth(c) },
 		func(c *gin.Context) {
 
-			pageComponent := controllers.Show(c, db)
+			pageComponent := controllers.Show(c)
 
 			RenderWithTemplate(pageComponent, "Game - id", c)
 
@@ -28,7 +28,7 @@ func CreateGameRoutes(db *gorm.DB, r *gin.Engine) {
 
 	r.GET(
 		"/games/new",
-		func(c *gin.Context) { middleware.RequireAuth(c, db) },
+		func(c *gin.Context) { middleware.RequireAuth(c) },
 		func(c *gin.Context) {
 
 			pageComponent := templates.Create()
@@ -38,10 +38,10 @@ func CreateGameRoutes(db *gorm.DB, r *gin.Engine) {
 
 	r.POST(
 		"/games/new",
-		func(c *gin.Context) { middleware.RequireAuth(c, db) },
+		func(c *gin.Context) { middleware.RequireAuth(c) },
 		func(c *gin.Context) {
 
-			game := controllers.Create(c, db)
+			game := controllers.Create(c)
 
 			show_url := fmt.Sprintf("/games/show/%s", game.ID)
 
@@ -53,8 +53,11 @@ func CreateGameRoutes(db *gorm.DB, r *gin.Engine) {
 
 	r.POST(
 		"/games/cmd/difficulty",
-		func(c *gin.Context) { middleware.AuthCurrentPlayer(c, db) },
+		func(c *gin.Context) { middleware.AuthCurrentPlayer(c) },
 		func(c *gin.Context) {
+
+			db := database.GetDb()
+
 			// log form in context (form contains gameID and difficulty)
 			c.Request.ParseForm()
 			fmt.Println(c.Request.Form["gameID"])
@@ -93,11 +96,11 @@ func CreateGameRoutes(db *gorm.DB, r *gin.Engine) {
 
 	r.GET(
 		"/games",
-		func(c *gin.Context) { middleware.RequireAuth(c, db) },
+		func(c *gin.Context) { middleware.RequireAuth(c) },
 		func(c *gin.Context) {
 
 			// get all games
-			pageComponent := controllers.Index(c, db)
+			pageComponent := controllers.Index(c)
 
 			RenderWithTemplate(pageComponent, "Show games", c)
 

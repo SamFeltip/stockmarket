@@ -8,7 +8,6 @@ import (
 	"stockmarket/websockets"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 // serveWs handles websocket requests from the peer.
@@ -49,12 +48,11 @@ func serveWs(hub *websockets.Hub, c *gin.Context) {
 	go client.ReadPump()
 }
 
-func CreateWebsocketRoutes(db *gorm.DB, r *gin.Engine) {
-
+func CreateWebsocketRoutes() {
 	hub := websockets.NewHub()
 	go hub.Run()
 
 	r.GET("/ws",
-		func(c *gin.Context) { middleware.RequireAuthWebsocket(c, db) },
+		func(c *gin.Context) { middleware.RequireAuthWebsocket(c) },
 		func(c *gin.Context) { serveWs(hub, c) })
 }
