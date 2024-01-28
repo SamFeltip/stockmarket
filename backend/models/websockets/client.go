@@ -10,7 +10,7 @@ import (
 	"stockmarket/controllers"
 	"time"
 
-	"github.com/gorilla/websocket"
+	gorrilaws "github.com/gorilla/websocket"
 )
 
 const (
@@ -32,7 +32,7 @@ var (
 	space   = []byte{' '}
 )
 
-var upgrader = websocket.Upgrader{
+var upgrader = gorrilaws.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }
@@ -42,29 +42,29 @@ type Client struct {
 	Hub *Hub
 
 	// The websocket connection.
-	conn *websocket.Conn
+	Conn *gorrilaws.Conn
 
 	// Buffered channel of outbound messages.
-	send chan *bytes.Buffer
+	Send chan *bytes.Buffer
 
-	gameID string
-	userID uint
+	GameID string
+	UserID uint
 }
 
 type BroadcastMessage struct {
-	userID uint
-	gameID string
+	UserID uint
+	GameID string
 	Buffer *bytes.Buffer
 }
 
-func NewClient(conn *websocket.Conn, userID uint, gameID string) *Client {
+func NewClient(hub *Hub, conn *gorrilaws.Conn, userID uint, gameID string) *Client {
 	return &Client{
 		Hub:    hub,
-		conn:   conn,
-		userID: userID,
-		gameID: gameID,
+		Conn:   conn,
+		UserID: userID,
+		GameID: gameID,
 
-		send: make(chan *bytes.Buffer),
+		Send: make(chan *bytes.Buffer),
 	}
 }
 
@@ -75,18 +75,18 @@ func NewClient(conn *websocket.Conn, userID uint, gameID string) *Client {
 // reads from this goroutine.
 func (c *Client) ReadPump() {
 	defer func() {
-		c.Hub.unregister <- c
-		c.conn.Close()
+		c.Hub.Unregister <- c
+		c.Conn.Close()
 	}()
-	c.conn.SetReadLimit(maxMessageSize)
-	c.conn.SetReadDeadline(time.Now().Add(pongWait))
-	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	c.Conn.SetReadLimit(maxMessageSize)
+	c.Conn.SetReadDeadline(time.Now().Add(pongWait))
+	c.Conn.SetPongHandler(func(string) error { c.Conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 
 	for {
-		_, message, err := c.conn.ReadMessage()
+		_, message, err := c.Conn.ReadMessage()
 		if err != nil {
 			// if message is websocket: close 1001 (going away)
-			if websocket.IsCloseError(err, websocket.CloseGoingAway) {
+			if gorrilaws.IsCloseError(err, gorrilaws.CloseGoingAway) {
 				fmt.Println("Websocket closed:", err)
 				break
 			} else {
@@ -105,12 +105,12 @@ func (c *Client) ReadPump() {
 		}
 
 		broadcastMessage := BroadcastMessage{
-			userID: c.userID,
-			gameID: c.gameID,
+			UserID: c.UserID,
+			GameID: c.GameID,
 			Buffer: buffer,
 		}
 
-		c.Hub.broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
+		c.Hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 	}
 }
 
@@ -123,26 +123,26 @@ func (c *Client) WritePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
-		c.conn.Close()
+		c.Conn.Close()
 	}()
 	for {
 		select {
-		case messageBuffer, ok := <-c.send:
-			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
+		case messageBuffer, ok := <-c.Send:
+			c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				// The hub closed the channel.
-				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
+				c.Conn.WriteMessage(gorrilaws.CloseMessage, []byte{})
 				return
 			}
 
-			err := c.conn.WriteMessage(websocket.TextMessage, messageBuffer.Bytes())
+			err := c.Conn.WriteMessage(gorrilaws.TextMessage, messageBuffer.Bytes())
 			if err != nil {
 				return
 			}
 
 		case <-ticker.C:
-			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+			c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err := c.Conn.WriteMessage(gorrilaws.PingMessage, nil); err != nil {
 				return
 			}
 		}

@@ -5,6 +5,7 @@ import (
 	"os"
 	"stockmarket/database"
 	"stockmarket/router"
+	"stockmarket/websockets"
 
 	"github.com/joho/godotenv"
 )
@@ -23,6 +24,8 @@ func init() {
 func main() {
 
 	database.SetupDb()
+	websockets.InitializeHub()
+
 	r := router.SetupRoutes()
 	r.Static("/static", "./static")
 	var port = os.Getenv("PORT")

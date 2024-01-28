@@ -14,6 +14,22 @@ import (
 	"stockmarket/models"
 )
 
+func IngamePage(game models.Game) templ.Component {
+
+	if game.Status == "playing" {
+		pageComponent := Playing(game)
+		return pageComponent
+	}
+
+	if game.Status == "showing" {
+		pageComponent := Showing(game)
+		return pageComponent
+	}
+
+	pageComponent := Waiting(game)
+	return pageComponent
+}
+
 func Index(games []models.Game) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -62,7 +78,7 @@ func Index(games []models.Game) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(game.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/index.templ`, Line: 15, Col: 36}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/index.templ`, Line: 31, Col: 36}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {

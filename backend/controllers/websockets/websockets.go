@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"stockmarket/models"
+	websocketModels "stockmarket/models/websockets"
 	"stockmarket/websockets"
 
 	"github.com/gin-gonic/gin"
@@ -43,9 +44,10 @@ func ServeWs(c *gin.Context) (int, gin.H) {
 	userID := cu.(models.User).ID
 	gameID := cg.(models.Game).ID
 
-	client := websockets.NewClient(conn, userID, gameID)
-
 	hub := websockets.GetHub()
+
+	client := websocketModels.NewClient(hub, conn, userID, gameID)
+
 	hub.Register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in

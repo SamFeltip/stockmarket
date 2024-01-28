@@ -52,7 +52,5 @@ func SetupDb() *gorm.DB {
 }
 
 func GetDb() *gorm.DB {
-
 	return db
-
 }

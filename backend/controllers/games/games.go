@@ -17,13 +17,11 @@ func Show(c *gin.Context) templ.Component {
 
 	gameID := c.Param("id")
 
-	var game models.Game
-	err := db.Model(&game).Preload("Players").Preload("Players.User").Where("lower(id) = lower(?)", gameID).First(&game).Error
+	game, err := models.GetGame(gameID, db)
 
 	if err != nil {
 		fmt.Println("error fetching game:", err)
-		pageComponent := templates.NoGame()
-		return pageComponent
+		return templates.NoGame()
 	}
 
 	cu, _ := c.Get("user")
@@ -37,18 +35,14 @@ func Show(c *gin.Context) templ.Component {
 
 	game.Players = append(game.Players, player)
 
-	if game.Status == "playing" {
-		pageComponent := templates.Playing(game)
-		return pageComponent
+	err = game.BroadcastNewPlayer(player)
+
+	if err != nil {
+		fmt.Println("error broadcasting new player:", err)
+		return templates.NoGame()
 	}
 
-	if game.Status == "showing" {
-		pageComponent := templates.Showing(game)
-		return pageComponent
-	}
-
-	pageComponent := templates.Waiting(game)
-	return pageComponent
+	return templates.IngamePage(game)
 
 }
 

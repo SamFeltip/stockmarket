@@ -14,3 +14,17 @@ type Game struct {
 	CurrentUser   User
 	CurrentUserID uint
 }
+
+func GetGame(gameID string, db *gorm.DB) (Game, error) {
+
+	var game Game
+	err := db.Model(&game).Preload("Players").Preload("Players.User").Where("lower(id) = lower(?)", gameID).First(&game).Error
+
+	return game, err
+
+}
+
+func (game *Game) BroadcastNewPlayer(player Player) error {
+	return nil
+
+}

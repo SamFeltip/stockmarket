@@ -4,6 +4,22 @@ import(
     "stockmarket/models"
 )
 
+func IngamePage(game models.Game) templ.Component {
+
+	if game.Status == "playing" {
+		pageComponent := Playing(game)
+		return pageComponent
+	}
+
+	if game.Status == "showing" {
+		pageComponent := Showing(game)
+		return pageComponent
+	}
+
+	pageComponent := Waiting(game)
+	return pageComponent
+}
+
 templ Index(games []models.Game){
     <div class="container">
         <div class="d-flex justify-content-between pb-3">
