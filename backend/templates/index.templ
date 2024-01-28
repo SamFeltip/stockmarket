@@ -71,9 +71,3 @@ templ Base(title string, body templ.Component, c *gin.Context) {
 		</body>
 	</html>
 }
-
-templ Card(name string){
-	<div hx-swap-oob="beforeend:#notifications">
-		<p>{name}</p>
-	</div>
-}

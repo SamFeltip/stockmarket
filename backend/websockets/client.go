@@ -1,12 +1,9 @@
 package websockets
 
 import (
-	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	websocketModels "stockmarket/models/websockets"
-	"stockmarket/templates"
 	"time"
 
 	gorrilaws "github.com/gorilla/websocket"
@@ -76,19 +73,6 @@ func ReadPump(c *websocketModels.Client) {
 		}
 
 		fmt.Println("websocket request:", request)
-
-		component := templates.Card(request.Message)
-
-		buffer := &bytes.Buffer{}
-		component.Render(context.Background(), buffer)
-
-		broadcastMessage := websocketModels.BroadcastMessage{
-			UserID: c.UserID,
-			GameID: c.GameID,
-			Buffer: buffer,
-		}
-
-		c.Hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 	}
 }
 

@@ -2,7 +2,6 @@ package router
 
 import (
 	"context"
-	"net/http"
 	"stockmarket/models"
 	page "stockmarket/templates"
 
@@ -14,12 +13,6 @@ var r *gin.Engine
 
 func SetupRoutes() *gin.Engine {
 	r = gin.Default()
-	r.LoadHTMLFiles("sockets.html")
-
-	//router.LoadHTMLFiles("templates/template1.html", "templates/template2.html")
-	r.GET("/sockets", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "sockets.html", nil)
-	})
 
 	CreateAuthRoutes()
 
