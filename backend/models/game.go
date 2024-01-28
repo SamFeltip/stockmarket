@@ -23,8 +23,3 @@ func GetGame(gameID string, db *gorm.DB) (Game, error) {
 	return game, err
 
 }
-
-func (game *Game) BroadcastNewPlayer(player Player) error {
-	return nil
-
-}

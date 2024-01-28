@@ -3,11 +3,28 @@ package users
 import (
     "stockmarket/models"
 )
+// templ Card(user models.User) {
+// 	<div class="card" width="6rem">
+// 		<img src={user.ProfileRoot} class="card-img-top" alt={user.Name + " profile"}/>
+// 		<div class="card-body">
+// 			<h5 class="text-center card-title">{user.Name}</h5>
+// 		</div>
+// 	</div>
+// }
+
 templ Card(user models.User) {
-	<div class="card" style="width: 6rem;">
-		<img src={user.ProfileRoot} class="card-img-top" alt={user.Name + " profile"}/>
+	<div class="card">
+		<img class="rounded card-img-top" style="object-fit: cover; width: 120px; height: 120px" src={ user.ProfileRoot } alt={ user.Name }/>
+
 		<div class="card-body">
-			<h5 class="text-center card-title">{user.Name}</h5>
+			<h2>{ user.Name }</h2>
 		</div>
+	</div>
+}
+
+templ CardSocket(user models.User){
+
+	<div hx-swap-oob="beforeend:#player-list">
+		@Card(user)
 	</div>
 }

@@ -52,8 +52,8 @@ func ServeWs(c *gin.Context) (int, gin.H) {
 
 	// Allow collection of memory referenced by the caller by doing all work in
 	// new goroutines.
-	go client.WritePump()
-	go client.ReadPump()
+	go websockets.WritePump(client)
+	go websockets.ReadPump(client)
 
 	return http.StatusOK, gin.H{"message": "websocket connection established"}
 }

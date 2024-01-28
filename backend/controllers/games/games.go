@@ -1,16 +1,41 @@
 package games
 
 import (
+	"bytes"
+	"context"
 	"fmt"
 	"stockmarket/database"
 	"stockmarket/models"
+	websocketModels "stockmarket/models/websockets"
 	templates "stockmarket/templates/games"
+	userTemplates "stockmarket/templates/users"
+	"stockmarket/websockets"
 	"strconv"
 
 	"github.com/a-h/templ"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
+
+func BroadcastNewPlayer(player models.Player) error {
+
+	userCard := userTemplates.CardSocket(player.User)
+
+	buffer := &bytes.Buffer{}
+	userCard.Render(context.Background(), buffer)
+
+	broadcastMessage := websocketModels.BroadcastMessage{
+		UserID: player.UserID,
+		GameID: player.GameID,
+		Buffer: buffer,
+	}
+
+	hub := websockets.GetHub()
+	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
+
+	return nil
+
+}
 
 func Show(c *gin.Context) templ.Component {
 	db := database.GetDb()
@@ -35,7 +60,7 @@ func Show(c *gin.Context) templ.Component {
 
 	game.Players = append(game.Players, player)
 
-	err = game.BroadcastNewPlayer(player)
+	err = BroadcastNewPlayer(player)
 
 	if err != nil {
 		fmt.Println("error broadcasting new player:", err)
