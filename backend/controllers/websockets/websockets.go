@@ -16,7 +16,7 @@ var wsupgrader = websocket.Upgrader{
 }
 
 // serveWs handles websocket requests from the peer.
-func ServeWs(c *gin.Context) {
+func ServeWs(c *gin.Context) (int, gin.H) {
 
 	w := c.Writer
 	r := c.Request
@@ -24,7 +24,7 @@ func ServeWs(c *gin.Context) {
 	conn, err := wsupgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
-		return
+		return http.StatusInternalServerError, gin.H{"error": "could not upgrade websocket"}
 	}
 
 	cu, _ := c.Get("user")
@@ -32,14 +32,12 @@ func ServeWs(c *gin.Context) {
 
 	if cu == nil {
 		log.Println("no user found")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "no user found in request context"})
-		return
+		return http.StatusBadRequest, gin.H{"error": "no user found in request context"}
 	}
 
 	if cg == nil {
 		log.Println("no game found")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "no game found in request context"})
-		return
+		return http.StatusBadRequest, gin.H{"error": "no game found in request context"}
 	}
 
 	userID := cu.(models.User).ID
@@ -54,4 +52,6 @@ func ServeWs(c *gin.Context) {
 	// new goroutines.
 	go client.WritePump()
 	go client.ReadPump()
+
+	return http.StatusOK, gin.H{"message": "websocket connection established"}
 }

@@ -13,5 +13,8 @@ func CreateWebsocketRoutes() {
 
 	r.GET("/ws",
 		func(c *gin.Context) { middleware.RequireAuthWebsocket(c) },
-		func(c *gin.Context) { controllers.ServeWs(c) })
+		func(c *gin.Context) {
+			httpResponseCode, response := controllers.ServeWs(c)
+			c.JSON(httpResponseCode, response)
+		})
 }
