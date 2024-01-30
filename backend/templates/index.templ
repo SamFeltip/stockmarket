@@ -60,13 +60,18 @@ templ Base(title string, body templ.Component, c *gin.Context) {
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<link rel="icon" type="" href="/static/imgs/logo.svg"/>
+			<link rel="manifest" href="/static/manifest.json"/>
+
 			@Styles()
 			@Scripts()
 			<title>{ title }</title>
 		</head>
-		<body>
-			@Navbar()
-			@body
+		<body style="display: grid; height: 95vh;">
+			//@Navbar()
+			<main class="d-flex flex-column justify-content-center">
+				@body
+			</main>
 			@DeferedScripts()
 		</body>
 	</html>
