@@ -3,8 +3,9 @@
     "short_name": "Stockmarket",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#204712",
-    "theme_color": "#204712",
+    "orientation": "landscape",
+    "background_color": "#0F2C12",
+    "theme_color": "#0F2C12",
     "icons": [
         {
             "src": "/static/imgs/app-icon.png",

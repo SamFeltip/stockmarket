@@ -11,10 +11,10 @@ script Form() {
 }
 
 templ Index() {
-	<div class="container d-flex justify-content-center">
-		<div class="card" style="max-width: 40rem">
+	<div class="container-fluid rounded d-flex justify-content-center" style="max-width: 40rem">
+		<div class="card">
 			<div class="card-header text-center">
-				<h1>Stockmarket!</h1>
+				<header>Stockmarket!</header>
 				<h2>Welcome to stockmarket</h2>
 			</div>
 			<div
@@ -23,7 +23,7 @@ templ Index() {
                     grid-template-columns: 1fr 1fr;
                     gap: 10px;"
 			>
-				<form action="/games/show" class="border rounded text-center p-5">
+				<form action="/games/show" class="bg-dark rounded text-center p-5">
 					<h3>Join game</h3>
 					<input class="text-center form-control mb-3" type="text" name="game" placeholder="Lobby number"/>
 					<input type="submit" value="Join" class="btn btn-primary px-5"/>

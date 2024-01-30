@@ -1,21 +1,143 @@
-.container {
-    /* padding-top: 1rem; */
+* {
+    font-display: block;
+    font-family: 'Inter', serif;
 }
 
-.darker::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.5);
+@font-face {
+    font-family: "Big Caslon";
+    src: url("/static/fonts/BigCaslonRom.otf");
+  }
+
+header {
+    font-display: block;
+    font-family: 'Big Caslon', 'Times New Roman', Times, serif;
+    color: #fff;
+    text-align: center;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 125%; /* 50px */
+    letter-spacing: 1.6px;
+
 }
 
-.darker {
-    filter: alpha(opacity=30);
-    -moz-opacity: 0.3;
-    -khtml-opacity: 0.3;
-    opacity: 0.3;
+p {
+    margin-bottom: 0;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.64px;
+}
 
+:root {
+    --bs-body-bg: #0F2C12;
+    --bs-heading-color: white;
+    --bs-card-bg: #204712;
+    --bs-container-bg: #204712;
+    --bs-body-color: white;
+    
+    --bs-primary: #FFF284;
+    --bs-btn-big: var(--bs-primary);
+}
+
+.container, .container-fluid {
+    background-color: var(--bs-container-bg);
+
+}
+.btn-primary {
+    --bs-btn-color: #000;
+    --bs-btn-bg: #FFF284;
+    --bs-btn-border-color: #FFF284;
+    --bs-btn-hover-color: #000;
+    --bs-btn-hover-bg: #f0e57d;
+    --bs-btn-hover-border-color: #f0e47c;
+    --bs-btn-focus-shadow-rgb: 49,132,253;
+    --bs-btn-active-color: #000;
+    --bs-btn-active-bg: #f0e47c;
+    --bs-btn-active-border-color: #e8dd77;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #000;
+    --bs-btn-disabled-bg: #FFF284;
+    --bs-btn-disabled-border-color: #FFF284;
+}
+
+.btn-secondary {
+    --bs-btn-color: #black;
+    --bs-btn-hover-color: #black;
+    --bs-btn-active-color: #black;
+    --bs-btn-disabled-color: #black;
+}
+
+.card, .card-header, .card-body {
+    border: none;
+    background-color: #204712;
+}
+
+.card:has(.card-img-top) .rounded {
+    border-radius: 100px;
+
+}
+
+.form-control {
+    background-color: #fff;
+    color: black;
+}
+
+.form-control:focus {
+    color: black;
+    background-color: white;
+    /*border: 0;*/
+}
+
+h2.primary {
+    /* make the h2 tag exactly the height of the font */
+
+
+    text-transform: uppercase;
+    font-size: 80px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 0.8em;
+    letter-spacing: 3.2px;
+    padding: 1rem 0 2rem;
+    
+}
+
+.primary {
+    color: #FFF284;
+}
+
+.bg-dark {
+    background-color: var(--bs-body-bg) !important;
+}
+
+#orientation-warning {
+    display: none !important;
+}
+
+@media screen and (max-width: 750px) {
+    /* * {
+        font-size: 2vw;
+    } */
+}
+@media (orientation: portrait) and (max-width: 500px) {
+  
+    #orientation-warning {
+
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        display: flex !important;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    main {
+        opacity: 0.1;
+    }
 }

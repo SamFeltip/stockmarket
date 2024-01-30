@@ -23,7 +23,7 @@ func Signup() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container d-flex justify-content-center\"><div class=\"card w-100\" style=\"max-width: 40rem\"><div class=\"card-header text-center\"><h1>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container rounded d-flex justify-content-center\"><div class=\"card w-100\" style=\"max-width: 40rem\"><div class=\"card-header text-center\"><h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

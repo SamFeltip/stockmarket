@@ -6,39 +6,66 @@ import (
 	"strconv"
 )
 
+
+templ RadioRowStyles(){
+    <style>
+        .radio-row {
+
+        }
+
+        .btn-check .btn {
+            border-radius: 0 !important;
+            border: 1px solid var(--bs-primary) !important;
+        }
+        .btn-check:checked+.btn {
+            background-color: var(--bs-primary) !important;
+            color: black;
+        }
+    </style>
+}
+
 templ Waiting(game models.Game) {
-	<div class="container text-center">
+	<div class="container-fluid rounded text-center d-flex flex-column justify-content-center" style="width: 90%; height: 90%;">
         <p>Lobby code:</p>
-		<h1>{ game.ID }</h1>
-		<div>Waiting for players to join ({ strconv.Itoa(len(game.Players)) } / 6)</div>
+		<h2 class="primary">{ game.ID }</h2>
+		<p>Waiting for players to join ({ strconv.Itoa(len(game.Players)) } / 6)</p>
 
         // 
-        <div id="player-list" class="d-flex flex-row justify-content-center gap-3" hx-ext="ws" ws-connect="/ws" hx-trigger="load">
+        <div id="player-list" class="d-flex flex-row justify-content-center gap-3 p-2 " hx-ext="ws" ws-connect="/ws" hx-trigger="load">
             @userTemplates.CardList(game.Players)
         </div>
         
-		<div>
-			<p>Game length</p>
+		<div class="py-3">
+			<p class="pb-2">Game length</p>
             <form hx-trigger="change" hx-post="/games/cmd/difficulty" hx-swap="none">
+                @RadioRowStyles()
                 <div class="radio-row">
                     <input type="hidden" name="gameID" value={game.ID}/>
-                    <input type="radio" class="btn-check" name="game-length" id="option1" autocomplete="off" value="1" checked?={game.Difficulty == 1}/>
-                    <label class="btn" for="option1">Short</label>
+                    <span>
+                        <input type="radio" class="btn-check" name="game-length" id="option1" autocomplete="off" value="1" checked?={game.Difficulty == 1}/>
+                        <label class="btn bg-dark" for="option1">Short</label>
+                    </span>
+                    
+                    <span>
+                        <input type="radio" class="btn-check" name="game-length" id="option2" autocomplete="off" value="2" checked?={game.Difficulty == 2}/>
+                        <label class="btn bg-dark" for="option2">Medium</label>
+                    </span>
 
-                    <input type="radio" class="btn-check" name="game-length" id="option2" autocomplete="off" value="2" checked?={game.Difficulty == 2}/>
-                    <label class="btn" for="option2">Medium</label>
-
-                    <input type="radio" class="btn-check" name="game-length" id="option3" autocomplete="off" value="3" checked?={game.Difficulty == 3}/>
-                    <label class="btn" for="option3">Long</label>
+                    <span>
+                        <input type="radio" class="btn-check" name="game-length" id="option3" autocomplete="off" value="3" checked?={game.Difficulty == 3}/>
+                        <label class="btn bg-dark" for="option3">Long</label>
+                    </span>
                 </div>
             </form>
-            <p>Launch game when all players have joined</p>
+		</div>
+
+        <div class="py-3">
+            <p class="pb-2">Launch game when all players have joined</p>
             <div style="d-flex flex-row w-100 justify-content-center gap-3">
                 <a href="/" class="btn btn-secondary w-100" style="max-width: 14rem;">Back</a>
                 <a class="btn btn-primary w-100" style="max-width: 14rem;" hx-post="/games/cmd/start" hx-swap="none">Launch Game</a>
             </div>
-            
-		</div>
+        </div>
 		
 	</div>
 }
