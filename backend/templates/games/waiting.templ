@@ -7,7 +7,7 @@ import (
 )
 
 
-templ RadioRowStyles(){
+templ DifficultyOptionStyles(){
     <style>
         .radio-row {
 
@@ -24,6 +24,33 @@ templ RadioRowStyles(){
     </style>
 }
 
+templ DifficultyOptions(game models.Game) {
+    <input type="hidden" name="gameID" value={game.ID}/>
+    <span>
+        <input type="radio" class="btn-check" name="game-length" id="option1" autocomplete="off" value="1" checked?={game.Difficulty == 1}/>
+        <label class="btn bg-dark" for="option1">Short</label>
+    </span>
+    
+    <span>
+        <input type="radio" class="btn-check" name="game-length" id="option2" autocomplete="off" value="2" checked?={game.Difficulty == 2}/>
+        <label class="btn bg-dark" for="option2">Medium</label>
+    </span>
+
+    <span>
+        <input type="radio" class="btn-check" name="game-length" id="option3" autocomplete="off" value="3" checked?={game.Difficulty == 3}/>
+        <label class="btn bg-dark" for="option3">Long</label>
+    </span>
+
+}
+
+templ DifficultyOptionsSocket(game models.Game){
+
+	<div hx-swap-oob="innerHTML:#difficulty-options">
+		@DifficultyOptions(game)
+	</div>
+}
+
+
 templ Waiting(game models.Game) {
 	<div class="container-fluid rounded text-center d-flex flex-column justify-content-center" style="width: 90%; height: 90%;">
         <p>Lobby code:</p>
@@ -31,30 +58,17 @@ templ Waiting(game models.Game) {
 		<p>Waiting for players to join ({ strconv.Itoa(len(game.Players)) } / 6)</p>
 
         // 
-        <div id="player-list" class="d-flex flex-row justify-content-center gap-3 p-2 " hx-ext="ws" ws-connect="/ws" hx-trigger="load">
+        <div id="player-list" class="d-flex flex-row justify-content-center gap-3 p-2 " hx-ext="ws" ws-connect="/load-players" hx-trigger="load">
             @userTemplates.CardList(game.Players)
         </div>
         
 		<div class="py-3">
 			<p class="pb-2">Game length</p>
-            <form hx-trigger="change" hx-post="/games/cmd/difficulty" hx-swap="none">
-                @RadioRowStyles()
-                <div class="radio-row">
-                    <input type="hidden" name="gameID" value={game.ID}/>
-                    <span>
-                        <input type="radio" class="btn-check" name="game-length" id="option1" autocomplete="off" value="1" checked?={game.Difficulty == 1}/>
-                        <label class="btn bg-dark" for="option1">Short</label>
-                    </span>
-                    
-                    <span>
-                        <input type="radio" class="btn-check" name="game-length" id="option2" autocomplete="off" value="2" checked?={game.Difficulty == 2}/>
-                        <label class="btn bg-dark" for="option2">Medium</label>
-                    </span>
 
-                    <span>
-                        <input type="radio" class="btn-check" name="game-length" id="option3" autocomplete="off" value="3" checked?={game.Difficulty == 3}/>
-                        <label class="btn bg-dark" for="option3">Long</label>
-                    </span>
+            <form hx-trigger="change" hx-ext="ws" ws-connect="/update-difficulty">
+                @DifficultyOptionStyles()
+                <div class="radio-row" id="difficulty-options">
+                    @DifficultyOptions(game)
                 </div>
             </form>
 		</div>

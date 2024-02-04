@@ -15,4 +15,5 @@ func CreateUserRoutes() {
 		pageComponent := templates.Index(users)
 		RenderWithTemplate(pageComponent, "Users", c)
 	})
+
 }
