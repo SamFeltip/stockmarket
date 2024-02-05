@@ -18,13 +18,26 @@ type Game struct {
 func GetGame(gameID string, db *gorm.DB) (Game, error) {
 
 	var game Game
-	err := db.Model(&game).Preload("Players").Preload("Players.User").Where("lower(id) = lower(?)", gameID).First(&game).Error
+	err := db.Model(&game).Preload("CurrentUser").Preload("Players").Preload("Players.User").Where("lower(id) = lower(?)", gameID).First(&game).Error
 
 	return game, err
 
 }
 
 func (game *Game) UpdateORM(db *gorm.DB) error {
-	err := db.Preload("Players").Preload("Players.User").Where("lower(id) = lower(?)", game.ID).First(&game).Error
+	err := db.Model(&game).Preload("CurrentUser").Preload("Players").Preload("Players.User").Where("lower(id) = lower(?)", game.ID).First(&game).Error
 	return err
+}
+
+func GameDifficultyDisplay(difficulty int) string {
+	switch difficulty {
+	case 0:
+		return "Short"
+	case 1:
+		return "Medium"
+	case 2:
+		return "Long"
+	default:
+		return "Unknown"
+	}
 }

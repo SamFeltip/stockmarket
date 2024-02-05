@@ -28,8 +28,7 @@ func DoesUserExist(db *gorm.DB, username string) (User, error) {
 
 func (user *User) ActiveGame(db *gorm.DB) (Game, error) {
 	var player Player
-	fmt.Println("finding active game", user.ID)
-	err := db.Preload("Game").Where("user_id = ? AND active = ?", user.ID, true).First(&player).Error
+	err := db.Preload("Game").Preload("Game.CurrentUser").Where("user_id = ? AND active = ?", user.ID, true).First(&player).Error
 
 	return player.Game, err
 }

@@ -9,18 +9,10 @@ import (
 
 func CreateWebsocketRoutes() {
 
-	r.GET("/load-players",
+	r.GET("/connected-game",
 		func(c *gin.Context) { middleware.RequireAuthWebsocket(c) },
 		func(c *gin.Context) {
-			httpResponseCode, response := controllers.LoadPlayers(c)
+			httpResponseCode, response := controllers.ServeWs(c)
 			c.JSON(httpResponseCode, response)
-		})
-
-	r.GET("/update-difficulty",
-		func(c *gin.Context) { middleware.AuthCurrentPlayer(c) },
-		func(c *gin.Context) {
-			httpResponseCode, response := controllers.UpdateDifficulty(c)
-			c.JSON(httpResponseCode, response)
-
 		})
 }

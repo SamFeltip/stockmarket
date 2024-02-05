@@ -76,6 +76,18 @@ func RequireAuth(c *gin.Context) {
 
 	c.Set("user", user)
 
+	db := database.GetDb()
+	game, err := user.ActiveGame(db)
+	fmt.Println("active game:", game.ID)
+
+	if err != nil {
+		fmt.Println("user is not participating in a game (RequireAuth)", err)
+		// write a http response and return
+		game = models.Game{}
+		return
+	}
+	c.Set("game", game)
+
 	c.Next()
 }
 
@@ -89,13 +101,12 @@ func RequireAuthWebsocket(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
-
+	fmt.Println("username for active game:", user.Name)
 	game, err := user.ActiveGame(db)
+
 	if err != nil {
-		fmt.Println("user is not participating in a game", err)
-		// write a http response and return
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "not participating in a game"})
-		return
+		fmt.Println("user is not participating in a game (RequireAuthWebsocket)", err)
+		game = models.Game{}
 	}
 
 	c.Set("user", user)
@@ -130,7 +141,7 @@ func AuthCurrentPlayer(c *gin.Context) {
 		return
 	}
 
-	gameID := c.Request.Form["gameID"][0]
+	gameID := c.PostForm("gameID")
 
 	var game models.Game
 	err = db.Where("lower(id) = lower(?) AND current_user_id = ?", gameID, user.ID).First(&game).Error

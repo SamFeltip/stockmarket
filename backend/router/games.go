@@ -1,6 +1,7 @@
 package router
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	controllers "stockmarket/controllers/games"
@@ -52,11 +53,12 @@ func CreateGameRoutes() {
 		})
 
 	r.POST(
-		"/games/cmd/difficulty",
+		"api/games/difficulty",
 		func(c *gin.Context) { middleware.AuthCurrentPlayer(c) },
 		func(c *gin.Context) {
 
 			db := database.GetDb()
+			errMsg := ""
 
 			// log form in context (form contains gameID and difficulty)
 			c.Request.ParseForm()
@@ -69,27 +71,48 @@ func CreateGameRoutes() {
 			difficulty, err := strconv.Atoi(difficultyStr)
 			if err != nil {
 				fmt.Println("could not convert difficulty to int", difficultyStr)
+				errMsg = "could not convert difficulty to int"
 				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": "could not convert difficulty to int",
+					"error": errMsg,
 				})
-				return
 			}
 
-			// Assuming you have a *gorm.DB object named db
-			err = db.Model(models.Game{}).Where("id = lower(?)", gameID).Update("difficulty", difficulty).Error
+			game := models.Game{}
+			err = db.Model(&game).Where("id = lower(?)", gameID).Update("difficulty", difficulty).Error
 
 			if err != nil {
 				fmt.Println("could not update game difficulty")
+				errMsg = "could not update game difficulty"
 				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": "could not update game difficulty",
+					"error": errMsg,
 				})
-				return
 			}
 
-			c.JSON(http.StatusOK, gin.H{
-				"error":   "",
-				"message": "difficulty updated",
-			})
+			err = db.Model(&game).Where("lower(id) = lower(?)", gameID).First(&game).Error
+
+			if err != nil {
+				fmt.Printf("Error reloading game: %v", err)
+				errMsg = "Error reloading game"
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"error": errMsg,
+				})
+			}
+
+			err = controllers.BroadcastUpdateDifficulty(game)
+
+			if err != nil {
+				fmt.Println("could not broadcast difficulty update")
+				errMsg = "could not broadcast difficulty update"
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"error": errMsg,
+				})
+			}
+
+			// return DifficultyOptions(game) templ
+			ctx := context.Background()
+
+			baseComponent := templates.DifficultyOptions(game, errMsg)
+			baseComponent.Render(ctx, c.Writer)
 
 		},
 	)

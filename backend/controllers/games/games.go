@@ -35,10 +35,29 @@ func BroadcastUpdatePlayersList(players []models.Player) error {
 	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 
 	return nil
+}
+
+func BroadcastUpdateDifficulty(game models.Game) error {
+
+	difficultyDisplay := templates.DifficultyOptionsSocket(game)
+
+	buffer := &bytes.Buffer{}
+	difficultyDisplay.Render(context.Background(), buffer)
+
+	broadcastMessage := websocketModels.BroadcastMessage{
+		GameID: game.ID,
+		Buffer: buffer,
+	}
+
+	hub := websockets.GetHub()
+	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
+
+	return nil
 
 }
 
 func Show(c *gin.Context) templ.Component {
+	fmt.Println("show!!!!")
 	db := database.GetDb()
 
 	gameID := c.Param("id")
@@ -61,6 +80,9 @@ func Show(c *gin.Context) templ.Component {
 	}
 
 	err = game.UpdateORM(db)
+
+	c.Set("game", game)
+
 	if err != nil {
 		fmt.Printf("Error reloading game: %v", err)
 		return templates.NoGame()

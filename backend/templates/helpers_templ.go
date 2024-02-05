@@ -10,9 +10,8 @@ import "context"
 import "io"
 import "bytes"
 
-import (
-	"stockmarket/models"
-)
+import "stockmarket/models"
+import "fmt"
 
 type contextKey string
 
@@ -30,6 +29,27 @@ func GetCurrentUser(ctx context.Context) models.User {
 func IsLoggedIn(ctx context.Context) bool {
 	user, ok := ctx.Value(CurrentUser).(models.User)
 	return ok && user != models.User{}
+}
+
+var CurrentGame contextKey = "current_game"
+
+func GetGame(ctx context.Context) models.Game {
+	// get current game from context
+	game := ctx.Value(CurrentGame).(models.Game)
+	return game
+}
+
+func GetGameCurrentUser(ctx context.Context) models.User {
+	// get current game from context
+	game := ctx.Value(CurrentGame).(models.Game)
+	fmt.Println("game:", game.ID)
+	cu := game.CurrentUser
+	return cu
+}
+
+func IsCurrentUserTurn(ctx context.Context) bool {
+	fmt.Println("**", IsLoggedIn(ctx), GetGameCurrentUser(ctx).ID, ":::", GetCurrentUser(ctx).ID)
+	return IsLoggedIn(ctx) && GetGameCurrentUser(ctx).ID == GetCurrentUser(ctx).ID
 }
 
 func helper() templ.Component {

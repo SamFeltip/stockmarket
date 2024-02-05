@@ -3,16 +3,13 @@ package games
 import (
 	"stockmarket/models"
     userTemplates "stockmarket/templates/users"
+    "stockmarket/templates"
 	"strconv"
 )
 
 
 templ DifficultyOptionStyles(){
     <style>
-        .radio-row {
-
-        }
-
         .btn-check .btn {
             border-radius: 0 !important;
             border: 1px solid var(--bs-primary) !important;
@@ -24,53 +21,65 @@ templ DifficultyOptionStyles(){
     </style>
 }
 
-templ DifficultyOptions(game models.Game) {
+templ DifficultyOptions(game models.Game, errMsg string) {
     <input type="hidden" name="gameID" value={game.ID}/>
     <span>
-        <input type="radio" class="btn-check" name="game-length" id="option1" autocomplete="off" value="1" checked?={game.Difficulty == 1}/>
-        <label class="btn bg-dark" for="option1">Short</label>
+        <input type="radio" class="btn-check" name="game-length" id="option1" autocomplete="off" value="0" checked?={game.Difficulty == 0}/>
+        <label class="btn bg-dark" for="option1">{models.GameDifficultyDisplay(0)}</label>
     </span>
     
     <span>
-        <input type="radio" class="btn-check" name="game-length" id="option2" autocomplete="off" value="2" checked?={game.Difficulty == 2}/>
-        <label class="btn bg-dark" for="option2">Medium</label>
+        <input type="radio" class="btn-check" name="game-length" id="option2" autocomplete="off" value="1" checked?={game.Difficulty == 1}/>
+        <label class="btn bg-dark" for="option2">{models.GameDifficultyDisplay(1)}</label>
     </span>
 
     <span>
-        <input type="radio" class="btn-check" name="game-length" id="option3" autocomplete="off" value="3" checked?={game.Difficulty == 3}/>
-        <label class="btn bg-dark" for="option3">Long</label>
+        <input type="radio" class="btn-check" name="game-length" id="option3" autocomplete="off" value="2" checked?={game.Difficulty == 2}/>
+        <label class="btn bg-dark" for="option3">{models.GameDifficultyDisplay(2)}</label>
     </span>
+
+    <p>
+        {models.GameDifficultyDisplay(game.Difficulty)}
+        <em>
+            {errMsg}
+        </em>
+    </p>
 
 }
 
 templ DifficultyOptionsSocket(game models.Game){
 
-	<div hx-swap-oob="innerHTML:#difficulty-options">
-		@DifficultyOptions(game)
+	<div hx-swap-oob="innerHTML:#game-difficulty">
+		{models.GameDifficultyDisplay(game.Difficulty)}
 	</div>
 }
 
-
 templ Waiting(game models.Game) {
-	<div class="container-fluid rounded text-center d-flex flex-column justify-content-center" style="width: 90%; height: 90%;">
+	<div class="container-fluid rounded text-center d-flex flex-column justify-content-center" hx-ext="ws" ws-connect="/connected-game" hx-trigger="load" style="width: 90%; height: 90%;">
         <p>Lobby code:</p>
 		<h2 class="primary">{ game.ID }</h2>
 		<p>Waiting for players to join ({ strconv.Itoa(len(game.Players)) } / 6)</p>
 
-        // 
-        <div id="player-list" class="d-flex flex-row justify-content-center gap-3 p-2 " hx-ext="ws" ws-connect="/load-players" hx-trigger="load">
+        <div id="player-list" class="d-flex flex-row justify-content-center gap-3 p-2 ">
             @userTemplates.CardList(game.Players)
         </div>
         
 		<div class="py-3">
 			<p class="pb-2">Game length</p>
-
-            <form hx-trigger="change" hx-ext="ws" ws-connect="/update-difficulty">
-                @DifficultyOptionStyles()
-                <div class="radio-row" id="difficulty-options">
-                    @DifficultyOptions(game)
+            
+            if templates.IsCurrentUserTurn(ctx) {
+                <form hx-post="/api/games/difficulty" hx-trigger="change" hx-swap="innerHTML" hx-target="#difficulty-options-setter">
+                    @DifficultyOptionStyles()
+                    <div class="radio-row" id="difficulty-options-setter">
+                        @DifficultyOptions(game, "good")
+                    </div>
+                </form>
+            } else {
+                <div class="btn bg-dark" id="game-difficulty">
+                    {models.GameDifficultyDisplay(game.Difficulty)}
                 </div>
-            </form>
+            }
+
 		</div>
 
         <div class="py-3">

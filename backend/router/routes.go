@@ -2,6 +2,7 @@ package router
 
 import (
 	"context"
+	"fmt"
 	"stockmarket/models"
 	page "stockmarket/templates"
 
@@ -34,7 +35,19 @@ func RenderWithTemplate(pageComponent templ.Component, title string, c *gin.Cont
 
 	user := cu.(models.User)
 
-	ctx := context.WithValue(context.Background(), page.CurrentUser, user)
+	cg, _ := c.Get("game")
+
+	if cg == nil {
+		fmt.Println("no game found in context")
+		cg = models.Game{}
+	}
+
+	game := cg.(models.Game)
+	fmt.Println("^^^", game.CurrentUser.ID)
+
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, page.CurrentUser, user)
+	ctx = context.WithValue(ctx, page.CurrentGame, game)
 
 	baseComponent := page.Base(title, pageComponent, c)
 	baseComponent.Render(ctx, c.Writer)
