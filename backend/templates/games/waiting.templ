@@ -37,14 +37,13 @@ templ DifficultyOptions(game models.Game, errMsg string) {
         <input type="radio" class="btn-check" name="game-length" id="option3" autocomplete="off" value="2" checked?={game.Difficulty == 2}/>
         <label class="btn bg-dark" for="option3">{models.GameDifficultyDisplay(2)}</label>
     </span>
-
-    <p>
-        {models.GameDifficultyDisplay(game.Difficulty)}
-        <em>
-            {errMsg}
-        </em>
-    </p>
-
+    if errMsg != "" {
+        <p>
+            <em>
+                {errMsg}
+            </em>
+        </p>
+    }
 }
 
 templ DifficultyOptionsSocket(game models.Game){
@@ -55,7 +54,7 @@ templ DifficultyOptionsSocket(game models.Game){
 }
 
 templ Waiting(game models.Game) {
-	<div class="container-fluid rounded text-center d-flex flex-column justify-content-center" hx-ext="ws" ws-connect="/connected-game" hx-trigger="load" style="width: 90%; height: 90%;">
+	<div class="container-fluid rounded text-center d-flex flex-column justify-content-center" hx-ext="ws" ws-connect="/connected-game" hx-trigger="load" style="width: 90vw; height: 90vh;">
         <p>Lobby code:</p>
 		<h2 class="primary">{ game.ID }</h2>
 		<p>Waiting for players to join ({ strconv.Itoa(len(game.Players)) } / 6)</p>
@@ -71,7 +70,7 @@ templ Waiting(game models.Game) {
                 <form hx-post="/api/games/difficulty" hx-trigger="change" hx-swap="innerHTML" hx-target="#difficulty-options-setter">
                     @DifficultyOptionStyles()
                     <div class="radio-row" id="difficulty-options-setter">
-                        @DifficultyOptions(game, "good")
+                        @DifficultyOptions(game, "")
                     </div>
                 </form>
             } else {
@@ -86,7 +85,9 @@ templ Waiting(game models.Game) {
             <p class="pb-2">Launch game when all players have joined</p>
             <div style="d-flex flex-row w-100 justify-content-center gap-3">
                 <a href="/" class="btn btn-secondary w-100" style="max-width: 14rem;">Back</a>
-                <a class="btn btn-primary w-100" style="max-width: 14rem;" hx-post="/games/cmd/start" hx-swap="none">Launch Game</a>
+                if templates.IsCurrentUserTurn(ctx) {
+                    <a class="btn btn-primary w-100" style="max-width: 14rem;" hx-post="/games/cmd/start" hx-swap="none">Launch Game</a>
+                }
             </div>
         </div>
 		

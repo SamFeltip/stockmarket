@@ -13,7 +13,11 @@ import (
 // }
 
 templ CardList(players []models.Player) {
-
+	<style>
+		.darker {
+			opacity: 0.5;
+		}
+	</style>
 	for _, player := range models.SortPlayers(players) {
 		<div class="card">
 			<img 
@@ -22,7 +26,7 @@ templ CardList(players []models.Player) {
 				} else {
 					class="rounded card-img-top darker"
 				}
-				style="object-fit: cover; width: 120px; height: 120px" 
+				style="object-fit: cover; max-width: 7.5em; max-height: 7.5em; height: auto; width: auto;" 
 				src={ player.User.ProfileRoot } 
 				alt={ player.User.Name }
 			/>
