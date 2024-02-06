@@ -33,23 +33,60 @@ func (user *User) ActiveGame(db *gorm.DB) (Game, error) {
 	return player.Game, err
 }
 
+func (user *User) createPlayer(game Game, db *gorm.DB) (*Player, error) {
+	player := Player{
+		Game:   game,
+		User:   *user,
+		Active: true,
+	}
+	err := db.Create(&player).Error
+
+	if err != nil {
+		fmt.Println("error creating player:", err)
+		return nil, err
+	}
+
+	// create player stocks
+	if err != nil {
+		fmt.Println("error fetching stocks:", err)
+		return nil, err
+	}
+
+	for _, game_stock := range game.GameStocks {
+		player_stock := PlayerStock{
+			Player:    player,
+			GameStock: game_stock,
+			Quantity:  0,
+		}
+
+		err = db.Create(&player_stock).Error
+
+		if err != nil {
+			fmt.Println("error creating player stock:", err)
+			return nil, err
+		}
+	}
+
+	err = db.Model(&player).Preload("User").Preload("Game").First(&player).Error
+
+	return &player, err
+}
+
 func (current_user *User) SetActiveGame(game Game, db *gorm.DB) error {
 
 	player, find_err := GetPlayer(&game, current_user, db)
 
 	if find_err == gorm.ErrRecordNotFound {
 		fmt.Println("could not find player, creating:", find_err)
-		player = Player{
-			Game:   game,
-			User:   *current_user,
-			Active: true,
-		}
-		create_err := db.Create(&player).Error
+		new_player, create_err := current_user.createPlayer(game, db)
 
 		if create_err != nil {
 			fmt.Println("error creating player:", create_err)
-			return find_err
+			return create_err
 		}
+
+		player = *new_player
+
 	} else if find_err != nil {
 		fmt.Println("unexpected error fetching player:", find_err)
 		return find_err

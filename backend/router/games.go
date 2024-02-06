@@ -28,7 +28,7 @@ func CreateGameRoutes() {
 		func(c *gin.Context) { middleware.RequireAuth(c) },
 		func(c *gin.Context) {
 
-			pageComponent := templates.Create()
+			pageComponent := templates.Create("")
 			RenderWithTemplate(pageComponent, "Create new game", c)
 
 		})
@@ -37,7 +37,14 @@ func CreateGameRoutes() {
 		func(c *gin.Context) { middleware.RequireAuth(c) },
 		func(c *gin.Context) {
 
-			game := controllers.Create(c)
+			game, err := controllers.Create(c)
+
+			if err != nil {
+				fmt.Println("error creating game:", err)
+				pageComponent := templates.Create(err.Error())
+				RenderWithTemplate(pageComponent, "Create new game", c)
+				return
+			}
 
 			show_url := fmt.Sprintf("/games/show/%s", game.ID)
 

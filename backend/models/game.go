@@ -11,6 +11,7 @@ type Game struct {
 	Difficulty    int
 	Status        string
 	Players       []Player
+	GameStocks    []GameStock
 	CurrentUser   User
 	CurrentUserID uint
 }
@@ -25,7 +26,7 @@ var Finished GameStatus = "finished"
 func GetGame(gameID string, db *gorm.DB) (Game, error) {
 
 	var game Game
-	err := db.Model(&game).Preload("CurrentUser").Preload("Players").Preload("Players.User").Where("lower(id) = lower(?)", gameID).First(&game).Error
+	err := db.Model(&game).Preload("GameStocks").Preload("GameStocks.Stock").Preload("CurrentUser").Preload("Players").Preload("Players.User").Where("lower(id) = lower(?)", gameID).First(&game).Error
 
 	return game, err
 
@@ -33,6 +34,11 @@ func GetGame(gameID string, db *gorm.DB) (Game, error) {
 
 func (game Game) UpdateORM(db *gorm.DB) error {
 	err := db.Model(&game).Preload("CurrentUser").Preload("Players").Preload("Players.User").Where("lower(id) = lower(?)", game.ID).First(&game).Error
+	return err
+}
+
+func (game Game) UpdateStatus(status GameStatus, db *gorm.DB) error {
+	err := db.Model(&game).Where("id = lower(?)", game.ID).Update("status", status).Error
 	return err
 }
 

@@ -1,7 +1,11 @@
 package games
 
-templ Create() {
+templ Create(alert string) {
+    if alert != "" {
+        <div style="height: 80px" class="position-absolute alert alert-warning" role="alert">{alert}</div>
+    }
     <main class="d-flex flex-column justify-content-center p-2">
+        
         <h1>Create a game</h1>
         <form action="/games/new" method="post">
             <select name="difficulty">

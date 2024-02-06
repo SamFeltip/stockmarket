@@ -98,7 +98,11 @@ func Show(c *gin.Context) templ.Component {
 		fmt.Println("error setting active game:", err)
 	}
 
-	err = game.UpdateORM(db)
+	game, err = models.GetGame(gameID, db)
+	if err != nil {
+		fmt.Println("error fetching game:", err)
+		return templates.NoGame()
+	}
 
 	c.Set("game", game)
 
@@ -118,7 +122,7 @@ func Show(c *gin.Context) templ.Component {
 
 }
 
-func Create(c *gin.Context) models.Game {
+func Create(c *gin.Context) (*models.Game, error) {
 	db := database.GetDb()
 
 	code := c.PostForm("code")
@@ -128,9 +132,16 @@ func Create(c *gin.Context) models.Game {
 	if err != nil {
 		// handle error, e.g. return an error response
 		fmt.Println("couldnt convert to int")
+		return nil, err
 	}
+
 	cu, _ := c.Get("user")
 	current_user := cu.(models.User)
+
+	if err != nil {
+		fmt.Println("error creating game stocks, creating empty set:", err)
+		return nil, err
+	}
 
 	game := models.Game{
 		ID:          code,
@@ -141,7 +152,19 @@ func Create(c *gin.Context) models.Game {
 
 	db.Create(&game)
 
-	return game // passed into templates
+	// get all stocks
+	fmt.Println("create game stocks: ", code)
+	game_stocks, err := models.CreateGameStocks(code, db)
+
+	if err != nil {
+		fmt.Println("error creating game stocks:", err)
+		return nil, err
+	}
+
+	game.GameStocks = game_stocks
+	db.Save(&game)
+
+	return &game, nil // passed into templates
 }
 
 func New(c *gin.Context, db *gorm.DB) {

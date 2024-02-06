@@ -2,11 +2,21 @@ package games
 
 import (
     "stockmarket/models"
+	"fmt"
+	"strconv"
 )
 
 templ Playing(game models.Game){
     something
-    {game.ID}
+    {strconv.Itoa(len(game.GameStocks))}
+    for _, game_stock := range game.GameStocks {
+        <div>
+            <h3>{game_stock.Stock.Name}</h3>
+            <p>{game_stock.Stock.ImagePath}</p>
+            <p>{fmt.Sprintf("%f", game_stock.Value)}</p>
+        </div>
+    
+    }
 }
 
 templ PlayingSocket(game models.Game){
