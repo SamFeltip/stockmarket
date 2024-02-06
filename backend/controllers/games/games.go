@@ -56,6 +56,25 @@ func BroadcastUpdateDifficulty(game models.Game) error {
 
 }
 
+func BroadcastStartPlay(game models.Game) error {
+
+	fmt.Println("broadcasting start play")
+
+	boardDisplay := templates.PlayingSocket(game)
+
+	buffer := &bytes.Buffer{}
+	boardDisplay.Render(context.Background(), buffer)
+
+	broadcastMessage := websocketModels.BroadcastMessage{
+		GameID: game.ID,
+		Buffer: buffer,
+	}
+
+	hub := websockets.GetHub()
+	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
+	return nil
+}
+
 func Show(c *gin.Context) templ.Component {
 	fmt.Println("show!!!!")
 	db := database.GetDb()
@@ -116,7 +135,7 @@ func Create(c *gin.Context) models.Game {
 	game := models.Game{
 		ID:          code,
 		Difficulty:  difficulty,
-		Status:      "waiting",
+		Status:      string(models.Waiting),
 		CurrentUser: current_user,
 	}
 

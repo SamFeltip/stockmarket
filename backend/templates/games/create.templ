@@ -1,7 +1,7 @@
 package games
 
 templ Create() {
-    <div>
+    <main class="d-flex flex-column justify-content-center p-2">
         <h1>Create a game</h1>
         <form action="/games/new" method="post">
             <select name="difficulty">
@@ -12,5 +12,5 @@ templ Create() {
             <input type="text" name="code" placeholder="code"/>
             <input type="submit" value="Create" />
         </form>
-    </div>
+    </main>
 }

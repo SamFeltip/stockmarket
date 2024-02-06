@@ -15,6 +15,13 @@ type Game struct {
 	CurrentUserID uint
 }
 
+type GameStatus string
+
+var Waiting GameStatus = "waiting"
+var Playing GameStatus = "playing"
+var Evaluating GameStatus = "evaluating"
+var Finished GameStatus = "finished"
+
 func GetGame(gameID string, db *gorm.DB) (Game, error) {
 
 	var game Game
@@ -24,7 +31,7 @@ func GetGame(gameID string, db *gorm.DB) (Game, error) {
 
 }
 
-func (game *Game) UpdateORM(db *gorm.DB) error {
+func (game Game) UpdateORM(db *gorm.DB) error {
 	err := db.Model(&game).Preload("CurrentUser").Preload("Players").Preload("Players.User").Where("lower(id) = lower(?)", game.ID).First(&game).Error
 	return err
 }

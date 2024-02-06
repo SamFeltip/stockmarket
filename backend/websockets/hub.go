@@ -1,6 +1,7 @@
 package websockets
 
 import (
+	"fmt"
 	websocketModels "stockmarket/models/websockets"
 )
 
@@ -21,11 +22,12 @@ func RunHub() {
 			gameID := broadcastMessage.GameID
 
 			for client := range hub.Clients {
-
 				// only send message to clients in the same game
 				if client.GameID != gameID {
 					continue
 				}
+
+				fmt.Println("client: ", client.UserID)
 
 				select {
 				case client.Send <- message:

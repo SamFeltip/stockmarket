@@ -5,5 +5,13 @@ import (
 )
 
 templ Playing(game models.Game){
-    <h1>in play</h1>
+    something
+    {game.ID}
+}
+
+templ PlayingSocket(game models.Game){
+    <div hx-swap-oob="innerHTML:main">
+        @Playing(game)
+    </div>
+    
 }

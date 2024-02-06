@@ -82,11 +82,8 @@ templ Base(title string, body templ.Component, c *gin.Context) {
 		</head>
 		<body style="display: grid; height: 100vh;" class="w-100">
 			//@Navbar()
-			<main class="d-flex flex-column justify-content-center p-2">
-				@body
-			</main>
+			@body
 			@OrientationWarning()
-			
 			@DeferedScripts()
 
 		</body>

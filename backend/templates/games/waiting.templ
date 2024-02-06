@@ -53,13 +53,22 @@ templ DifficultyOptionsSocket(game models.Game){
 	</div>
 }
 
+templ WaitingLoading(){
+    <button href="/" class="btn btn-secondary w-100" style="max-width: 14rem;" disabled>
+        Loading...
+    </button>
+    <button type="submit" class="btn btn-primary w-100" style="max-width: 14rem;" disabled>
+        Loading...
+    </button>
+}
+
 templ Waiting(game models.Game) {
-	<div class="container-fluid rounded text-center d-flex flex-column justify-content-center" hx-ext="ws" ws-connect="/connected-game" hx-trigger="load" style="width: 90vw; height: 90vh;">
+	<div class="container-fluid rounded text-center d-flex flex-column justify-content-center" style="width: 95vw; height: 95vh;">
         <p>Lobby code:</p>
 		<h2 class="primary">{ game.ID }</h2>
 		<p>Waiting for players to join ({ strconv.Itoa(len(game.Players)) } / 6)</p>
 
-        <div id="player-list" class="d-flex flex-row justify-content-center gap-3 p-2 ">
+        <div style="min-height: 11em;" id="player-list" class="d-flex flex-row justify-content-center gap-3 p-2 ">
             @userTemplates.CardList(game.Players)
         </div>
         
@@ -83,10 +92,17 @@ templ Waiting(game models.Game) {
 
         <div class="py-3">
             <p class="pb-2">Launch game when all players have joined</p>
-            <div style="d-flex flex-row w-100 justify-content-center gap-3">
-                <a href="/" class="btn btn-secondary w-100" style="max-width: 14rem;">Back</a>
+            <div id="game-actions" class="d-flex flex-row w-100 justify-content-center gap-3">
+                <a href="/" class="btn btn-secondary w-100" style="max-width: 14rem;">
+                    Back
+                </a>
                 if templates.IsCurrentUserTurn(ctx) {
-                    <a class="btn btn-primary w-100" style="max-width: 14rem;" hx-post="/games/cmd/start" hx-swap="none">Launch Game</a>
+                    <form style="max-width: 14rem;" class="w-100" hx-post="/api/games/start" hx-trigger="submit" hx-swap="innerHTML" hx-target="#game-actions">
+                        <input type="hidden" name="gameID" value={game.ID}/>
+                        <button type="submit" class="btn btn-primary w-100">
+                            Launch Game
+                        </button>
+                    </form>
                 }
             </div>
         </div>

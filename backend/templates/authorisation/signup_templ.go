@@ -23,7 +23,7 @@ func Signup() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container rounded d-flex justify-content-center\"><div class=\"card w-100\" style=\"max-width: 40rem\"><div class=\"card-header text-center\"><h1>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<main class=\"d-flex flex-column justify-content-center p-2\"><div class=\"container rounded d-flex justify-content-center\"><div class=\"card w-100\" style=\"max-width: 40rem\"><div class=\"card-header text-center\"><h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -95,7 +95,7 @@ func Signup() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option></select> <input class=\"form-control mb-2\" type=\"text\" id=\"name\" name=\"name\" placeholder=\"Username\" required> <input class=\"form-control mb-4\" type=\"password\" id=\"password\" name=\"password\" placeholder=\"Password\" required><div style=\"display: grid;\n                    grid-template-columns: 1fr 1fr;\n                    gap: 1rem;\"><a href=\"/login\" class=\"btn btn-secondary\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option></select> <input class=\"form-control mb-2\" type=\"text\" id=\"name\" name=\"name\" placeholder=\"Username\" required> <input class=\"form-control mb-4\" type=\"password\" id=\"password\" name=\"password\" placeholder=\"Password\" required><div style=\"display: grid;\n						grid-template-columns: 1fr 1fr;\n						gap: 1rem;\"><a href=\"/login\" class=\"btn btn-secondary\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -113,7 +113,7 @@ func Signup() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</button></div></form></div></div></div><script src=\"/static/js/signup/form.js\" defer>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</button></div></form></div></div></div></main><script src=\"/static/js/signup/form.js\" defer>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

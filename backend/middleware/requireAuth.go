@@ -129,6 +129,8 @@ func SoftAuth(c *gin.Context) {
 }
 
 func AuthCurrentPlayer(c *gin.Context) {
+	fmt.Println("auth current player")
+
 	db := database.GetDb()
 
 	c.Request.ParseForm()

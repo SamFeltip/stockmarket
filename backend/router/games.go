@@ -16,19 +16,17 @@ import (
 
 func CreateGameRoutes() {
 
-	r.GET(
-		"/games/show/:id",
+	r.GET("/games/show/:id",
 		func(c *gin.Context) { middleware.RequireAuth(c) },
 		func(c *gin.Context) {
 
 			pageComponent := controllers.Show(c)
-
-			RenderWithTemplate(pageComponent, "Game - id", c)
+			gameWrapper := templates.Base(pageComponent)
+			RenderWithTemplate(gameWrapper, "Game - id", c)
 
 		})
 
-	r.GET(
-		"/games/new",
+	r.GET("/games/new",
 		func(c *gin.Context) { middleware.RequireAuth(c) },
 		func(c *gin.Context) {
 
@@ -37,8 +35,7 @@ func CreateGameRoutes() {
 
 		})
 
-	r.POST(
-		"/games/new",
+	r.POST("/games/new",
 		func(c *gin.Context) { middleware.RequireAuth(c) },
 		func(c *gin.Context) {
 
@@ -52,8 +49,7 @@ func CreateGameRoutes() {
 
 		})
 
-	r.POST(
-		"api/games/difficulty",
+	r.POST("/api/games/difficulty",
 		func(c *gin.Context) { middleware.AuthCurrentPlayer(c) },
 		func(c *gin.Context) {
 
@@ -117,8 +113,60 @@ func CreateGameRoutes() {
 		},
 	)
 
-	r.GET(
-		"/games",
+	r.POST("/api/games/start",
+		func(c *gin.Context) {
+			middleware.AuthCurrentPlayer(c)
+		},
+		func(c *gin.Context) {
+			fmt.Println("start game")
+
+			db := database.GetDb()
+			errMsg := ""
+
+			// log form in context (form contains gameID and difficulty)
+			c.Request.ParseForm()
+
+			gameID := c.Request.Form["gameID"][0]
+
+			game := models.Game{}
+			err := db.Model(&game).Where("id = lower(?)", gameID).Update("status", string(models.Playing)).Error
+
+			if err != nil {
+				fmt.Println("could not update game status")
+				errMsg = "could not update game status"
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"error": errMsg,
+				})
+			}
+
+			game, err = models.GetGame(gameID, db)
+
+			if err != nil {
+				fmt.Println("could not find game")
+				errMsg = "could not find game"
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"error": errMsg,
+				})
+			}
+
+			fmt.Println("game updated:", game.ID)
+			err = controllers.BroadcastStartPlay(game)
+
+			if err != nil {
+				fmt.Println("could not broadcast start play")
+				errMsg = "could not broadcast start play"
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"error": errMsg,
+				})
+			}
+
+			ctx := context.Background()
+
+			baseComponent := templates.WaitingLoading()
+			baseComponent.Render(ctx, c.Writer)
+		})
+
+	r.GET("/games",
 		func(c *gin.Context) { middleware.RequireAuth(c) },
 		func(c *gin.Context) {
 

@@ -1,0 +1,7 @@
+package games
+
+templ Base(children templ.Component){
+    <main class="d-flex flex-column justify-content-center" hx-ext="ws" ws-connect="/connected-game" hx-trigger="load">
+        @children
+    </main>
+}
