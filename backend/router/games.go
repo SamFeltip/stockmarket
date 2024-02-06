@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	controllers "stockmarket/controllers/games"
-	"stockmarket/database"
 	"stockmarket/middleware"
-	"stockmarket/models"
 	templates "stockmarket/templates/games"
 	"strconv"
 
@@ -53,9 +51,6 @@ func CreateGameRoutes() {
 		func(c *gin.Context) { middleware.AuthCurrentPlayer(c) },
 		func(c *gin.Context) {
 
-			db := database.GetDb()
-			errMsg := ""
-
 			// log form in context (form contains gameID and difficulty)
 			c.Request.ParseForm()
 			fmt.Println(c.Request.Form["gameID"])
@@ -67,47 +62,21 @@ func CreateGameRoutes() {
 			difficulty, err := strconv.Atoi(difficultyStr)
 			if err != nil {
 				fmt.Println("could not convert difficulty to int", difficultyStr)
-				errMsg = "could not convert difficulty to int"
 				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": errMsg,
+					"error": "could not convert difficulty to int",
 				})
+				return
 			}
 
-			game := models.Game{}
-			err = db.Model(&game).Where("id = lower(?)", gameID).Update("difficulty", difficulty).Error
-
+			baseComponent, err := controllers.UpdateGameDifficulty(gameID, difficulty)
 			if err != nil {
-				fmt.Println("could not update game difficulty")
-				errMsg = "could not update game difficulty"
 				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": errMsg,
+					"error": err.Error(),
 				})
+				return
 			}
 
-			err = db.Model(&game).Where("lower(id) = lower(?)", gameID).First(&game).Error
-
-			if err != nil {
-				fmt.Printf("Error reloading game: %v", err)
-				errMsg = "Error reloading game"
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": errMsg,
-				})
-			}
-
-			err = controllers.BroadcastUpdateDifficulty(game)
-
-			if err != nil {
-				fmt.Println("could not broadcast difficulty update")
-				errMsg = "could not broadcast difficulty update"
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": errMsg,
-				})
-			}
-
-			// return DifficultyOptions(game) templ
 			ctx := context.Background()
-
-			baseComponent := templates.DifficultyOptions(game, errMsg)
 			baseComponent.Render(ctx, c.Writer)
 
 		},
@@ -120,49 +89,20 @@ func CreateGameRoutes() {
 		func(c *gin.Context) {
 			fmt.Println("start game")
 
-			db := database.GetDb()
-			errMsg := ""
-
 			// log form in context (form contains gameID and difficulty)
 			c.Request.ParseForm()
-
 			gameID := c.Request.Form["gameID"][0]
 
-			game := models.Game{}
-			err := db.Model(&game).Where("id = lower(?)", gameID).Update("status", string(models.Playing)).Error
+			baseComponent, err := controllers.StartGame(gameID)
 
 			if err != nil {
-				fmt.Println("could not update game status")
-				errMsg = "could not update game status"
 				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": errMsg,
+					"error": err.Error(),
 				})
-			}
-
-			game, err = models.GetGame(gameID, db)
-
-			if err != nil {
-				fmt.Println("could not find game")
-				errMsg = "could not find game"
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": errMsg,
-				})
-			}
-
-			fmt.Println("game updated:", game.ID)
-			err = controllers.BroadcastStartPlay(game)
-
-			if err != nil {
-				fmt.Println("could not broadcast start play")
-				errMsg = "could not broadcast start play"
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": errMsg,
-				})
+				return
 			}
 
 			ctx := context.Background()
-
-			baseComponent := templates.WaitingLoading()
 			baseComponent.Render(ctx, c.Writer)
 		})
 

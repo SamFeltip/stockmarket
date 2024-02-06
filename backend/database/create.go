@@ -47,6 +47,22 @@ func SetupDb() *gorm.DB {
 		log.Fatal(err)
 	}
 
+	// Perform migrations
+	err = db.AutoMigrate(&models.Stock{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = db.AutoMigrate(&models.GameStock{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = db.AutoMigrate(&models.PlayerStock{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return db
 
 }
