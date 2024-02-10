@@ -4,10 +4,18 @@ import(
     "stockmarket/models"
 )
 
-func IngamePage(game models.Game) templ.Component {
+func GetCurrentUserPlayer(user models.User, game models.Game) *models.Player{
+    player, err := game.GetPlayer(user)
+    if err != nil {
+        return nil
+    }
+    return player
+}
+
+func IngamePage(user models.User, game models.Game) templ.Component {
 
 	if game.Status == "playing" {
-		pageComponent := Playing(game)
+		pageComponent := Playing(game, GetCurrentUserPlayer(user, game))
 		return pageComponent
 	}
 

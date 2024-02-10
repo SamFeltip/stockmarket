@@ -2,26 +2,190 @@ package games
 
 import (
     "stockmarket/models"
-	"fmt"
-	"strconv"
+    templates "stockmarket/templates"
+    "strconv"
+    "fmt"
 )
 
-templ Playing(game models.Game){
-    something
-    {strconv.Itoa(len(game.GameStocks))}
-    for _, game_stock := range game.GameStocks {
-        <div>
-            <h3>{game_stock.Stock.Name}</h3>
-            <p>{game_stock.Stock.ImagePath}</p>
-            <p>{fmt.Sprintf("%f", game_stock.Value)}</p>
+templ GameGridStyle(){
+    <style>
+        #game-grid {
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-areas: 
+                "profile    now-playing header"
+                "content    content     feed";
+
+            grid-template-columns: 1fr 3fr 1fr;
+            grid-template-rows: 100px 1fr;
+            grid-gap: 16px;
+        }
+
+        #game-grid > #profile {
+            grid-area: profile;
+        }
+
+        #game-grid > #now-playing {
+            grid-area: now-playing;
+        }
+
+        #game-grid > header {
+            grid-area: header;
+        }
+
+        #game-grid > #tabs {
+            grid-area: tabs;
+        }
+        #game-grid > aside {
+            grid-area: feed;
+        }
+
+        #game-grid > #content{
+            grid-area: content;
+        }
+        
+        #content {
+            display: grid;
+            grid-template-rows: 48px auto;
+        }
+        
+        aside {
+            display: grid;
+            grid-template-rows: auto 44px;
+        }
+
+    </style>
+}
+
+script SetTabListeners(){
+    document.querySelector(".player-stock").classList.add("active");
+
+    document.querySelectorAll(".player-stock").forEach(stock => {
+        stock.addEventListener("click", function(event){
+            document.querySelectorAll(".player-stock").forEach((stock) => {
+                stock.classList.remove("active");
+            });
+            event.target.classList.add("active");
+        });
+    });
+
+}
+
+templ Playing(game models.Game, player *models.Player){
+    @GameGridStyle()
+    <div id="game-grid" class="p-3">
+        <div id="profile" class="rounded d-flex flex-row align-items-center p-2" style="background-color: var(--bs-card-bg);">
+            // <div class="rounded" style="z-index: 990; position: relative; transform: translate(-10px, -10px); height: 60px; width: 60px; background-color: #ff0;"></div>
+            <img class="rounded" style="z-index: 999; " height="60px" width="60px" src={templates.GetCurrentUser(ctx).ProfileRoot} alt={templates.GetCurrentUser(ctx).Name}/>
+            <div>
+                <h2>
+                    {player.User.Name}
+                </h2>
+                <p>
+                    Cash £{strconv.Itoa(player.Cash)}
+                </p>
+                <p>
+                    Net £{ strconv.FormatFloat(player.TotalValue(), 'f', -1, 64) }
+                </p>
+            </div>
         </div>
+        
+        <div id="now-playing" class="p-2 rounded d-flex flex-column align-items-center justify-content-center" style="background-color: var(--bs-card-bg);">
+            if game.CurrentUser.ID == templates.GetCurrentUser(ctx).ID {
+                <h2>
+                    It's your turn!
+                </h2>
+                <p>
+                    Buy, sell, use or pass
+                </p>
+            } else {
+                <p>
+                    It's {game.CurrentUser.Name}'s turn!
+                </p>
+            }
+        </div>
+
+        <header  class="rounded p-3" style="background-color: var(--bs-card-bg);">    
+            <h1>Stockmarket!</h1>
+            <div class="d-flex justify-content-between">
+                <div>
+                    Period
+                </div>
+                <div>
+                    Round
+                </div>
+            </div>
+        </header>
+
+        <div id="content" class="">
+            <ul id="tabs" class="nav nav-tabs d-flex justify-content-between">
+            // {strconv.Itoa(len(game.GameStocks))}
+            
+            for _, player_stock := range player.PlayerStocks {
+                <li class="nav-item">
+                    <a class="player-stock nav-link d-flex flex-row align-items-center gap-1" hx-swap="outerHTML" hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint( uint64(player_stock.ID), 10 )) } hx-trigger="click" hx-target="#play-view">
+                        <img height="30px" src={player_stock.GameStock.Stock.ImagePath} alt={player_stock.GameStock.Stock.Name}/>
+                        £{ fmt.Sprintf("%.2f", player_stock.GameStock.Value) }
+                    </a>
+                </li>
+            }
+            </ul>
+            @SetTabListeners()
+            <div id="play-view" class="bg-white text-black rounded-bottom p-3" hx-swap="outerHTML" hx-trigger="load" hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint( uint64(player.PlayerStocks[0].ID), 10 )) }>
+            </div>
+        </div>
+
+        <aside class="rounded bg-white text-black p-3">
+            <div>
+                <h2 class="text-black">
+                    Feed
+                </h2>
+                <div>
+                Period 2
+                <br/>
+                Players get a second turn
+                <br/>
+                Phoebe
+                <br/>
+                Skipped their go
+                <br/>
+                Callum
+                <br/>
+                Sold 10,000 shares in UB
+                <br/>
+                Daniel James Blackford
+                <br/>
+                Bought 25,000 shares of Legal & General
+                <br/>
+                Sol
+                <br/>
+                Skipped their go
+                <br/>
+                Dan
+                <br/>
+                Collected £10,000
+                <br/>
+                Sam
+                <br/>
+                Bought 5,000 shares in Trusthouse Forte
+                </div>
+                
+            </div>
+            <button id="pass-button" class="btn btn-secondary">
+                PASS
+            </button>
+            
+        </aside>
+    </div>
     
-    }
+    
 }
 
 templ PlayingSocket(game models.Game){
+    
     <div hx-swap-oob="innerHTML:main">
-        @Playing(game)
+        @Playing(game, GetCurrentUserPlayer(templates.GetCurrentUser(ctx), game))
     </div>
     
 }

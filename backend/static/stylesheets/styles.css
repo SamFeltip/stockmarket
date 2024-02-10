@@ -8,7 +8,7 @@
     src: url("/static/fonts/BigCaslonRom.otf");
   }
 
-header {
+header h1 {
     font-display: block;
     font-family: 'Big Caslon', 'Times New Roman', Times, serif;
     color: #fff;
@@ -39,6 +39,35 @@ p {
     
     --bs-primary: #FFF284;
     --bs-btn-big: var(--bs-primary);
+
+}
+
+.nav {
+
+    --bs-nav-link-active-background: white;
+    --bs-nav-link-active-color: black;
+    --bs-nav-link-hover-color: white;
+    --bs-nav-link-color: white;
+}
+
+.nav-tabs {
+    --nav-tabs-border-width: var(--nav-tabs-border-width);
+    --nav-tabs-border-radius: var(--nav-tabs-border-radius);
+    /* --nav-tabs-link-hover-border-color: var(--nav-tabs-link-hover-border-color); */
+    
+    --nav-tabs-link-active-border-color: var(--nav-tabs-link-active-border-color);
+
+    /* --bs-nav-tabs-border-width: var(--bs-nav-tabs-hover-border-width); */
+    --bs-nav-tabs-border-color: white;
+    --bs-nav-tabs-link-active-bg: white;
+
+    --bs-nav-tabs-link-active-border-size: 2px;
+
+    --bs-nav-tabs-link-border-color: white;
+}
+
+.nav-tabs .nav-link {
+    border: var(--bs-nav-tabs-border-width) solid white;
 }
 
 .container, .container-fluid {

@@ -118,8 +118,7 @@ func Show(c *gin.Context) templ.Component {
 		return templates.NoGame()
 	}
 
-	return templates.IngamePage(game)
-
+	return templates.IngamePage(current_user, game)
 }
 
 func Create(c *gin.Context) (*models.Game, error) {

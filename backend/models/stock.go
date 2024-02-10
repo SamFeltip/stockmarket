@@ -17,22 +17,41 @@ type Stock struct {
 
 type GameStock struct {
 	gorm.Model
-	ID      uint   `gorm:"primaryKey"`
-	GameID  string `gorm:"not null"`
-	StockID uint   `gorm:"not null"`
-	Stock   Stock
-	Game    Game
-	Value   float64
+	ID           uint   `gorm:"primaryKey"`
+	GameID       string `gorm:"not null"`
+	StockID      uint   `gorm:"not null"`
+	Stock        Stock
+	PlayerStocks []PlayerStock
+	Game         Game
+	Value        float64
 }
 
 type PlayerStock struct {
 	gorm.Model
 	ID          uint `gorm:"primaryKey"`
 	PlayerID    uint
+	Player      Player
 	GameStockID uint
 	GameStock   GameStock
-	Player      Player
 	Quantity    int
+}
+
+func GetPlayerStock(playerStockID string, db *gorm.DB) (PlayerStock, error) {
+	var playerStock PlayerStock
+
+	// player_stock.GameStock.Stock.Name
+
+	err := db.
+		Preload("GameStock").
+		Preload("GameStock.Stock").
+		Preload("GameStock.PlayerStocks").
+		Preload("GameStock.PlayerStocks.Player").
+		Preload("GameStock.PlayerStocks.Player.User").
+		Preload("Player").
+		Preload("Player.User").
+		Where("id = ?", playerStockID).First(&playerStock).Error
+
+	return playerStock, err
 }
 
 func CreateGameStocks(gameID string, db *gorm.DB) ([]GameStock, error) {

@@ -8,13 +8,15 @@ import (
 
 type Player struct {
 	gorm.Model
-	ID       uint
-	GameID   string
-	Game     Game
-	UserID   uint
-	User     User
-	Position int
-	Active   bool
+	ID           uint
+	GameID       string
+	Game         Game
+	PlayerStocks []PlayerStock
+	UserID       uint
+	User         User
+	Cash         int
+	Position     int
+	Active       bool
 }
 
 func GetPlayer(game *Game, user *User, db *gorm.DB) (Player, error) {
@@ -58,4 +60,13 @@ func SortPlayers(players []Player) []Player {
 	}
 
 	return players
+}
+
+func (player *Player) TotalValue() float64 {
+
+	var total float64
+	for _, ps := range player.PlayerStocks {
+		total += float64(ps.Quantity) * ps.GameStock.Value
+	}
+	return total + float64(player.Cash)
 }

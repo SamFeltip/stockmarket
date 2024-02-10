@@ -14,10 +14,18 @@ import (
 	"stockmarket/models"
 )
 
-func IngamePage(game models.Game) templ.Component {
+func GetCurrentUserPlayer(user models.User, game models.Game) *models.Player {
+	player, err := game.GetPlayer(user)
+	if err != nil {
+		return nil
+	}
+	return player
+}
+
+func IngamePage(user models.User, game models.Game) templ.Component {
 
 	if game.Status == "playing" {
-		pageComponent := Playing(game)
+		pageComponent := Playing(game, GetCurrentUserPlayer(user, game))
 		return pageComponent
 	}
 
@@ -78,7 +86,7 @@ func Index(games []models.Game) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(game.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/index.templ`, Line: 32, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/index.templ`, Line: 40, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
