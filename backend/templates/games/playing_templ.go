@@ -280,7 +280,7 @@ func Playing(game models.Game, player *models.Player) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></header><div id=\"content\" class=\"\"><ul id=\"tabs\" class=\"nav nav-tabs\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></header><div id=\"content\" class=\"\"><ul id=\"tabs\" class=\"nav nav-tabs d-flex justify-content-between\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -503,7 +503,7 @@ func Playing(game models.Game, player *models.Player) templ.Component {
 	})
 }
 
-func PlayingSocket(game models.Game) templ.Component {
+func PlayingSocket(game models.Game, current_user models.User) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -520,7 +520,7 @@ func PlayingSocket(game models.Game) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = Playing(game, GetCurrentUserPlayer(templates.GetCurrentUser(ctx), game)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Playing(game, game.MustGetPlayer(current_user)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -27,7 +27,7 @@ func BroadcastUpdatePlayersList(players []models.Player) error {
 	latestPlayer := players[len(players)-1]
 
 	broadcastMessage := websocketModels.BroadcastMessage{
-		GameID: latestPlayer.GameID,
+		Game:   latestPlayer.Game,
 		Buffer: buffer,
 	}
 
@@ -45,7 +45,7 @@ func BroadcastUpdateDifficulty(game models.Game) error {
 	difficultyDisplay.Render(context.Background(), buffer)
 
 	broadcastMessage := websocketModels.BroadcastMessage{
-		GameID: game.ID,
+		Game:   game,
 		Buffer: buffer,
 	}
 
@@ -58,18 +58,15 @@ func BroadcastUpdateDifficulty(game models.Game) error {
 
 func BroadcastStartPlay(game models.Game) error {
 
-	fmt.Println("broadcasting start play")
-
-	boardDisplay := templates.PlayingSocket(game)
-
-	buffer := &bytes.Buffer{}
-	boardDisplay.Render(context.Background(), buffer)
+	fmt.Println("broadcasting start play: capturing playing socket template")
 
 	broadcastMessage := websocketModels.BroadcastMessage{
-		GameID: game.ID,
-		Buffer: buffer,
+		Game:    game,
+		Buffer:  nil,
+		Message: "start play",
 	}
 
+	fmt.Println("broadcasting start play: sending playing socket template")
 	hub := websockets.GetHub()
 	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 	return nil

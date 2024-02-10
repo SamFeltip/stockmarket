@@ -18,15 +18,15 @@ func Index(c *gin.Context) []models.User {
 	return users // passed into templates
 }
 
-func Show(c *gin.Context) models.User {
+func Show(c *gin.Context) (models.User, error) {
 
 	db := database.GetDb()
 
 	id := c.Param("id")
 
 	var user models.User
-	db.First(&user, id)
+	err := db.First(&user, id).Error
 
-	return user // passed into templates
+	return user, err // passed into templates
 
 }

@@ -1,0 +1,17 @@
+package users
+
+import (
+    "stockmarket/models"
+)
+
+templ Show(user models.User){
+    <div>
+        {user.Name}
+    </div>
+}
+
+templ NoUser(){
+    <div>
+        No user found!
+    </div>
+}

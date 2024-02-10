@@ -182,10 +182,10 @@ templ Playing(game models.Game, player *models.Player){
     
 }
 
-templ PlayingSocket(game models.Game){
+templ PlayingSocket(game models.Game, current_user models.User){
     
     <div hx-swap-oob="innerHTML:main">
-        @Playing(game, GetCurrentUserPlayer(templates.GetCurrentUser(ctx), game))
+        @Playing(game, game.MustGetPlayer(current_user))
     </div>
     
 }

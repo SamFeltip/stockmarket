@@ -50,6 +50,8 @@ func RenderWithTemplate(pageComponent templ.Component, title string, c *gin.Cont
 	ctx = context.WithValue(ctx, page.CurrentUser, user)
 	ctx = context.WithValue(ctx, page.CurrentGame, game)
 
+	fmt.Println("rendering template with base:", title)
+
 	baseComponent := page.Base(title, pageComponent, c)
 	baseComponent.Render(ctx, c.Writer)
 }

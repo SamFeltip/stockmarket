@@ -48,7 +48,7 @@ func GetGameCurrentUser(ctx context.Context) models.User {
 }
 
 func IsCurrentUserTurn(ctx context.Context) bool {
-	fmt.Println("**", IsLoggedIn(ctx), GetGameCurrentUser(ctx).ID, ":::", GetCurrentUser(ctx).ID)
+	fmt.Println("is current user turn?", GetCurrentUser(ctx).Name)
 	return IsLoggedIn(ctx) && GetGameCurrentUser(ctx).ID == GetCurrentUser(ctx).ID
 }
 

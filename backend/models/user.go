@@ -38,6 +38,7 @@ func (user *User) createPlayer(game Game, db *gorm.DB) (*Player, error) {
 		Game:   game,
 		User:   *user,
 		Active: true,
+		Cash:   100000,
 	}
 	err := db.Create(&player).Error
 

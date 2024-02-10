@@ -106,7 +106,9 @@ func RequireAuthWebsocket(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println("user is not participating in a game (RequireAuthWebsocket)", err)
-		game = models.Game{}
+		c.JSON(http.StatusBadRequest, gin.H{"error": "no user found in request context"})
+		return
+		// game = models.Game{}
 	}
 
 	c.Set("user", user)

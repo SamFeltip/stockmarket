@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -56,6 +57,15 @@ func (game Game) GetPlayer(user User) (*Player, error) {
 	}
 
 	return nil, errors.New("Player not found")
+}
+
+func (game Game) MustGetPlayer(user User) *Player {
+	player, err := game.GetPlayer(user)
+	if err != nil {
+		fmt.Println("could not must get player, return nil")
+		return nil
+	}
+	return player
 }
 
 func (game Game) UpdateStatus(status GameStatus, db *gorm.DB) error {

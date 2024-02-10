@@ -62,8 +62,8 @@ func ReadPump(c *websocketModels.Client) {
 
 			fmt.Println("Websocket closed:", err)
 
-			fmt.Println("details:", c.UserID, c.GameID)
-			err := models.PlayerLeft(c.UserID, c.GameID, db)
+			fmt.Println("details:", c.User.ID, c.Game.ID)
+			err := models.PlayerLeft(c.User.ID, c.Game.ID, db)
 
 			if err != nil {
 				fmt.Println("error setting player to inactive:", err)

@@ -7,6 +7,8 @@ package websockets
 import (
 	"bytes"
 
+	models "stockmarket/models"
+
 	gorrilaws "github.com/gorilla/websocket"
 )
 
@@ -20,21 +22,22 @@ type Client struct {
 	// Buffered channel of outbound messages.
 	Send chan *bytes.Buffer
 
-	GameID string
-	UserID uint
+	Game models.Game
+	User models.User
 }
 
 type BroadcastMessage struct {
-	GameID string
-	Buffer *bytes.Buffer
+	Game    models.Game
+	Buffer  *bytes.Buffer
+	Message string
 }
 
-func NewClient(hub *Hub, conn *gorrilaws.Conn, userID uint, gameID string) *Client {
+func NewClient(hub *Hub, conn *gorrilaws.Conn, user models.User, game models.Game) *Client {
 	return &Client{
-		Hub:    hub,
-		Conn:   conn,
-		UserID: userID,
-		GameID: gameID,
+		Hub:  hub,
+		Conn: conn,
+		User: user,
+		Game: game,
 
 		Send: make(chan *bytes.Buffer),
 	}
