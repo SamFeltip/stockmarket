@@ -71,6 +71,7 @@ p {
     background-color: var(--bs-container-bg);
 
 }
+
 .btn-primary {
     --bs-btn-color: #000;
     --bs-btn-bg: #FFF284;
@@ -106,6 +107,12 @@ p {
     /*border: 0;*/
 }
 
+.modal {
+    --bs-modal-bg: white;
+    --bs-modal-color: black;
+    --bs-heading-color: black;
+    --bs-modal-margin: 20vh;
+}
 
 /* .card {
     --bs-card-bg: white;
