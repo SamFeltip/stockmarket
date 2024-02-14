@@ -285,7 +285,7 @@ func Playing(game models.Game, player *models.Player) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		for _, player_stock := range player.PlayerStocks {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"nav-item flex-fill \"><a class=\"player-stock nav-link d-flex flex-row align-items-center gap-1\" hx-swap=\"outerHTML\" hx-get=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"nav-item flex-fill\"><a class=\"player-stock nav-link d-flex flex-row align-items-center gap-1\" hx-swap=\"outerHTML\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
