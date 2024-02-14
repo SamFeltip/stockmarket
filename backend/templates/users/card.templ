@@ -19,7 +19,7 @@ templ CardList(players []models.Player) {
 		}
 	</style>
 	for _, player := range models.SortPlayers(players) {
-		<div class="card">
+		<div class="card card-green">
 			<img 
 				if player.Active {
 					class="rounded card-img-top"

@@ -53,7 +53,7 @@ func CardList(players []models.Player) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		for _, player := range models.SortPlayers(players) {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"card\"><img")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"card card-green\"><img")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

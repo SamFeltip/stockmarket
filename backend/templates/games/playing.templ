@@ -75,11 +75,11 @@ script SetTabListeners(){
 templ Playing(game models.Game, player *models.Player){
     @GameGridStyle()
     <div id="game-grid" class="p-3">
-        <div id="profile" class="rounded d-flex flex-row align-items-center p-2" style="background-color: var(--bs-card-bg);">
+        <div id="profile" class="card card-green d-flex flex-row align-items-center p-2" style="background-color: var(--bs-card-bg);">
             // <div class="rounded" style="z-index: 990; position: relative; transform: translate(-10px, -10px); height: 60px; width: 60px; background-color: #ff0;"></div>
             <img class="rounded" style="z-index: 999; " height="60px" width="60px" src={templates.GetCurrentUser(ctx).ProfileRoot} alt={templates.GetCurrentUser(ctx).Name}/>
             <div>
-                <h2>
+                <h2 class="text-capitalize">
                     {player.User.Name}
                 </h2>
                 <p>
@@ -91,22 +91,22 @@ templ Playing(game models.Game, player *models.Player){
             </div>
         </div>
         
-        <div id="now-playing" class="p-2 rounded d-flex flex-column align-items-center justify-content-center" style="background-color: var(--bs-card-bg);">
+        <div id="now-playing" class="card card-green p-2 rounded d-flex flex-column align-items-center justify-content-center" style="background-color: var(--bs-card-bg);">
             if game.CurrentUser.ID == templates.GetCurrentUser(ctx).ID {
-                <h2>
-                    It's your turn!
-                </h2>
+                <h3 class="primary">
+                    It's your turn
+                </h3>
                 <p>
                     Buy, sell, use or pass
                 </p>
             } else {
-                <p>
+                <h3>
                     It's {game.CurrentUser.Name}'s turn!
-                </p>
+                </h3>
             }
         </div>
 
-        <header  class="rounded p-3" style="background-color: var(--bs-card-bg);">    
+        <header  class="card card-green rounded p-3" style="background-color: var(--bs-card-bg);">    
             <h1>Stockmarket!</h1>
             <div class="d-flex justify-content-between">
                 <div>

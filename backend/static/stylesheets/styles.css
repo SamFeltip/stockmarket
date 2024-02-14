@@ -23,20 +23,17 @@ header h1 {
 
 p {
     margin-bottom: 0;
-    font-size: 16px;
+    font-size: 1rem;
     font-style: normal;
-    font-weight: 600;
     line-height: normal;
-    letter-spacing: 0.64px;
+    letter-spacing: 0.04rem;
 }
 
 :root {
     --bs-body-bg: #0F2C12;
     --bs-heading-color: white;
-    --bs-card-bg: #204712;
     --bs-container-bg: #204712;
     --bs-body-color: white;
-    
     --bs-primary: #FFF284;
     --bs-btn-big: var(--bs-primary);
 
@@ -98,16 +95,6 @@ p {
     --bs-btn-disabled-color: #black;
 }
 
-.card, .card-header, .card-body {
-    border: none;
-    background-color: #204712;
-}
-
-.card:has(.card-img-top) .rounded {
-    border-radius: 100px;
-
-}
-
 .form-control {
     background-color: #fff;
     color: black;
@@ -117,6 +104,32 @@ p {
     color: black;
     background-color: white;
     /*border: 0;*/
+}
+
+
+/* .card {
+    --bs-card-bg: white;
+} */
+
+.card {
+    --bs-card-bg: white;
+    --bs-card-color: black;
+}
+
+.card.card-green {
+    --bs-card-bg: #204712;
+}
+
+
+.card.card-green, 
+.card.card-green .card-header, 
+.card.card-green .card-body {
+    border: none;
+    background-color: #204712;
+}
+
+.card:has(.card-img-top) .rounded {
+    border-radius: 100px;
 }
 
 h2.primary {

@@ -22,8 +22,8 @@ templ PlayViewStyles(){
                 "buy-button sell-button";
 
             grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr 1fr 44px;
-            grid-gap: 30px;
+            grid-template-rows: 100px auto 95px 44px;
+            grid-gap: 40px;
         }
 
         #play-view > #stocks {
@@ -62,7 +62,8 @@ templ Show(player_stock models.PlayerStock){
         </div>
 
         <div id="investors">
-            <h2 class="text-black">Investors</h2>
+            <h4 class="text-black">Investors</h4>
+            <div class="d-flex flex-row">
             for _, player_stock := range player_stock.GameStock.PlayerStocks {
                 <div class="d-flex flex-column align-items-center">
                     <img class="rounded" width="50px" src={player_stock.Player.User.ProfileRoot} alt={player_stock.Player.User.Name}/>
@@ -71,19 +72,56 @@ templ Show(player_stock models.PlayerStock){
                     </p>
                 </div>
             }
+            </div>
         </div>
 
         <div id="insights">
-            <h2 class="text-black">Your insights</h2>
+            <h4 class="text-black">Your insights</h4>
         </div>
 
         <div id="price-charts">
-            <h2 class="text-black">Price charts</h2>
+            <h4 class="text-black">Price charts</h4>
         </div>
 
 
-        <div id="stock-info">
-            <h2 class="text-black">Info</h2>
+        <div id="stock-info" class="d-flex flex-column">
+            <h4 class="text-black">Info</h4>
+            <div class="gap-3 d-flex flex-row">
+                <div class="card flex-fill">
+                    <div class="card-body text-center">
+                        <p class="fs-5">
+                            {strconv.FormatFloat(player_stock.GameStock.Stock.Variation, 'f', -1, 64)}
+                        </p>
+                        <p class="text-secondary">
+                            Volitility
+                        </p>
+                    </div>
+                </div>
+                <div class="card flex-fill">
+                    <div class="card-body text-center">
+                        if player_stock.GameStock.Director == nil {
+                            <p class="fs-5">
+                                N/A
+                            </p>
+                        }else{
+                            {player_stock.GameStock.Director.User.Name}
+                        }
+                        <p class="text-secondary">
+                            Director
+                        </p>
+                    </div>
+                </div>
+                <div class="card flex-fill">
+                    <div class="card-body text-center">
+                        <p class="fs-5">
+                            100,000
+                        </p>
+                        <p class="text-secondary">
+                            Shares available
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <button id="buy-button" class="btn btn-success">

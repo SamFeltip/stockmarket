@@ -22,6 +22,8 @@ type GameStock struct {
 	StockID      uint   `gorm:"not null"`
 	Stock        Stock
 	PlayerStocks []PlayerStock
+	DirectorID   *uint
+	Director     *Player `gorm:"foreignKey:DirectorID"`
 	Game         Game
 	Value        float64
 }
@@ -67,9 +69,10 @@ func CreateGameStocks(gameID string, db *gorm.DB) ([]GameStock, error) {
 	for _, stock := range stocks {
 		fmt.Println("stock iteration:", stock.ID, ":", gameID)
 		game_stock := GameStock{
-			GameID:  gameID,
-			StockID: stock.ID,
-			Value:   stock.StartingValue,
+			GameID:   gameID,
+			StockID:  stock.ID,
+			Value:    stock.StartingValue,
+			Director: nil,
 		}
 
 		err := db.Create(&game_stock).Error
