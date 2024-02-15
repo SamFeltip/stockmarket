@@ -62,6 +62,8 @@ func StartGame(gameID string) (templ.Component, error) {
 		return nil, err
 	}
 
+	// game.GenerateInsights(db)
+
 	fmt.Println("game updated:", game.ID)
 	err = BroadcastStartPlay(game)
 

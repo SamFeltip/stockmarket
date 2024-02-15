@@ -11,7 +11,8 @@ type Stock struct {
 	ID            uint   `gorm:"primaryKey"`
 	Name          string `gorm:"not null;unique"`
 	StartingValue float64
-	ImagePath     string  `gorm:"not null;unique"`
+	ImagePath     string `gorm:"not null;unique"`
+	Insights      []Insight
 	Variation     float64 // +/- maximum value of variation (0.50 increments)
 }
 
@@ -28,16 +29,6 @@ type GameStock struct {
 	Value        float64
 }
 
-type PlayerStock struct {
-	gorm.Model
-	ID          uint `gorm:"primaryKey"`
-	PlayerID    uint
-	Player      Player
-	GameStockID uint
-	GameStock   GameStock
-	Quantity    int
-}
-
 func GetPlayerStock(playerStockID string, db *gorm.DB) (PlayerStock, error) {
 	var playerStock PlayerStock
 
@@ -51,6 +42,8 @@ func GetPlayerStock(playerStockID string, db *gorm.DB) (PlayerStock, error) {
 		Preload("GameStock.PlayerStocks.Player.User").
 		Preload("Player").
 		Preload("Player.User").
+		Preload("PlayerInsights").
+		Preload("PlayerInsights.Insight").
 		Where("id = ?", playerStockID).First(&playerStock).Error
 
 	return playerStock, err

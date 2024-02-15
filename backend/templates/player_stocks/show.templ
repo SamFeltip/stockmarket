@@ -3,6 +3,7 @@ package player_stocks
 import (
     "stockmarket/models"
     "strconv"
+    "fmt"
 )
 
 templ NoPlayerStock(){
@@ -22,7 +23,8 @@ templ PlayViewStyles(){
                 "buy-button sell-button";
 
             grid-template-columns: 1fr 1fr;
-            grid-template-rows: 100px auto 95px 44px;
+            grid-template-rows: 100px minmax(auto, 430px) 95px 44px;
+            
             grid-gap: 40px;
         }
 
@@ -50,6 +52,25 @@ templ PlayViewStyles(){
 }
 
 
+
+templ TotalInsight(player_stock models.PlayerStock){
+    if player_stock.TotalInsight() > 0 {
+        <div class="btn btn-success">
+            <img class="pe-2" height="16px" src="/static/imgs/icons/stock_up_black.svg" alt="stock up arrow"/>
+            £{fmt.Sprintf("%.2f", player_stock.TotalInsight())}
+        </div>
+    } else if player_stock.TotalInsight() < 0{
+        <div class="btn btn-danger">
+            <img class="pe-2" height="16px" src="/static/imgs/icons/stock_down_black.svg" alt="stock down arrow"/>
+            £{fmt.Sprintf("%.2f", player_stock.TotalInsight())}
+        </div> 
+    } else {
+        <div class="btn btn-secondary">
+            boring!
+        </div> 
+    }
+}
+
 templ ModalStyles(){
     <style>
         .modal .purchase-form {
@@ -71,11 +92,11 @@ templ ModalStyles(){
             grid-area: value;
         }
 
-        .modal .input-cash {
+        .modal .input-cash-group {
             grid-area: input-cash;
         }
 
-        .modal .input-stock {
+        .modal .input-stock-group {
             grid-area: input-stock;
         }
 
@@ -106,37 +127,61 @@ templ BuyModal(player_stock models.PlayerStock){
                         <img width="30px" src={player_stock.GameStock.Stock.ImagePath} alt={player_stock.GameStock.Stock.Name}/>
                         <h5 class="modal-title">{player_stock.GameStock.Stock.Name}</h5>
                     </div>
+                    @TotalInsight(player_stock)
                 </div>
                 <div class="modal-body d-flex flex-column row-gap-3">
-                    <div class="d-flex flex-row gap-1">
-                        <div class="purchase-form flex-fill">
-                            <h6 class="mb-0 header-amount-of-stocks">
-                                Amount of stocks
-                            </h6>
-                            <h6 class="mb-0 header-value">
-                                Value
-                            </h6>
+                    
+                    <stock-calculator class="d-flex flex-row gap-1" stock-count={strconv.Itoa(player_stock.Quantity)} stock-value={fmt.Sprintf("%.2f", player_stock.GameStock.Value)}>
+                        <form id="stockForm">
+                            <div class="purchase-form flex-fill">
+                                <h6 class="mb-0 header-amount-of-stocks">
+                                    Amount of stocks
+                                </h6>
+                                <h6 class="mb-0 header-value">
+                                    Value
+                                </h6>
 
-                            <input class="input-stock form-control" type="text" value="1000"/>
                             
-                            <div class="equals d-flex justify-content-center align-items-center flex-fill">
-                                =
-                            </div>
+                                <div class="input-stock-group input-group mb-0">
+                                    <input 
+                                        type="number"
+                                        step="1000"
+                                        min="0"
+                                        class="form-control input-stock" 
+                                        name="stockCount"
+                                    />
+                                </div>
+                                
+                                <div class="equals d-flex justify-content-center align-items-center flex-fill">
+                                    =
+                                </div>
 
-                            <input class="form-control input-cash" type="text" value="5000"/>
+                                <div class="input-cash-group input-group mb-0">
+                                    <span class="input-group-text text-black">£</span>
+                                    <input
+                                        class="form-control input-cash" 
+                                        type="number"
+                                        steps="1000"
+                                        min="0"
+                                        value="0"
+                                    />
+                                </div>
 
-                            <div class="stock-btns d-flex gap-2">
-                                <button class="btn btn-danger flex-fill">-</button>
-                                <button class="btn btn-success flex-fill">+</button>
+                                <div class="stock-btns d-flex gap-2">
+                                    <button type="button" class="rem-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center ">-</button>
+                                    <button type="button" class="add-stock btn btn-success flex-fill d-flex justify-content-center align-items-center ">+</button>
+                                </div>
+                                
+                                <div class="cash-btns d-flex gap-2">
+                                    <button type="button" class="rem-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center ">-</button>
+                                    <button type="button" class="add-stock btn btn-success flex-fill d-flex justify-content-center align-items-center ">+</button>
+                                </div>
                             </div>
-                            
-                            <div class="cash-btns d-flex gap-2">
-                                <button class="btn btn-danger flex-fill">-</button>
-                                <button class="btn btn-success flex-fill">+</button>
+                            <div class="justify-end">
+                                <input type="hidden" id="stockId" name="stockId" value="1"/>
                             </div>
-
-                        </div>
-                    </div>
+                        </form>
+                    </stock-calculator>
                     <div class="d-flex flex-row gap-1">
                         <div class="flex-fill">
                             <h6>
@@ -157,14 +202,28 @@ templ BuyModal(player_stock models.PlayerStock){
                         </div>
                     </div>
 
-
                 </div>
                 <div class="modal-footer d-flex flex-row">
                     <button type="button" class="btn btn-secondary flex-fill" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-success flex-fill">Buy</button>
+                    // <button type="button" class="btn btn-success flex-fill">Buy</button>
+                    <button
+                        id="btn-buy-success"
+                        class="btn btn-success flex-fill"
+                        type="button"
+                        hx-post="/holdings"
+                        hx-trigger="click"
+                        hx-swap="outerHTML" 
+                        hx-target="#portfolio"
+                        hx-form="#stockForm"
+                    >
+                        Buy
+                    </button>
                 </div>
             </div>
         </div>
+
+
+
     </div>
 }
 
@@ -177,6 +236,7 @@ templ SellModal(player_stock models.PlayerStock){
                         <img width="30px" src={player_stock.GameStock.Stock.ImagePath} alt={player_stock.GameStock.Stock.Name}/>
                         <h5 class="modal-title">{player_stock.GameStock.Stock.Name}</h5>
                     </div>
+                    @TotalInsight(player_stock)
                 </div>
                 <div class="modal-body d-flex flex-column row-gap-3">
                     <div class="d-flex flex-row gap-1">
@@ -188,22 +248,47 @@ templ SellModal(player_stock models.PlayerStock){
                                 Value
                             </h6>
 
-                            <input class="input-stock form-control" type="text" value="1000"/>
+                            <div class="input-stock-group input-group mb-0">
+                                <input class="input-stock form-control" type="text" value="1000"/>
+                            </div>
+                            
                             
                             <div class="equals d-flex justify-content-center align-items-center flex-fill">
                                 =
                             </div>
 
-                            <input class="form-control input-cash" type="text" value="5000"/>
+                                <div class="input-stock-group input-group mb-0">
+                                    <span class="input-group-text text-black">£</span>
+                                    <input 
+                                        type="number"
+                                        step="1000"
+                                        min="0"
+                                        class="form-control input-stock" 
+                                        name="stockCount"
+                                    />
+                                </div>
+                                
+
+                                <div class="equals d-flex justify-content-center align-items-center flex-fill">
+                                    =
+                                </div>
+
+
+                                <div class="input-cash-group input-group mb-0">
+                                    <span class="input-group-text text-black">£</span>
+                                    <input class="form-control input-cash" type="text" value="5000"/>
+                                </div>
+
+                            
 
                             <div class="stock-btns d-flex gap-2">
-                                <button class="btn btn-danger flex-fill">-</button>
-                                <button class="btn btn-success flex-fill">+</button>
+                                <button class="btn btn-danger flex-fill flex-fill d-flex justify-content-center align-items-center ">-</button>
+                                <button class="btn btn-success flex-fill flex-fill d-flex justify-content-center align-items-center ">+</button>
                             </div>
                             
                             <div class="cash-btns d-flex gap-2">
-                                <button class="btn btn-danger flex-fill">-</button>
-                                <button class="btn btn-success flex-fill">+</button>
+                                <button class="btn btn-danger flex-fill flex-fill d-flex justify-content-center align-items-center ">-</button>
+                                <button class="btn btn-success flex-fill flex-fill d-flex justify-content-center align-items-center ">+</button>
                             </div>
 
                         </div>
@@ -248,16 +333,16 @@ templ Show(player_stock models.PlayerStock){
                 {strconv.Itoa(player_stock.Quantity)} Shares held
             </p>
             <p>
-                £{strconv.FormatFloat(float64(player_stock.Quantity) * player_stock.GameStock.Value, 'f', -1, 64)} total value
+                £{fmt.Sprintf("%.2f", player_stock.Value())} stock evaluation
             </p>
         </div>
 
         <div id="investors">
             <h4 class="text-black">Investors</h4>
-            <div class="d-flex flex-row">
+            <div class="d-flex flex-row gap-2">
             for _, player_stock := range player_stock.GameStock.PlayerStocks {
                 <div class="d-flex flex-column align-items-center">
-                    <img class="rounded" width="50px" src={player_stock.Player.User.ProfileRoot} alt={player_stock.Player.User.Name}/>
+                    <img class="rounded" width="56px" src={player_stock.Player.User.ProfileRoot} alt={player_stock.Player.User.Name}/>
                     <p>
                         {strconv.Itoa(player_stock.Quantity)}
                     </p>
@@ -266,8 +351,32 @@ templ Show(player_stock models.PlayerStock){
             </div>
         </div>
 
-        <div id="insights">
-            <h4 class="text-black">Your insights</h4>
+        <div id="insights" class="d-flex flex-column gap-2">
+            <div class="d-flex justify-content-between">
+                <h4 class="text-black">Your insights</h4>
+                @TotalInsight(player_stock)
+            </div>
+            
+            <div class="d-grid gap-1 mh-100 overflow-scroll" style="grid-template-columns: 1fr 1fr;">
+            for _, player_insights := range player_stock.PlayerInsights {
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="text-black">
+                            if player_insights.Insight.Value > 0 {
+                                <img class="pe-2" height="16px" src="/static/imgs/icons/stock_up.svg" alt="stock up arrow"/>
+                            } else {
+                                <img class="pe-2" height="16px" src="/static/imgs/icons/stock_down.svg" alt="stock down arrow"/>
+                            }
+
+                            £{fmt.Sprintf("%.2f", player_insights.Insight.Value)}
+                        </h5>
+                        <p>
+                            {player_insights.Insight.Description}
+                        </p>
+                    </div>
+                </div>
+            }
+            </div>
         </div>
 
         <div id="price-charts">

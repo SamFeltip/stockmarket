@@ -63,6 +63,16 @@ func SetupDb() *gorm.DB {
 		log.Fatal(err)
 	}
 
+	err = db.AutoMigrate(&models.Insight{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = db.AutoMigrate(&models.PlayerInsight{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return db
 
 }

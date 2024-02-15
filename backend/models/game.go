@@ -40,7 +40,6 @@ func GetGame(gameID string, db *gorm.DB) (Game, error) {
 		Where("lower(id) = lower(?)", gameID).First(&game).Error
 
 	return game, err
-
 }
 
 func (game Game) UpdateORM(db *gorm.DB) error {
@@ -84,4 +83,38 @@ func GameDifficultyDisplay(difficulty int) string {
 	default:
 		return "Unknown"
 	}
+}
+
+func (game Game) GenerateInsights(db *gorm.DB) error {
+	// get every game stock, and pull the insights for each stock
+	// then distribute them randomly to players
+
+	// delete all existing insights for current game (player insights where the player.gameID is this game)
+	// get every player insight for this game
+
+	// get all player stocks where playerStock.gameStock.gameID is this game
+	// based on this sql:
+	/*
+		SELECT player_stocks.*
+		FROM player_stocks
+		INNER JOIN game_stocks ON player_stocks.game_stock_id = game_stocks.id
+		WHERE game_stocks.game_id = 'your_game_id';
+	*/
+	var playerStocks []PlayerStock
+	err := db.Where("game_stocks.game_id = ?", game.ID).Find(&playerStocks).Error
+
+	if err != nil {
+		return err
+	}
+
+	// get all insights
+	var insights []Insight
+	err = db.Find(&insights).Error
+
+	if err != nil {
+		return err
+	}
+
+	// for each game stock, distribute insights to players
+	return nil
 }
