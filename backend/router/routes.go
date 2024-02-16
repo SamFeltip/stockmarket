@@ -22,6 +22,7 @@ func SetupRoutes() *gin.Engine {
 	CreateUserRoutes()
 	CreateGameRoutes()
 	CreatePlayerStockRoutes()
+	CreateInsightRoutes()
 
 	return r
 }

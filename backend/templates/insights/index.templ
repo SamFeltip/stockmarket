@@ -1,0 +1,41 @@
+package insights
+
+import (
+    "stockmarket/models"
+    "fmt"
+    "strconv"
+)
+
+templ Index(insights []models.Insight){
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <h1>Insights</h1>
+        </div>
+        <div>
+        for _, insight := range insights {
+            <div class="card mb-2" id={"insight-" + strconv.FormatUint(uint64(insight.ID), 10)}>
+                <div class="card-header d-flex flex-row align-items-center gap-2 py-2">
+                    <img height="50px" src={insight.Stock.ImagePath} alt={insight.Stock.Name}/>
+                    <h1 class="text-black mb-0">{insight.Stock.Name}</h1>
+                </div>
+                <div class="card-body">
+                    <input type="hidden" name="insightID" value={strconv.FormatUint(uint64(insight.ID), 10)}/>
+                    <div class="row">
+                        <div class="col-2">
+                            <input class="form-control " name="Value" type="text" value={fmt.Sprintf("%.2f", insight.Value)}/>
+                        </div>
+                        <div class="col-8">
+                            <input class="form-control" name="Description" type="text" value={insight.Description}/>
+                        </div>
+
+                        <button class="col-2 btn btn-secondary" hx-post="/insight/update">
+                            Update
+                        </button>
+                    </div>
+                    
+                </div>
+            </div>
+        }
+        </div>
+    </div>
+}
