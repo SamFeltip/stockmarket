@@ -14,8 +14,8 @@ type Game struct {
 	ID            string
 	Difficulty    int
 	Status        string
-	Players       []Player
-	GameStocks    []GameStock
+	Players       []Player    `gorm:"constraint:OnDelete:CASCADE"`
+	GameStocks    []GameStock `gorm:"constraint:OnDelete:CASCADE"`
 	CurrentUser   User
 	CurrentUserID uint
 }
@@ -38,7 +38,8 @@ func GetGame(gameID string, db *gorm.DB) (Game, error) {
 		Preload("Players.User").
 		Preload("Players.PlayerStocks").
 		Preload("Players.PlayerStocks.GameStock.Stock").
-		Where("lower(id) = lower(?)", gameID).First(&game).Error
+		Where("lower(games.id) = lower(?)", gameID).
+		First(&game).Error
 
 	return game, err
 }

@@ -67,6 +67,10 @@ p {
     border: var(--bs-nav-tabs-border-width) solid white;
 }
 
+.nav-tabs .nav-link.active {
+    border: none;
+}
+
 .container, .container-fluid {
     background-color: var(--bs-container-bg);
 

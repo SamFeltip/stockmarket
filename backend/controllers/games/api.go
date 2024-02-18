@@ -14,7 +14,7 @@ func UpdateGameDifficulty(gameID string, difficulty int) (templ.Component, error
 	db := database.GetDb()
 
 	game := models.Game{}
-	err := db.Model(&game).Where("id = lower(?)", gameID).Update("difficulty", difficulty).Error
+	err := db.Model(&game).Where("lower(games.id) = lower(?)", gameID).Update("difficulty", difficulty).Error
 
 	errMsg := ""
 
@@ -23,7 +23,7 @@ func UpdateGameDifficulty(gameID string, difficulty int) (templ.Component, error
 		return nil, err
 	}
 
-	err = db.Model(&game).Where("lower(id) = lower(?)", gameID).First(&game).Error
+	err = db.Model(&game).Where("lower(games.id) = lower(?)", gameID).First(&game).Error
 
 	if err != nil {
 		fmt.Printf("Error reloading game: %v", err)

@@ -53,7 +53,7 @@ templ PlayViewStyles(){
 
 
 
-templ TotalInsight(player_stock models.PlayerStock){
+templ TotalInsightButton(player_stock models.PlayerStock){
     if player_stock.TotalInsight() > 0 {
         <div class="btn btn-success">
             <img class="pe-2" height="16px" src="/static/imgs/icons/stock_up_black.svg" alt="stock up arrow"/>
@@ -66,6 +66,30 @@ templ TotalInsight(player_stock models.PlayerStock){
         </div> 
     } else {
         <div class="btn btn-secondary">
+            boring!
+        </div> 
+    }
+}
+
+
+templ TotalInsight(player_stock models.PlayerStock){
+    
+    if player_stock.TotalInsight() > 0 {
+        <div class="total-insight text-succcess">
+            <img class="pe-2" src="/static/imgs/icons/stock_up.svg" alt="stock up arrow"/>
+            <p>
+                £{fmt.Sprintf("%.2f", player_stock.TotalInsight())}
+            </p>
+        </div>
+    } else if player_stock.TotalInsight() < 0{
+        <div class="total-insight text-danger">
+            <img class="pe-2" src="/static/imgs/icons/stock_down.svg" alt="stock down arrow"/>
+            <p>
+                £{fmt.Sprintf("%.2f", player_stock.TotalInsight())}
+            </p>
+        </div> 
+    } else {
+        <div class="total-insight text-secondary">
             boring!
         </div> 
     }
@@ -112,6 +136,15 @@ templ ModalStyles(){
         .modal .equals {
             grid-area: space;
         }
+
+        .modal .total-insight p {
+            text-size: 16px;
+        }
+
+        .modal .total-insight img {
+            height: 16px;
+        }
+
 
         
     </style>
@@ -354,7 +387,7 @@ templ Show(player_stock models.PlayerStock){
         <div id="insights" class="d-flex flex-column gap-2">
             <div class="d-flex justify-content-between">
                 <h4 class="text-black">Your insights</h4>
-                @TotalInsight(player_stock)
+                @TotalInsightButton(player_stock)
             </div>
             
             <div class="d-grid gap-1 mh-100 overflow-scroll" style="grid-template-columns: 1fr 1fr;">

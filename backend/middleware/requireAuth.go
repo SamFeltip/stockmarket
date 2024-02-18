@@ -148,7 +148,7 @@ func AuthCurrentPlayer(c *gin.Context) {
 	gameID := c.PostForm("gameID")
 
 	var game models.Game
-	err = db.Where("lower(id) = lower(?) AND current_user_id = ?", gameID, user.ID).First(&game).Error
+	err = db.Where("lower(games.id) = lower(?) AND current_user_id = ?", gameID, user.ID).First(&game).Error
 
 	if err != nil {
 		fmt.Println("could not find game")

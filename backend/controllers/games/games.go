@@ -160,6 +160,13 @@ func Create(c *gin.Context) (models.Game, error) {
 	game.GameStocks = game_stocks
 	db.Save(&game)
 
+	err = current_user.SetActiveGame(game, db)
+
+	if err != nil {
+		fmt.Println("error setting active game:", err)
+		return models.Game{}, err
+	}
+
 	return game, nil // passed into templates
 }
 

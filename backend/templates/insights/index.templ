@@ -21,10 +21,10 @@ templ Index(insights []models.Insight){
                 <div class="card-body">
                     <input type="hidden" name="insightID" value={strconv.FormatUint(uint64(insight.ID), 10)}/>
                     <div class="row">
-                        <div class="col-2">
-                            <input class="form-control " name="Value" type="text" value={fmt.Sprintf("%.2f", insight.Value)}/>
+                        <div class="col-1">
+                            <input class="form-control " name="Value" type="text" value={"£" + fmt.Sprintf("%.2f", insight.Value)} disabled/>
                         </div>
-                        <div class="col-8">
+                        <div class="col-9">
                             <input class="form-control" name="Description" type="text" value={insight.Description}/>
                         </div>
 

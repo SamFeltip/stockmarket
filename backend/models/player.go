@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"sort"
 
 	"gorm.io/gorm"
 )
@@ -11,7 +12,7 @@ type Player struct {
 	ID           uint
 	GameID       string
 	Game         Game
-	PlayerStocks []PlayerStock
+	PlayerStocks []PlayerStock `gorm:"constraint:OnDelete:CASCADE"`
 	UserID       uint
 	User         User
 	Cash         int
@@ -69,4 +70,15 @@ func (player *Player) TotalValue() float64 {
 		total += float64(ps.Quantity) * ps.GameStock.Value
 	}
 	return total + float64(player.Cash)
+}
+
+func (player Player) SortedPlayerStocks() []PlayerStock {
+
+	player_stocks := player.PlayerStocks
+
+	sort.Slice(player_stocks, func(i, j int) bool {
+		return player_stocks[i].GameStock.Stock.Variation < player_stocks[j].GameStock.Stock.Variation
+	})
+
+	return player_stocks
 }

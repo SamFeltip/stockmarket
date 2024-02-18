@@ -3,3 +3,4 @@ backend/.DS_Store
 backend/.env
 backend/tmp/*
 tmp/*
+backend/database/backup.sql

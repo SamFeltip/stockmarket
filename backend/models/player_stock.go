@@ -11,11 +11,12 @@ type PlayerStock struct {
 	Player         Player
 	GameStockID    uint
 	GameStock      GameStock
-	PlayerInsights []PlayerInsight
+	PlayerInsights []PlayerInsight `gorm:"constraint:OnDelete:CASCADE"`
 	Quantity       int
 }
 
 func (player_stock PlayerStock) TotalInsight() float64 {
+
 	var total float64 = 0
 
 	for _, player_insight := range player_stock.PlayerInsights {
