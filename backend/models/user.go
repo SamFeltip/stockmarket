@@ -33,7 +33,7 @@ func (user *User) ActiveGame(db *gorm.DB) (Game, error) {
 	return player.Game, err
 }
 
-func (user *User) createPlayer(game Game, db *gorm.DB) (*Player, error) {
+func (user *User) createPlayer(game Game, db *gorm.DB) (Player, error) {
 	player := Player{
 		Game:   game,
 		User:   *user,
@@ -44,13 +44,13 @@ func (user *User) createPlayer(game Game, db *gorm.DB) (*Player, error) {
 
 	if err != nil {
 		fmt.Println("error creating player:", err)
-		return nil, err
+		return Player{}, err
 	}
 
 	// create player stocks
 	if err != nil {
 		fmt.Println("error fetching stocks:", err)
-		return nil, err
+		return Player{}, err
 	}
 
 	for _, game_stock := range game.GameStocks {
@@ -64,13 +64,13 @@ func (user *User) createPlayer(game Game, db *gorm.DB) (*Player, error) {
 
 		if err != nil {
 			fmt.Println("error creating player stock:", err)
-			return nil, err
+			return Player{}, err
 		}
 	}
 
 	err = db.Model(&player).Preload("User").Preload("Game").First(&player).Error
 
-	return &player, err
+	return player, err
 }
 
 func (current_user *User) SetActiveGame(game Game, db *gorm.DB) error {
@@ -86,7 +86,7 @@ func (current_user *User) SetActiveGame(game Game, db *gorm.DB) error {
 			return create_err
 		}
 
-		player = *new_player
+		player = new_player
 
 	} else if find_err != nil {
 		fmt.Println("unexpected error fetching player:", find_err)
