@@ -80,3 +80,13 @@ func CreateGameStocks(gameID string, db *gorm.DB) ([]GameStock, error) {
 
 	return game_stocks, nil
 }
+
+func (gameStock GameStock) SharesAvailable() int {
+	var total int = 0
+
+	for _, playerStock := range gameStock.PlayerStocks {
+		total += playerStock.Quantity
+	}
+
+	return 100000 - total
+}

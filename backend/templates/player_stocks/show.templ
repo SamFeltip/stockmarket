@@ -102,7 +102,8 @@ templ ModalStyles(){
             grid-template-areas:
                 "label . value"
                 "input-stock space input-cash"
-                "stock-btns . cash-btns";
+                "stock-btns . cash-btns"
+                "transaction-body transaction-body transaction-body";
             grid-template-columns: 1fr 1rem 1fr;
             grid-template-rows: 1fr 1fr 2rem;
             row-gap: 1rem;
@@ -130,6 +131,11 @@ templ ModalStyles(){
 
         .modal .cash-btns {
             grid-area: cash-btns;
+        }
+
+
+        .modal .transaction-body {
+            grid-area: transaction-body;
         }
 
 
@@ -163,9 +169,19 @@ templ BuyModal(player_stock models.PlayerStock){
                     @TotalInsight(player_stock)
                 </div>
                 <div class="modal-body d-flex flex-column row-gap-3">
-                    
-                    <stock-calculator class="d-flex flex-row gap-1" stock-count={strconv.Itoa(player_stock.Quantity)} stock-value={fmt.Sprintf("%.2f", player_stock.GameStock.Value)}>
+                    <stock-calculator 
+                        class="d-flex flex-row gap-1" 
+                        stock-count={strconv.Itoa(player_stock.Quantity)} 
+                        stock-value={fmt.Sprintf("%.2f", player_stock.GameStock.Value)}
+                        
+                        playerStock-quantity={fmt.Sprintf("%d", player_stock.Quantity)}
+                        playerStock-value={strconv.FormatFloat(player_stock.Value(), 'f', -1, 64)}
+
+                        gameStock-sharesAvailable={strconv.Itoa(player_stock.GameStock.SharesAvailable())}
+                        player-cash={strconv.Itoa(player_stock.Player.Cash)}
+                    >
                         <form id="stockForm">
+                            <input type="hidden" id="stockId" name="stockId" value="1"/>
                             <div class="purchase-form flex-fill">
                                 <h6 class="mb-0 header-amount-of-stocks">
                                     Amount of stocks
@@ -209,31 +225,46 @@ templ BuyModal(player_stock models.PlayerStock){
                                     <button type="button" class="rem-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center ">-</button>
                                     <button type="button" class="add-stock btn btn-success flex-fill d-flex justify-content-center align-items-center ">+</button>
                                 </div>
-                            </div>
-                            <div class="justify-end">
-                                <input type="hidden" id="stockId" name="stockId" value="1"/>
+
+                                <div class="transaction-body">
+                                </div>
                             </div>
                         </form>
                     </stock-calculator>
-                    <div class="d-flex flex-row gap-1">
-                        <div class="flex-fill">
-                            <h6>
-                                Current
-                            </h6>
-                            11,000 Shares = £11,000
-                            183,000 Stocks left to buy
-                            £25,000 Cash available
-                        </div>
+                    // <div class="d-flex flex-row gap-1">
+                    //     <div class="flex-fill">
+                    //         <h6>
+                    //             Current
+                    //         </h6>
+                            
+                    //         <p>
+                    //             {strconv.Itoa(player_stock.Quantity)} Shares = £ {strconv.FormatFloat(player_stock.Value(), 'f', -1, 64)}
+                    //         </p>
+                    //         <p>
+                    //             {strconv.Itoa(player_stock.GameStock.SharesAvailable())} Stocks left to buy
+                    //         </p>
+                    //         <p>
+                    //             £{strconv.Itoa(player_stock.Player.Cash)} Cash available
+                    //         </p>
+                    //     </div>
 
-                        <div class="flex-fill">
-                            <h6>
-                                After transaction
-                            </h6>
-                            6,000 Shares = £6,000
-                            188,000 Stocks left to buy
-                            £30,000 Cash available
-                        </div>
-                    </div>
+                    //     <div class="flex-fill">
+                    //         <h6>
+                    //             After transaction
+                    //         </h6>
+                    //         <div id="after-transaction-body">
+                    //             <p>
+                    //                 6,000 Shares = £6,000
+                    //             </p>
+                    //             <p>
+                    //                 188,000 Stocks left to buy
+                    //             </p>
+                    //             <p>
+                    //                 £30,000 Cash available
+                    //             </p>
+                    //         </div>
+                    //     </div>
+                    // </div>
 
                 </div>
                 <div class="modal-footer d-flex flex-row">
