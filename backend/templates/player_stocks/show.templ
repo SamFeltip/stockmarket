@@ -171,11 +171,10 @@ templ BuyModal(player_stock models.PlayerStock){
                 <div class="modal-body d-flex flex-column row-gap-3">
                     <stock-calculator 
                         class="d-flex flex-row gap-1" 
-                        stock-count={strconv.Itoa(player_stock.Quantity)} 
-                        stock-value={fmt.Sprintf("%.2f", player_stock.GameStock.Value)}
                         
-                        playerStock-quantity={fmt.Sprintf("%d", player_stock.Quantity)}
-                        playerStock-value={strconv.FormatFloat(player_stock.Value(), 'f', -1, 64)}
+                        playerStock-quantity={strconv.Itoa(player_stock.Quantity)}
+
+                        gameStock-value={strconv.FormatFloat(player_stock.GameStock.Value, 'f', -1, 64)}
 
                         gameStock-sharesAvailable={strconv.Itoa(player_stock.GameStock.SharesAvailable())}
                         player-cash={strconv.Itoa(player_stock.Player.Cash)}
