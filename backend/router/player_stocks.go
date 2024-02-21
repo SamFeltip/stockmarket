@@ -33,4 +33,26 @@ func CreatePlayerStockRoutes() {
 
 		})
 
+	r.GET("/player_stocks/preview/:playerStockID",
+		func(c *gin.Context) { middleware.RequireAuth(c) },
+		func(c *gin.Context) {
+			db := database.GetDb()
+
+			// get a player stock for the game stock and player
+			player_stock_id := c.Param("playerStockID")
+
+			player_stock := models.PlayerStock{}
+			db.
+				Preload("GameStock.Stock").
+				Preload("PlayerInsights.Insight").
+				Where("id = ?", player_stock_id).
+				First(&player_stock)
+
+			pageComponent := templates.PlayerStockPreview(player_stock)
+
+			ctx := context.Background()
+			pageComponent.Render(ctx, c.Writer)
+
+		})
+
 }

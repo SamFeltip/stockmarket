@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 )
 
@@ -16,6 +18,8 @@ type PlayerStock struct {
 }
 
 func (player_stock PlayerStock) TotalInsight() float64 {
+
+	fmt.Println("player_stock stock: ", player_stock.GameStock.Stock.Name)
 
 	var total float64 = 0
 

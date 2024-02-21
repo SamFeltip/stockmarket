@@ -3,7 +3,6 @@ package games
 import (
     "stockmarket/models"
     templates "stockmarket/templates"
-    player_stock_templ "stockmarket/templates/player_stocks"
     "strconv"
     "fmt"
 )
@@ -115,19 +114,27 @@ templ Playing(game models.Game, player models.Player){
         </header>
 
         <div id="content" class="">
-            <ul id="tabs" class="nav nav-tabs d-flex justify-content-between">
-            for _, player_stock := range player.SortedPlayerStocks() {
-                <li class="nav-item flex-fill">
-                    <a class="player-stock nav-link d-flex flex-row align-items-center justify-content-between gap-1" hx-swap="outerHTML" hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint( uint64(player_stock.ID), 10 )) } hx-trigger="click" hx-target="#play-view">
-                        <img height="30px" src={player_stock.GameStock.Stock.ImagePath} alt={player_stock.GameStock.Stock.Name}/>
-                        <span class="d-flex flex-column align-items-end">
-                            £{ fmt.Sprintf("%.2f", player_stock.GameStock.Value) }
-                            @player_stock_templ.TotalInsight(player_stock)
-                        </span>
+            <ol id="tabs" class="nav nav-tabs d-flex justify-content-between">
+            for _, ps := range player.SortedPlayerStocks() {
+                <li class="nav-item d-flex flex-fill">
+                    <a 
+                        class="flex-fill player-stock nav-link d-flex flex-row align-items-center justify-content-between gap-1" 
+                        hx-swap="outerHTML" 
+                        hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint( uint64(ps.ID), 10 )) } 
+                        hx-trigger="click" 
+                        hx-target="#play-view"
+                        id={"player-stock-tab-" + strconv.FormatUint( uint64(ps.ID), 10 )}
+                    >
+                        <span
+                            hx-trigger="load"
+                            hx-get={ fmt.Sprintf("/player_stocks/preview/%s", strconv.FormatUint( uint64(ps.ID), 10 ))}
+                            hx-target={ fmt.Sprintf("#player-stock-tab-%s", strconv.FormatUint( uint64(ps.ID), 10 ) )}
+                            hx-swap="innerHTML"
+                        ></span>
                     </a>
                 </li>
             }
-            </ul>
+            </ol>
             @SetTabListeners()
             <div id="play-view" class="bg-white text-black rounded-bottom p-3" hx-swap="outerHTML" hx-trigger="load" hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint( uint64(player.PlayerStocks[0].ID), 10 )) }>
             </div>

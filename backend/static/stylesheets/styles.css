@@ -118,6 +118,14 @@ p {
     --bs-modal-margin: 20vh;
 }
 
+.modal-title {
+    display: none;
+}
+
+.modal .modal-title {
+    display: block;
+}
+
 /* .card {
     --bs-card-bg: white;
 } */
