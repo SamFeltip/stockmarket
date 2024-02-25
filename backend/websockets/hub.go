@@ -46,7 +46,7 @@ func RunHub() {
 
 					db := database.GetDb()
 
-					game, err := models.GetGame(client.Game.ID, db)
+					game, err := models.LoadGame(client.Game.ID, db)
 
 					if err != nil {
 						fmt.Println("could not update game in client")
@@ -65,8 +65,8 @@ func RunHub() {
 
 					fmt.Println("client.User updated", client.Player.User.Name)
 
-					if message == "start play" {
-						fmt.Println("rendering 'start play' socket for:", client.Player.User.Name, client.Game.ID)
+					if message == "game board" {
+						fmt.Println("rendering game board socket for:", client.Player.User.Name, client.Game.ID)
 
 						if err != nil {
 							fmt.Println("error getting player from game, perhaps they left and the connection wasn't removed?:", err)
@@ -78,7 +78,6 @@ func RunHub() {
 						buffer = &bytes.Buffer{}
 						boardDisplay.Render(context.Background(), buffer)
 
-						// fmt.Println("client: ", client.UserID)
 					}
 
 				}

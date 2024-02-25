@@ -126,7 +126,7 @@ func Validate(c *gin.Context) {
 	cu, _ := c.Get("user")
 
 	if cu == nil {
-		fmt.Println("no user found")
+		fmt.Println("validate: no user found in context")
 		cu = models.User{}
 	}
 

@@ -81,16 +81,21 @@ func AuthIsPlaying(c *gin.Context) {
 
 	db := database.GetDb()
 	player, err := user.ActiveGamePlayer(db)
-	game := player.Game
-
-	fmt.Println("active game:", game.ID)
 
 	if err != nil {
 		fmt.Println("user is not participating in a game (RequireAuth)", err)
-		// write a http response and return
-		game = models.Game{}
 		return
 	}
+
+	game, err := models.LoadGame(player.Game.ID, db)
+
+	if err != nil {
+		fmt.Println("error fetching game:", err)
+		return
+	}
+
+	fmt.Println("active game:", game.ID)
+
 	c.Set("game", game)
 	c.Set("player", player)
 
@@ -180,12 +185,22 @@ func AuthCurrentPlayer(c *gin.Context) {
 		return
 	}
 
-	var game models.Game
-	err = db.Where("lower(games.id) = lower(?) AND current_user_id = ?", gameID, user.ID).First(&game).Error
+	game, err := models.LoadGame(gameID, db)
 
 	if err != nil {
-		fmt.Println("could not find game", err)
-		pageComponent := templates.Error(err)
+		fmt.Println("error fetching game:", err)
+
+		pageComponent := templates.NoGame()
+		ctx := context.Background()
+		pageComponent.Render(ctx, c.Writer)
+		return
+	}
+
+	c.Set("game", game)
+
+	if game.CurrentUser.ID != user.ID {
+		fmt.Println("user is not current player")
+		pageComponent := templates.Error(fmt.Errorf("user is not current player"))
 		ctx := context.Background()
 		pageComponent.Render(ctx, c.Writer)
 		return

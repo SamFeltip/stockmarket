@@ -27,7 +27,7 @@ var Playing GameStatus = "playing"
 var Evaluating GameStatus = "evaluating"
 var Finished GameStatus = "finished"
 
-func GetGame(gameID string, db *gorm.DB) (Game, error) {
+func LoadGame(gameID string, db *gorm.DB) (Game, error) {
 
 	var game Game
 	err := db.Model(&game).
@@ -81,20 +81,6 @@ func GameDifficultyDisplay(difficulty int) string {
 }
 
 func (game Game) GenerateInsights(db *gorm.DB) error {
-	// get every game stock, and pull the insights for each stock
-	// then distribute them randomly to players
-
-	// delete all existing insights for current game (player insights where the player.gameID is this game)
-	// get every player insight for this game
-
-	// get all player stocks where playerStock.gameStock.gameID is this game
-	// based on this sql:
-	/*
-		SELECT player_stocks.*
-		FROM player_stocks
-		INNER JOIN game_stocks ON player_stocks.game_stock_id = game_stocks.id
-		WHERE game_stocks.game_id = 'your_game_id';
-	*/
 
 	fmt.Println("game.ID:", game.ID)
 
@@ -175,6 +161,46 @@ func (game Game) GenerateInsights(db *gorm.DB) error {
 		}
 
 		starting_point += 10
+	}
+
+	return nil
+}
+
+func (game Game) UpdateCurrentPlayer(db *gorm.DB) error {
+
+	current_player := game.CurrentUser
+	players := game.Players
+
+	fmt.Println("sorting players by id")
+	// sort players by id
+	for i := 0; i < len(players); i++ {
+		for j := i + 1; j < len(players); j++ {
+			if players[i].ID > players[j].ID {
+				players[i], players[j] = players[j], players[i]
+			}
+		}
+	}
+
+	fmt.Println("finding the next user")
+	next_player := User{}
+	// find the next player in the list (based on current player)
+	for i, player := range players {
+		if player.ID == current_player.ID {
+			if i == len(players)-1 {
+				next_player = players[0].User
+			} else {
+				next_player = players[0].User
+			}
+			break
+		}
+	}
+
+	fmt.Println("setting next user:", next_player.ID)
+	err := db.Model(&game).Where("id = lower(?)", game.ID).Update("current_user_id", next_player.ID).Error
+
+	if err != nil {
+		fmt.Println("could not update current player", err)
+		return err
 	}
 
 	return nil

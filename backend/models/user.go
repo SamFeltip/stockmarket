@@ -101,8 +101,27 @@ func (current_user *User) SetActiveGame(game Game, db *gorm.DB) (Player, error) 
 		return Player{}, err
 	}
 
-	fmt.Println("unsetting active game for other games")
-	db.Model(&Player{}).Where("user_id = ? AND game_id != ?", current_user.ID, game.ID).Update("active", false)
+	if !player.Active {
+		fmt.Println("setting active game for:", current_user.ID, game.ID)
+		player.Active = true
+
+		err = db.Model(&player).Where("id = ?", player.ID).Update("active", true).Error
+	}
+
+	if err != nil {
+		fmt.Println("error setting active game for:", current_user.ID, game.ID, err)
+		return Player{}, err
+	}
+
+	fmt.Println("unsetting active game for other games", current_user.ID, game.ID)
+	err = db.Model(&Player{}).Where("user_id = ? AND game_id != ?", current_user.ID, game.ID).Update("active", false).Error
+
+	if err != nil {
+		fmt.Println("error unsetting active game for other games:", err)
+		return Player{}, err
+	}
+
+	fmt.Println("set successfully")
 
 	return player, nil
 }

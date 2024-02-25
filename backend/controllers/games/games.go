@@ -53,40 +53,28 @@ func BroadcastUpdateDifficulty(game models.Game) error {
 	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 
 	return nil
-
 }
 
-func BroadcastStartPlay(game models.Game) error {
+func BroadcastUpdateBoard(game models.Game) error {
 
-	fmt.Println("broadcasting start play: capturing playing socket template")
+	fmt.Println("broadcasting show board: capturing playing socket template")
 
 	broadcastMessage := websocketModels.BroadcastMessage{
 		Game:    game,
 		Buffer:  nil,
-		Message: "start play",
+		Message: "game board",
 	}
 
-	fmt.Println("broadcasting start play: sending playing socket template")
+	fmt.Println("broadcasting show board: sending playing socket template")
 	hub := websockets.GetHub()
 	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 	return nil
 }
 
-func Show(c *gin.Context) templ.Component {
-	fmt.Println("show!!!!")
-	db := database.GetDb()
+func Show(db *gorm.DB, c *gin.Context) templ.Component {
 
-	gameID := c.Param("id")
-
-	game, err := models.GetGame(gameID, db)
-
-	if err != nil {
-		fmt.Println("error fetching game:", err)
-		return templates.NoGame()
-	}
-
-	fmt.Println("show game:", game.ID)
-	c.Set("game", game)
+	cg, _ := c.Get("game")
+	game := cg.(models.Game)
 
 	cu, _ := c.Get("user")
 	current_user := cu.(models.User)

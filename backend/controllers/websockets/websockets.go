@@ -34,7 +34,7 @@ func ServeWs(c *gin.Context) (int, gin.H) {
 	cg, _ := c.Get("game")
 
 	if cu == nil {
-		log.Println("no user found")
+		log.Println("websocket: no user found")
 		return http.StatusBadRequest, gin.H{"error": "no user found in request context"}
 	}
 

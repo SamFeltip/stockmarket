@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"net/http"
 	controllers "stockmarket/controllers/games"
+	"stockmarket/database"
 	"stockmarket/middleware"
+	models "stockmarket/models"
 	templates "stockmarket/templates/games"
 	"strconv"
 
@@ -18,7 +20,24 @@ func CreateGameRoutes() {
 		func(c *gin.Context) { middleware.AuthIsLoggedIn(c) },
 		func(c *gin.Context) {
 
-			pageComponent := controllers.Show(c)
+			fmt.Println("show!!!!")
+			db := database.GetDb()
+
+			gameID := c.Param("id")
+
+			game, err := models.LoadGame(gameID, db)
+
+			if err != nil {
+				fmt.Println("error fetching game:", err)
+				gameWrapper := templates.NoGame()
+				RenderWithTemplate(gameWrapper, "Game - id", c)
+				return
+			}
+
+			fmt.Println("show game:", game.ID)
+			c.Set("game", game)
+
+			pageComponent := controllers.Show(db, c)
 			gameWrapper := templates.Base(pageComponent)
 			RenderWithTemplate(gameWrapper, "Game - id", c)
 

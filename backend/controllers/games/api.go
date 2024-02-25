@@ -55,7 +55,7 @@ func StartGame(gameID string) (templ.Component, error) {
 		return nil, err
 	}
 
-	game, err = models.GetGame(gameID, db)
+	game, err = models.LoadGame(gameID, db)
 
 	if err != nil {
 		fmt.Println("could not find game", err)
@@ -65,7 +65,7 @@ func StartGame(gameID string) (templ.Component, error) {
 	game.GenerateInsights(db)
 
 	fmt.Println("game updated:", game.ID)
-	err = BroadcastStartPlay(game)
+	err = BroadcastUpdateBoard(game)
 
 	if err != nil {
 		fmt.Println("could not broadcast start play")

@@ -3,6 +3,7 @@ package router
 import (
 	"context"
 	"fmt"
+	gamecontrollers "stockmarket/controllers/games"
 	"stockmarket/database"
 	"stockmarket/middleware"
 	models "stockmarket/models"
@@ -101,9 +102,34 @@ func CreatePlayerStockRoutes() {
 
 			db.Save(&playerStock)
 
+			cg, exists := c.Get("game")
+
+			if !exists {
+				fmt.Println("could not get game from context", err)
+				pageComponent := gameTemplates.Error(err)
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
+
+			game := cg.(models.Game)
+
+			err = game.UpdateCurrentPlayer(db)
+
+			if err != nil {
+				fmt.Println("could not update current player", err)
+				pageComponent := gameTemplates.Error(err)
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
+
 			// get game loading template
 			loadingComponent := gameTemplates.Loading()
 			ctx := context.Background()
 			loadingComponent.Render(ctx, c.Writer)
+
+			gamecontrollers.BroadcastUpdateBoard(game)
+
 		})
 }
