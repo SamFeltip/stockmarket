@@ -248,6 +248,7 @@ templ BuyModal(player_stock models.PlayerStock) {
 						Cancel
 					</button>
 					<input
+						data-bs-dismiss="modal"
 						class="btn btn-success flex-fill"
 						type="submit"
 						form="buyStock"
@@ -280,7 +281,7 @@ templ SellModal(player_stock models.PlayerStock) {
 						player-cash={ strconv.Itoa(player_stock.Player.Cash) }
 					>
 						<form 
-							id="buyStock" 
+							id="sellStock" 
 							hx-post="/player_stocks/edit"
 							hx-target="main"
 							hx-swap="innerHTML"
@@ -333,7 +334,13 @@ templ SellModal(player_stock models.PlayerStock) {
 
 				<div class="modal-footer d-flex flex-row">
 					<button type="button" class="btn btn-secondary flex-fill" data-bs-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-success flex-fill">Sell</button>
+					<input
+						data-bs-dismiss="modal"
+						class="btn btn-success flex-fill"
+						type="submit"
+						form="sellStock"
+						value="Sell"
+					/>
 				</div>
 			</div>
 		</div>

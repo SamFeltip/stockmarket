@@ -114,7 +114,7 @@ func CreatePlayerStockRoutes() {
 
 			game := cg.(models.Game)
 
-			err = game.UpdateCurrentPlayer(db)
+			err = game.UpdateCurrentUser(db)
 
 			if err != nil {
 				fmt.Println("could not update current player", err)

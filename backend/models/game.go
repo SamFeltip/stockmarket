@@ -166,9 +166,9 @@ func (game Game) GenerateInsights(db *gorm.DB) error {
 	return nil
 }
 
-func (game Game) UpdateCurrentPlayer(db *gorm.DB) error {
+func (game *Game) UpdateCurrentUser(db *gorm.DB) error {
 
-	current_player := game.CurrentUser
+	current_user := game.CurrentUser
 	players := game.Players
 
 	fmt.Println("sorting players by id")
@@ -182,26 +182,29 @@ func (game Game) UpdateCurrentPlayer(db *gorm.DB) error {
 	}
 
 	fmt.Println("finding the next user")
-	next_player := User{}
+	next_user := User{}
 	// find the next player in the list (based on current player)
 	for i, player := range players {
-		if player.ID == current_player.ID {
+		if player.User.ID == current_user.ID {
 			if i == len(players)-1 {
-				next_player = players[0].User
+				next_user = players[0].User
 			} else {
-				next_player = players[0].User
+				next_user = players[0].User
 			}
 			break
 		}
 	}
 
-	fmt.Println("setting next user:", next_player.ID)
-	err := db.Model(&game).Where("id = lower(?)", game.ID).Update("current_user_id", next_player.ID).Error
+	fmt.Println("setting next user:", next_user.ID)
+	err := db.Model(&game).Where("id = lower(?)", game.ID).Update("current_user_id", next_user.ID).Error
 
 	if err != nil {
 		fmt.Println("could not update current player", err)
 		return err
 	}
+
+	game.CurrentUser = next_user
+	game.CurrentUserID = next_user.ID
 
 	return nil
 }

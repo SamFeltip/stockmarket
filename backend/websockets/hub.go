@@ -75,8 +75,8 @@ func RunHub() {
 
 						boardDisplay := gameTempl.PlayingSocket(client.Game, client.Player)
 
-						buffer = &bytes.Buffer{}
-						boardDisplay.Render(context.Background(), buffer)
+						render_buffer := &bytes.Buffer{}
+						boardDisplay.Render(context.Background(), render_buffer)
 
 					}
 
