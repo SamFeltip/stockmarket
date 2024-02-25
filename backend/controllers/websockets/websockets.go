@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"stockmarket/database"
 	"stockmarket/models"
 	websocketModels "stockmarket/models/websockets"
 	"stockmarket/websockets"
@@ -30,28 +29,23 @@ func ServeWs(c *gin.Context) (int, gin.H) {
 		return http.StatusInternalServerError, gin.H{"error": "could not upgrade websocket"}
 	}
 
-	cu, _ := c.Get("user")
-	cg, _ := c.Get("game")
+	cp, user_exists := c.Get("player")
+	cg, game_exists := c.Get("game")
 
-	if cu == nil {
+	if !user_exists {
 		log.Println("websocket: no user found")
 		return http.StatusBadRequest, gin.H{"error": "no user found in request context"}
 	}
 
-	if cg == nil {
+	if !game_exists {
 		log.Println("no game found")
 		return http.StatusBadRequest, gin.H{"error": "no game found in request context"}
 	}
 
-	user := cu.(models.User)
+	player := cp.(models.Player)
 	game := cg.(models.Game)
 
 	hub := websockets.GetHub()
-
-	db := database.GetDb()
-
-	fmt.Println("new websocket, setting active game")
-	player, err := user.SetActiveGame(game, db)
 
 	if err != nil {
 		fmt.Println("error setting active game:", err)
@@ -59,7 +53,7 @@ func ServeWs(c *gin.Context) (int, gin.H) {
 
 	client := websocketModels.NewClient(hub, conn, player, game)
 
-	fmt.Println("registering new client", user.Name, game.ID)
+	fmt.Println("registering new client", player.User.Name, game.ID)
 	hub.Register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in

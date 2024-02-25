@@ -20,7 +20,6 @@ func CreateGameRoutes() {
 		func(c *gin.Context) { middleware.AuthIsLoggedIn(c) },
 		func(c *gin.Context) {
 
-			fmt.Println("show!!!!")
 			db := database.GetDb()
 
 			gameID := c.Param("id")
@@ -38,7 +37,7 @@ func CreateGameRoutes() {
 			c.Set("game", game)
 
 			pageComponent := controllers.Show(db, c)
-			gameWrapper := templates.Base(pageComponent)
+			gameWrapper := templates.Base(pageComponent, game)
 			RenderWithTemplate(gameWrapper, "Game - id", c)
 
 		})

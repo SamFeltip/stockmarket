@@ -80,12 +80,21 @@ func AuthIsPlaying(c *gin.Context) {
 	c.Set("user", user)
 
 	db := database.GetDb()
-	player, err := user.ActiveGamePlayer(db)
+	playerID, err := user.ActiveGamePlayer(db)
 
 	if err != nil {
 		fmt.Println("user is not participating in a game (RequireAuth)", err)
 		return
 	}
+
+	player, err := models.LoadPlayer(playerID, db)
+
+	if err != nil {
+		fmt.Println("error fetching player:", err)
+		return
+	}
+
+	c.Set("player", player)
 
 	game, err := models.LoadGame(player.Game.ID, db)
 
@@ -95,9 +104,7 @@ func AuthIsPlaying(c *gin.Context) {
 	}
 
 	fmt.Println("active game:", game.ID)
-
 	c.Set("game", game)
-	c.Set("player", player)
 
 	c.Next()
 }
@@ -122,24 +129,33 @@ func RequireAuthWebsocket(c *gin.Context) {
 
 	user, err := TestAuth(c)
 
-	if err != nil {
-		fmt.Println("could not find user: ", err)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+	gameID := c.Param("gameID")
+
+	if gameID == "" {
+		fmt.Println("no gameID given in websocket connection request")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "no gameID"})
 		return
 	}
-	fmt.Println("username for active game:", user.Name)
-	player, err := user.ActiveGamePlayer(db)
+
+	game, err := models.LoadGame(gameID, db)
 
 	if err != nil {
-		fmt.Println("user is not participating in a game (RequireAuthWebsocket)", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "no user found in request context"})
+		fmt.Println("error fetching game:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "no game found"})
 		return
-		// game = models.Game{}
+	}
+
+	player, err := user.SetActiveGame(game, db)
+
+	if err != nil {
+		fmt.Println("could not set active game for user: ", err)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
 	}
 
 	c.Set("user", user)
 	c.Set("player", player)
-	c.Set("game", player.Game)
+	c.Set("game", game)
 
 	c.Next()
 }

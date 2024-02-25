@@ -9,7 +9,7 @@ import (
 
 func CreateWebsocketRoutes() {
 
-	r.GET("/connected-game",
+	r.GET("/connected-game/:gameID",
 		func(c *gin.Context) { middleware.RequireAuthWebsocket(c) },
 		func(c *gin.Context) {
 			httpResponseCode, response := controllers.ServeWs(c)

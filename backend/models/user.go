@@ -26,16 +26,15 @@ func DoesUserExist(db *gorm.DB, username string) (User, error) {
 	return user, err
 }
 
-func (user *User) ActiveGamePlayer(db *gorm.DB) (Player, error) {
+func (user *User) ActiveGamePlayer(db *gorm.DB) (uint, error) {
 	var player Player
 	err := db.
 		Joins("Game").
-		Joins("Game.CurrentUser").
 		Where("user_id = ? AND active = ?", user.ID, true).
 		First(&player).
 		Error
 
-	return player, err
+	return player.ID, err
 }
 
 func (user *User) CreatePlayer(game Game, db *gorm.DB) (Player, error) {
