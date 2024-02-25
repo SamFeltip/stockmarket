@@ -1,12 +1,15 @@
 package middleware
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
 	"stockmarket/database"
 	"stockmarket/models"
 	"time"
+
+	templates "stockmarket/templates/games"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -64,7 +67,7 @@ func TestAuth(c *gin.Context) (models.User, error) {
 	return user, nil
 }
 
-func RequireAuth(c *gin.Context) {
+func AuthIsPlaying(c *gin.Context) {
 
 	user, err := TestAuth(c)
 
@@ -77,7 +80,9 @@ func RequireAuth(c *gin.Context) {
 	c.Set("user", user)
 
 	db := database.GetDb()
-	game, err := user.ActiveGame(db)
+	player, err := user.ActiveGamePlayer(db)
+	game := player.Game
+
 	fmt.Println("active game:", game.ID)
 
 	if err != nil {
@@ -87,6 +92,22 @@ func RequireAuth(c *gin.Context) {
 		return
 	}
 	c.Set("game", game)
+	c.Set("player", player)
+
+	c.Next()
+}
+
+func AuthIsLoggedIn(c *gin.Context) {
+
+	user, err := TestAuth(c)
+
+	if err != nil {
+		fmt.Println("could not find user: ", err)
+		c.Redirect(http.StatusFound, "/login")
+		return
+	}
+
+	c.Set("user", user)
 
 	c.Next()
 }
@@ -102,7 +123,7 @@ func RequireAuthWebsocket(c *gin.Context) {
 		return
 	}
 	fmt.Println("username for active game:", user.Name)
-	game, err := user.ActiveGame(db)
+	player, err := user.ActiveGamePlayer(db)
 
 	if err != nil {
 		fmt.Println("user is not participating in a game (RequireAuthWebsocket)", err)
@@ -112,7 +133,8 @@ func RequireAuthWebsocket(c *gin.Context) {
 	}
 
 	c.Set("user", user)
-	c.Set("game", game)
+	c.Set("player", player)
+	c.Set("game", player.Game)
 
 	c.Next()
 }
@@ -127,7 +149,6 @@ func SoftAuth(c *gin.Context) {
 
 	c.Set("user", user)
 	c.Next()
-
 }
 
 func AuthCurrentPlayer(c *gin.Context) {
@@ -137,24 +158,36 @@ func AuthCurrentPlayer(c *gin.Context) {
 
 	c.Request.ParseForm()
 	user, err := TestAuth(c)
+
 	if err != nil {
-		fmt.Println("invalid credentials")
-		c.JSON(http.StatusForbidden, gin.H{
-			"error": "it is not your turn",
-		})
+		fmt.Println("invalid credentials", err)
+
+		pageComponent := templates.Error(err)
+		ctx := context.Background()
+		pageComponent.Render(ctx, c.Writer)
 		return
 	}
 
+	fmt.Println("username:", user.Name)
+
 	gameID := c.PostForm("gameID")
+
+	if gameID == "" {
+		fmt.Println("no gameID given in form which requires auth current player")
+		pageComponent := templates.Error(fmt.Errorf("no gameID"))
+		ctx := context.Background()
+		pageComponent.Render(ctx, c.Writer)
+		return
+	}
 
 	var game models.Game
 	err = db.Where("lower(games.id) = lower(?) AND current_user_id = ?", gameID, user.ID).First(&game).Error
 
 	if err != nil {
-		fmt.Println("could not find game")
-		c.JSON(http.StatusForbidden, gin.H{
-			"error": "it is not your turn",
-		})
+		fmt.Println("could not find game", err)
+		pageComponent := templates.Error(err)
+		ctx := context.Background()
+		pageComponent.Render(ctx, c.Writer)
 		return
 	}
 

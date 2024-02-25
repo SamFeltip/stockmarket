@@ -85,37 +85,34 @@ func Show(c *gin.Context) templ.Component {
 		return templates.NoGame()
 	}
 
+	fmt.Println("show game:", game.ID)
+	c.Set("game", game)
+
 	cu, _ := c.Get("user")
 	current_user := cu.(models.User)
 
 	fmt.Println("setting active game", current_user.Name)
-	err = current_user.SetActiveGame(game, db)
+	player, err := current_user.SetActiveGame(game, db)
 
 	if err != nil {
 		fmt.Println("error setting active game:", err)
+		return templates.Error(err)
 	}
 
-	game, err = models.GetGame(gameID, db)
-	if err != nil {
-		fmt.Println("error fetching game:", err)
-		return templates.NoGame()
-	}
+	c.Set("player", player)
 
-	c.Set("game", game)
+	fmt.Println("player fetched:", player.User.Name, player.Game.ID)
 
-	if err != nil {
-		fmt.Printf("Error reloading game: %v", err)
-		return templates.NoGame()
-	}
+	game.Players = append(game.Players, player)
 
 	err = BroadcastUpdatePlayersList(game.Players)
 
 	if err != nil {
 		fmt.Println("error broadcasting new player:", err)
-		return templates.NoGame()
+		return templates.Error(err)
 	}
 
-	return templates.IngamePage(current_user, game)
+	return templates.IngamePage(player, game)
 }
 
 func Create(c *gin.Context) (models.Game, error) {
@@ -123,6 +120,11 @@ func Create(c *gin.Context) (models.Game, error) {
 
 	code := c.PostForm("code")
 	difficultyStr := c.PostForm("difficulty")
+
+	if code == "" || difficultyStr == "" {
+		fmt.Println("no code or difficulty in form")
+		return models.Game{}, fmt.Errorf("no code or difficulty in form")
+	}
 
 	difficulty, err := strconv.Atoi(difficultyStr)
 	if err != nil {
@@ -138,6 +140,8 @@ func Create(c *gin.Context) (models.Game, error) {
 		fmt.Println("error creating game stocks, creating empty set:", err)
 		return models.Game{}, err
 	}
+
+	fmt.Println("create game:", code, difficulty)
 
 	game := models.Game{
 		ID:          code,
@@ -159,8 +163,6 @@ func Create(c *gin.Context) (models.Game, error) {
 
 	game.GameStocks = game_stocks
 	db.Save(&game)
-
-	err = current_user.SetActiveGame(game, db)
 
 	if err != nil {
 		fmt.Println("error setting active game:", err)

@@ -2,10 +2,13 @@ package router
 
 import (
 	"context"
+	"fmt"
 	"stockmarket/database"
 	"stockmarket/middleware"
 	models "stockmarket/models"
+	gameTemplates "stockmarket/templates/games"
 	templates "stockmarket/templates/player_stocks"
+	"strconv"
 
 	"github.com/a-h/templ"
 	"github.com/gin-gonic/gin"
@@ -14,7 +17,7 @@ import (
 func CreatePlayerStockRoutes() {
 
 	r.GET("/player_stocks/show/:playerStockID",
-		func(c *gin.Context) { middleware.RequireAuth(c) },
+		func(c *gin.Context) { middleware.AuthIsPlaying(c) },
 		func(c *gin.Context) {
 			db := database.GetDb()
 
@@ -34,7 +37,7 @@ func CreatePlayerStockRoutes() {
 		})
 
 	r.GET("/player_stocks/preview/:playerStockID",
-		func(c *gin.Context) { middleware.RequireAuth(c) },
+		func(c *gin.Context) { middleware.AuthIsPlaying(c) },
 		func(c *gin.Context) {
 			db := database.GetDb()
 
@@ -55,4 +58,52 @@ func CreatePlayerStockRoutes() {
 
 		})
 
+	r.POST("/player_stocks/edit",
+		func(c *gin.Context) { middleware.AuthCurrentPlayer(c) },
+		func(c *gin.Context) {
+			db := database.GetDb()
+			playerStockID := c.PostForm("PlayerStockID")
+			playerStockQuantityAdd := c.PostForm("PlayerStockQuantityAdd")
+
+			if playerStockID == "" || playerStockQuantityAdd == "" {
+				fmt.Println("no playerStockID or playerStockQuantityAdd in form")
+				pageComponent := gameTemplates.Error(fmt.Errorf("no playerStockID or playerStockQuantityAdd"))
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
+
+			fmt.Println("playerStockID", playerStockID)
+
+			playerStock, err := models.GetPlayerStock(playerStockID, db)
+
+			if err != nil {
+				fmt.Println("could not find player stock", err)
+
+				pageComponent := gameTemplates.Error(err)
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
+
+			// parse QuantityAdd to int and add to player stock . quantity
+			quantityAdd, err := strconv.Atoi(playerStockQuantityAdd)
+			if err != nil {
+				fmt.Println("could not parse new quantity to int", err)
+
+				pageComponent := gameTemplates.Error(err)
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
+
+			playerStock.Quantity += quantityAdd
+
+			db.Save(&playerStock)
+
+			// get game loading template
+			loadingComponent := gameTemplates.Loading()
+			ctx := context.Background()
+			loadingComponent.Render(ctx, c.Writer)
+		})
 }

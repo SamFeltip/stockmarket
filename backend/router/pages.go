@@ -10,7 +10,7 @@ import (
 func CreatePageRoutes() {
 
 	r.GET("/",
-		func(c *gin.Context) { middleware.RequireAuth(c) },
+		func(c *gin.Context) { middleware.AuthIsPlaying(c) },
 		func(c *gin.Context) {
 
 			pageComponent := templates.Index()

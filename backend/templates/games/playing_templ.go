@@ -131,7 +131,7 @@ func Playing(game models.Game, player models.Player) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templates.GetCurrentUser(ctx).ProfileRoot))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(player.User.ProfileRoot))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -139,7 +139,7 @@ func Playing(game models.Game, player models.Player) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templates.GetCurrentUser(ctx).Name))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(player.User.Name))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -488,7 +488,7 @@ func Playing(game models.Game, player models.Player) templ.Component {
 	})
 }
 
-func PlayingSocket(game models.Game, current_user models.User) templ.Component {
+func PlayingSocket(game models.Game, player models.Player) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -505,7 +505,7 @@ func PlayingSocket(game models.Game, current_user models.User) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = Playing(game, game.MustGetPlayer(current_user)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Playing(game, player).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

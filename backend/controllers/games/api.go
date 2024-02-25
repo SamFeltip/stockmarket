@@ -58,7 +58,7 @@ func StartGame(gameID string) (templ.Component, error) {
 	game, err = models.GetGame(gameID, db)
 
 	if err != nil {
-		fmt.Println("could not find game")
+		fmt.Println("could not find game", err)
 		return nil, err
 	}
 

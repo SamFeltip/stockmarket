@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"sort"
 
 	"gorm.io/gorm"
 )
@@ -20,26 +19,38 @@ type Player struct {
 	Active       bool
 }
 
-func GetPlayer(game *Game, user *User, db *gorm.DB) (Player, error) {
+func (user *User) GetPlayer(game Game, db *gorm.DB) (Player, error) {
 
 	var player Player
-	err := db.Where("game_id = ? AND user_id = ?", game.ID, user.ID).First(&player).Error
+	err := db.
+		Preload("User").
+		Preload("PlayerStocks").
+		Preload("Game").
+		Preload("PlayerStocks.GameStock.Stock").
+		Where("game_id = ? AND user_id = ?", game.ID, user.ID).
+		First(&player).Error
 
 	return player, err
 }
 
-func PlayerLeft(userID uint, gameID string, db *gorm.DB) error {
+func LoadPlayer(playerID uint, db *gorm.DB) (Player, error) {
 
 	var player Player
-	err := db.Where("game_id = ? AND user_id = ?", gameID, userID).First(&player).Error
+	err := db.
+		Preload("User").
+		Preload("PlayerStocks").
+		Preload("Game").
+		Preload("PlayerStocks.GameStock.Stock").
+		Where("id = ?", playerID).
+		First(&player).Error
 
-	if err != nil {
-		fmt.Println("could not fetch player")
-		return err
-	}
+	return player, err
+}
+
+func PlayerLeft(player Player, db *gorm.DB) error {
 
 	player.Active = false
-	err = db.Save(&player).Error
+	err := db.Save(&player).Error
 
 	if err != nil {
 		fmt.Println("could not update player to inactive")
@@ -72,13 +83,17 @@ func (player *Player) TotalValue() float64 {
 	return total + float64(player.Cash)
 }
 
+// sort array of playerstocks by gamestock.stock.variation bubble sort
 func (player Player) SortedPlayerStocks() []PlayerStock {
 
 	player_stocks := player.PlayerStocks
-
-	sort.Slice(player_stocks, func(i, j int) bool {
-		return player_stocks[i].GameStock.Stock.Variation < player_stocks[j].GameStock.Stock.Variation
-	})
+	for i := 0; i < len(player_stocks); i++ {
+		for j := 0; j < len(player_stocks)-i-1; j++ {
+			if player_stocks[j].GameStock.Stock.Variation > player_stocks[j+1].GameStock.Stock.Variation {
+				player_stocks[j], player_stocks[j+1] = player_stocks[j+1], player_stocks[j]
+			}
+		}
+	}
 
 	return player_stocks
 }

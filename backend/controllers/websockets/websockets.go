@@ -49,14 +49,15 @@ func ServeWs(c *gin.Context) (int, gin.H) {
 	hub := websockets.GetHub()
 
 	db := database.GetDb()
+
 	fmt.Println("new websocket, setting active game")
-	err = user.SetActiveGame(game, db)
+	player, err := user.SetActiveGame(game, db)
 
 	if err != nil {
 		fmt.Println("error setting active game:", err)
 	}
 
-	client := websocketModels.NewClient(hub, conn, user, game)
+	client := websocketModels.NewClient(hub, conn, player, game)
 
 	fmt.Println("registering new client", user.Name, game.ID)
 	hub.Register <- client

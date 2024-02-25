@@ -188,8 +188,15 @@ templ BuyModal(player_stock models.PlayerStock) {
 						gameStock-sharesAvailable={ strconv.Itoa(player_stock.GameStock.SharesAvailable()) }
 						player-cash={ strconv.Itoa(player_stock.Player.Cash) }
 					>
-						<form id="buyStock" method="post" action="/PlayerStock/Buy">
+						<form 
+							id="buyStock" 
+							hx-post="/player_stocks/edit"
+							hx-target="main"
+							hx-swap="innerHTML"
+						>
 							<input type="hidden" id="playerStockID" name="PlayerStockID" value={ strconv.FormatUint(uint64(player_stock.ID), 10) }/>
+							<input type="hidden" name="gameID" value={ player_stock.GameStock.GameID }/>
+							
 							<div class="purchase-form flex-fill">
 								<h6 class="mb-0 header-amount-of-stocks">
 									Amount of stocks
@@ -203,7 +210,7 @@ templ BuyModal(player_stock models.PlayerStock) {
 										step="1000"
 										min="0"
 										class="form-control input-stock"
-										name="playerStock-quantity-add"
+										name="PlayerStockQuantityAdd"
 									/>
 								</div>
 								<div class="equals d-flex justify-content-center align-items-center flex-fill">

@@ -10,32 +10,33 @@ import (
 
 func CreateAuthRoutes() {
 
-	r.GET("/signup", func(c *gin.Context) {
+	r.GET("/signup",
+		func(c *gin.Context) {
 
-		pageComponent := templates.Signup()
-		RenderWithTemplate(pageComponent, "Signup", c)
+			pageComponent := templates.Signup()
+			RenderWithTemplate(pageComponent, "Signup", c)
 
-	})
+		})
 
-	r.GET("/login", func(c *gin.Context) {
+	r.GET("/login",
+		func(c *gin.Context) {
 
-		pageComponent := templates.Login()
-		RenderWithTemplate(pageComponent, "Login", c)
+			pageComponent := templates.Login()
+			RenderWithTemplate(pageComponent, "Login", c)
 
-	})
+		})
 
-	r.POST("/signup", func(c *gin.Context) { controller.Signup(c) })
+	r.POST("/signup",
+		func(c *gin.Context) { controller.Signup(c) })
 
-	r.POST("/login", func(c *gin.Context) { controller.Login(c, controller.SignupBody{}) })
+	r.POST("/login",
+		func(c *gin.Context) { controller.Login(c, controller.SignupBody{}) })
 
-	r.GET(
-		"/validate",
+	r.GET("/validate",
 		func(c *gin.Context) { middleware.SoftAuth(c) },
-		controller.Validate,
-	)
+		controller.Validate)
 
-	r.GET(
-		"/logout",
+	r.GET("/logout",
 		func(c *gin.Context) {
 			c.SetCookie("Authorisation", "", -1, "", "", false, true)
 

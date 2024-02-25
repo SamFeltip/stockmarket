@@ -15,7 +15,7 @@ import (
 func CreateGameRoutes() {
 
 	r.GET("/games/show/:id",
-		func(c *gin.Context) { middleware.RequireAuth(c) },
+		func(c *gin.Context) { middleware.AuthIsLoggedIn(c) },
 		func(c *gin.Context) {
 
 			pageComponent := controllers.Show(c)
@@ -25,7 +25,7 @@ func CreateGameRoutes() {
 		})
 
 	r.GET("/games/new",
-		func(c *gin.Context) { middleware.RequireAuth(c) },
+		func(c *gin.Context) { middleware.AuthIsLoggedIn(c) },
 		func(c *gin.Context) {
 
 			pageComponent := templates.Create("")
@@ -34,10 +34,12 @@ func CreateGameRoutes() {
 		})
 
 	r.POST("/games/new",
-		func(c *gin.Context) { middleware.RequireAuth(c) },
+		func(c *gin.Context) { middleware.AuthIsLoggedIn(c) },
 		func(c *gin.Context) {
 
 			game, err := controllers.Create(c)
+
+			c.Set("game", game)
 
 			if err != nil {
 				fmt.Println("error creating game:", err)
@@ -69,17 +71,18 @@ func CreateGameRoutes() {
 			difficulty, err := strconv.Atoi(difficultyStr)
 			if err != nil {
 				fmt.Println("could not convert difficulty to int", difficultyStr)
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": "could not convert difficulty to int",
-				})
+				pageComponent := templates.Error(err)
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
 				return
 			}
 
 			baseComponent, err := controllers.UpdateGameDifficulty(gameID, difficulty)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": err.Error(),
-				})
+				pageComponent := templates.Error(err)
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+
 				return
 			}
 
@@ -90,9 +93,7 @@ func CreateGameRoutes() {
 	)
 
 	r.POST("/api/games/start",
-		func(c *gin.Context) {
-			middleware.AuthCurrentPlayer(c)
-		},
+		func(c *gin.Context) { middleware.AuthCurrentPlayer(c) },
 		func(c *gin.Context) {
 			fmt.Println("start game")
 
@@ -103,9 +104,10 @@ func CreateGameRoutes() {
 			baseComponent, err := controllers.StartGame(gameID)
 
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": err.Error(),
-				})
+				pageComponent := templates.Error(err)
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+
 				return
 			}
 
@@ -114,7 +116,7 @@ func CreateGameRoutes() {
 		})
 
 	r.GET("/games",
-		func(c *gin.Context) { middleware.RequireAuth(c) },
+		func(c *gin.Context) { middleware.AuthIsLoggedIn(c) },
 		func(c *gin.Context) {
 
 			// get all games

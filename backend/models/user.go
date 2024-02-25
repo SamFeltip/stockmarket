@@ -26,7 +26,7 @@ func DoesUserExist(db *gorm.DB, username string) (User, error) {
 	return user, err
 }
 
-func (user *User) ActiveGame(db *gorm.DB) (Game, error) {
+func (user *User) ActiveGamePlayer(db *gorm.DB) (Player, error) {
 	var player Player
 	err := db.
 		Joins("Game").
@@ -35,10 +35,11 @@ func (user *User) ActiveGame(db *gorm.DB) (Game, error) {
 		First(&player).
 		Error
 
-	return player.Game, err
+	return player, err
 }
 
-func (user *User) createPlayer(game Game, db *gorm.DB) (Player, error) {
+func (user *User) CreatePlayer(game Game, db *gorm.DB) (Player, error) {
+
 	player := Player{
 		Game:   game,
 		User:   *user,
@@ -58,6 +59,15 @@ func (user *User) createPlayer(game Game, db *gorm.DB) (Player, error) {
 		return Player{}, err
 	}
 
+	game_stocks := []GameStock{}
+
+	err = db.Where("game_id = ?", game.ID).Find(&game_stocks).Error
+
+	if err != nil {
+		fmt.Println("error fetching game stocks:", err)
+		return Player{}, err
+	}
+
 	for _, game_stock := range game.GameStocks {
 		player_stock := PlayerStock{
 			Player:    player,
@@ -73,38 +83,28 @@ func (user *User) createPlayer(game Game, db *gorm.DB) (Player, error) {
 		}
 	}
 
-	err = db.Model(&player).Preload("User").Preload("Game").First(&player).Error
-
 	return player, err
 }
 
-func (current_user *User) SetActiveGame(game Game, db *gorm.DB) error {
+func (current_user *User) SetActiveGame(game Game, db *gorm.DB) (Player, error) {
 
-	player, find_err := GetPlayer(&game, current_user, db)
+	player, err := current_user.GetPlayer(game, db)
 
-	if find_err == gorm.ErrRecordNotFound {
-		fmt.Println("could not find player, creating:", find_err)
-		new_player, create_err := current_user.createPlayer(game, db)
-
-		if create_err != nil {
-			fmt.Println("error creating player:", create_err)
-			return create_err
-		}
-
-		player = new_player
-
-	} else if find_err != nil {
-		fmt.Println("unexpected error fetching player:", find_err)
-		return find_err
+	// if gorm no record error
+	if err != nil {
+		fmt.Println("player does not exist, creating")
+		player, err = current_user.CreatePlayer(game, db)
 	}
 
-	// set all players of user to inactive
-	db.Model(&Player{}).Where("user_id = ?", current_user.ID).Update("active", false)
+	if err != nil {
+		fmt.Println("error creating player:", err)
+		return Player{}, err
+	}
 
-	player.Active = true
-	db.Save(&player)
+	fmt.Println("unsetting active game for other games")
+	db.Model(&Player{}).Where("user_id = ? AND game_id != ?", current_user.ID, game.ID).Update("active", false)
 
-	return nil
+	return player, nil
 }
 
 func GenerateSessionToken(user User) (string, error) {

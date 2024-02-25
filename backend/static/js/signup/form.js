@@ -1,22 +1,23 @@
 //@ts-check
 
 /** @type {HTMLFormElement?} */
-let signup = document.querySelector("form#signup")
+signupForm = document.querySelector("form#signup")
 
-if (signup == null) {
+if (signupForm == null) {
     throw new Error("form#signup element is not present")
 }
 
-signup.addEventListener("submit", (event) => {
+signupForm.addEventListener("submit", (event) => {
     event.preventDefault()
 
     console.log(event);
+    console.log(event.target);
 
     /** @type {HTMLInputElement?} */
     // @ts-ignore
     const target = event.target
 
-    if (target == null || target.value == null) {
+    if (target == null) {
         throw new Error("input.input-stock event listener failed ")
     }
 
@@ -26,8 +27,8 @@ signup.addEventListener("submit", (event) => {
     /** @type {HTMLInputElement?} */
     let form_password_elem = target.querySelector("input#password")
 
-    /** @type {HTMLInputElement?} */
-    let form_profile_elem = target.querySelector("input#profile")
+    /** @type {HTMLSelectElement?} */
+    let form_profile_elem = target.querySelector("select#profile")
     
     if (form_name_elem == null || form_password_elem == null || form_profile_elem == null) {
         throw new Error("form is missing elements")

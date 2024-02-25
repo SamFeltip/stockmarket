@@ -1,10 +1,10 @@
-let signup = document.querySelector("form#login")
-signup.addEventListener("submit", function (event) {
+let signupForm = document.querySelector("form#login")
+signupForm.addEventListener("submit", function (event) {
     event.preventDefault()
 
     let body = {
-        Name: signup.querySelector("#name").value,
-        Password: signup.querySelector("#password").value,
+        Name: signupForm.querySelector("#name").value,
+        Password: signupForm.querySelector("#password").value,
     }
 
     console.log(body)

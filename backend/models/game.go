@@ -36,8 +36,6 @@ func GetGame(gameID string, db *gorm.DB) (Game, error) {
 		Preload("CurrentUser").
 		Preload("Players").
 		Preload("Players.User").
-		Preload("Players.PlayerStocks").
-		Preload("Players.PlayerStocks.GameStock.Stock").
 		Where("lower(games.id) = lower(?)", gameID).
 		First(&game).Error
 
