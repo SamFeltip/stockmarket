@@ -38,6 +38,7 @@ func CreateGameRoutes() {
 
 			pageComponent := controllers.Show(db, c)
 			gameWrapper := templates.Base(pageComponent, game)
+
 			RenderWithTemplate(gameWrapper, "Game - id", c)
 
 		})

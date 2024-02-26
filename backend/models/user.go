@@ -37,10 +37,15 @@ func (user *User) ActiveGamePlayer(db *gorm.DB) (uint, error) {
 	return player.ID, err
 }
 
-func (user *User) CreatePlayer(game Game, db *gorm.DB) (Player, error) {
+/*
+- create a new player object and connected player stocks
+
+- adds player object to game object
+*/
+func (user *User) CreatePlayer(game *Game, db *gorm.DB) (*Player, error) {
 
 	player := Player{
-		Game:   game,
+		Game:   *game,
 		User:   *user,
 		Active: true,
 		Cash:   100000,
@@ -49,13 +54,13 @@ func (user *User) CreatePlayer(game Game, db *gorm.DB) (Player, error) {
 
 	if err != nil {
 		fmt.Println("error creating player:", err)
-		return Player{}, err
+		return nil, err
 	}
 
 	// create player stocks
 	if err != nil {
 		fmt.Println("error fetching stocks:", err)
-		return Player{}, err
+		return nil, err
 	}
 
 	game_stocks := []GameStock{}
@@ -64,7 +69,7 @@ func (user *User) CreatePlayer(game Game, db *gorm.DB) (Player, error) {
 
 	if err != nil {
 		fmt.Println("error fetching game stocks:", err)
-		return Player{}, err
+		return nil, err
 	}
 
 	for _, game_stock := range game.GameStocks {
@@ -78,51 +83,13 @@ func (user *User) CreatePlayer(game Game, db *gorm.DB) (Player, error) {
 
 		if err != nil {
 			fmt.Println("error creating player stock:", err)
-			return Player{}, err
+			return nil, err
 		}
 	}
 
-	return player, err
-}
+	game.Players = append(game.Players, player)
 
-func (current_user *User) SetActiveGame(game Game, db *gorm.DB) (Player, error) {
-
-	player, err := current_user.GetPlayer(game, db)
-
-	// if gorm no record error
-	if err != nil {
-		fmt.Println("player does not exist, creating")
-		player, err = current_user.CreatePlayer(game, db)
-	}
-
-	if err != nil {
-		fmt.Println("error creating player:", err)
-		return Player{}, err
-	}
-
-	if !player.Active {
-		fmt.Println("setting active game for:", current_user.ID, game.ID)
-		player.Active = true
-
-		err = db.Model(&player).Where("id = ?", player.ID).Update("active", true).Error
-	}
-
-	if err != nil {
-		fmt.Println("error setting active game for:", current_user.ID, game.ID, err)
-		return Player{}, err
-	}
-
-	fmt.Println("unsetting active game for other games", current_user.ID, game.ID)
-	err = db.Model(&Player{}).Where("user_id = ? AND game_id != ?", current_user.ID, game.ID).Update("active", false).Error
-
-	if err != nil {
-		fmt.Println("error unsetting active game for other games:", err)
-		return Player{}, err
-	}
-
-	fmt.Println("set successfully")
-
-	return player, nil
+	return &game.Players[len(game.Players)-1], err
 }
 
 func GenerateSessionToken(user User) (string, error) {

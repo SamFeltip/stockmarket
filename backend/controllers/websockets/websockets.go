@@ -42,7 +42,7 @@ func ServeWs(c *gin.Context) (int, gin.H) {
 		return http.StatusBadRequest, gin.H{"error": "no game found in request context"}
 	}
 
-	player := cp.(models.Player)
+	player := cp.(*models.Player)
 	game := cg.(models.Game)
 
 	hub := websockets.GetHub()

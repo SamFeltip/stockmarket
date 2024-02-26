@@ -42,24 +42,15 @@ func LoadGame(gameID string, db *gorm.DB) (Game, error) {
 	return game, err
 }
 
-func (game Game) GetPlayer(user User) (Player, error) {
+func (game Game) GetPlayer(user *User) (*Player, error) {
 
-	for _, player := range game.Players {
-		if player.UserID == user.ID {
-			return player, nil
+	for p, _ := range game.Players {
+		if game.Players[p].UserID == user.ID {
+			return &game.Players[p], nil
 		}
 	}
 
-	return Player{}, errors.New("Player not found")
-}
-
-func (game Game) MustGetPlayer(user User) Player {
-	player, err := game.GetPlayer(user)
-	if err != nil {
-		fmt.Println("could not must get player, return nil")
-		return Player{}
-	}
-	return player
+	return nil, errors.New("Player not found")
 }
 
 func (game Game) UpdateStatus(status GameStatus, db *gorm.DB) error {
@@ -78,6 +69,52 @@ func GameDifficultyDisplay(difficulty int) string {
 	default:
 		return "Unknown"
 	}
+}
+
+/*
+- set active game for passed in user
+
+- if needed, create a player and associate it with the game
+*/
+func (game *Game) SetActiveGame(current_user *User, db *gorm.DB) (*Player, error) {
+
+	player, err := game.GetPlayer(current_user)
+
+	// if gorm no record error
+	if err != nil {
+		fmt.Println("player does not exist, creating")
+		player, err = current_user.CreatePlayer(game, db)
+
+		if err != nil {
+			fmt.Println("error creating player:", err)
+			return nil, err
+		}
+	}
+
+	if !player.Active {
+		fmt.Println("setting active game for:", current_user.ID, game.ID)
+
+		err = db.Model(&player).Where("id = ?", player.ID).Update("active", true).Error
+	}
+
+	if err != nil {
+		fmt.Println("error setting active game for:", current_user.ID, game.ID, err)
+		return nil, err
+	}
+
+	player.Active = true
+
+	fmt.Println("unsetting active game for other games", current_user.ID, game.ID)
+	err = db.Model(&Player{}).Where("user_id = ? AND game_id != ?", current_user.ID, game.ID).Update("active", false).Error
+
+	if err != nil {
+		fmt.Println("error unsetting active game for other games:", err)
+		return nil, err
+	}
+
+	fmt.Println("set successfully")
+
+	return player, nil
 }
 
 func (game Game) GenerateInsights(db *gorm.DB) error {
@@ -144,8 +181,6 @@ func (game Game) GenerateInsights(db *gorm.DB) error {
 				fmt.Println("could not get player stock", err)
 				continue
 			}
-
-			fmt.Println("got player stock")
 
 			// create player_insight
 			player_insight := PlayerInsight{

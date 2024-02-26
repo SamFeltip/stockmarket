@@ -145,7 +145,7 @@ func RequireAuthWebsocket(c *gin.Context) {
 		return
 	}
 
-	player, err := user.SetActiveGame(game, db)
+	player, err := game.SetActiveGame(&user, db)
 
 	if err != nil {
 		fmt.Println("could not set active game for user: ", err)

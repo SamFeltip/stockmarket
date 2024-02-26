@@ -98,14 +98,18 @@ func WritePump(c *websocketModels.Client) {
 	for {
 		select {
 		case messageBuffer, ok := <-c.Send:
+			fmt.Println("starting message")
 			c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
+
 			if !ok {
 				// The hub closed the channel.
+				fmt.Println("hub closed the channel")
 				c.Conn.WriteMessage(gorrilaws.CloseMessage, []byte{})
 				return
 			}
-
+			fmt.Println("sending message")
 			err := c.Conn.WriteMessage(gorrilaws.TextMessage, messageBuffer.Bytes())
+
 			if err != nil {
 				return
 			}

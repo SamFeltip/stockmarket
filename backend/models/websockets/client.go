@@ -23,7 +23,7 @@ type Client struct {
 	Send chan *bytes.Buffer
 
 	Game   models.Game
-	Player models.Player
+	Player *models.Player
 }
 
 type BroadcastMessage struct {
@@ -32,7 +32,7 @@ type BroadcastMessage struct {
 	Message string
 }
 
-func NewClient(hub *Hub, conn *gorrilaws.Conn, player models.Player, game models.Game) *Client {
+func NewClient(hub *Hub, conn *gorrilaws.Conn, player *models.Player, game models.Game) *Client {
 	return &Client{
 		Hub:    hub,
 		Conn:   conn,

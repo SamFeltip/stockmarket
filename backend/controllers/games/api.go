@@ -55,6 +55,8 @@ func StartGame(gameID string) (templ.Component, error) {
 		return nil, err
 	}
 
+	fmt.Println("game status updated:", game.ID)
+
 	game, err = models.LoadGame(gameID, db)
 
 	if err != nil {
@@ -64,7 +66,7 @@ func StartGame(gameID string) (templ.Component, error) {
 
 	game.GenerateInsights(db)
 
-	fmt.Println("game updated:", game.ID)
+	fmt.Println("insights made:", game.ID)
 	err = BroadcastUpdateBoard(game)
 
 	if err != nil {

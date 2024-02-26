@@ -19,20 +19,6 @@ type Player struct {
 	Active       bool
 }
 
-func (user *User) GetPlayer(game Game, db *gorm.DB) (Player, error) {
-
-	var player Player
-	err := db.
-		Preload("User").
-		Preload("PlayerStocks").
-		Preload("Game").
-		Preload("PlayerStocks.GameStock.Stock").
-		Where("game_id = ? AND user_id = ?", game.ID, user.ID).
-		First(&player).Error
-
-	return player, err
-}
-
 func LoadPlayer(playerID uint, db *gorm.DB) (Player, error) {
 
 	var player Player
@@ -47,10 +33,10 @@ func LoadPlayer(playerID uint, db *gorm.DB) (Player, error) {
 	return player, err
 }
 
-func PlayerLeft(player Player, db *gorm.DB) error {
+func PlayerLeft(player *Player, db *gorm.DB) error {
 
 	player.Active = false
-	err := db.Save(&player).Error
+	err := db.Save(player).Error
 
 	if err != nil {
 		fmt.Println("could not update player to inactive")
@@ -63,9 +49,14 @@ func PlayerLeft(player Player, db *gorm.DB) error {
 // sort array of players by ID bubble sort
 func SortPlayers(players []Player) []Player {
 
+	fmt.Println("sorting players", len(players))
+
 	for i := 0; i < len(players); i++ {
+		fmt.Println("active?", players[i].User.Name, players[i].Active)
+
 		for j := 0; j < len(players)-i-1; j++ {
 			if players[j].ID > players[j+1].ID {
+
 				players[j], players[j+1] = players[j+1], players[j]
 			}
 		}

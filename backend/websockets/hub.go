@@ -25,11 +25,13 @@ func RunHub() {
 			}
 		case broadcastMessage := <-hub.Broadcast:
 
-			buffer := broadcastMessage.Buffer
+			buffer_template := broadcastMessage.Buffer
 			broadcast_game := broadcastMessage.Game
 			message := broadcastMessage.Message
 
 			fmt.Println("broadcasted! ", broadcast_game.ID, message)
+
+			db := database.GetDb()
 
 			for client := range hub.Clients {
 				fmt.Println("checking", client.Player.User.Name)
@@ -41,10 +43,8 @@ func RunHub() {
 
 				// buffer == nil when the template broadcast requires user context.
 				// these requests reference the DB so should be used sparingly
-				if buffer == nil {
+				if buffer_template != nil {
 					fmt.Println("creating unique buffer for each client and updating client user")
-
-					db := database.GetDb()
 
 					game, err := models.LoadGame(client.Game.ID, db)
 
@@ -52,8 +52,9 @@ func RunHub() {
 						fmt.Println("could not update game in client")
 						continue
 					}
+					player, err := game.GetPlayer(&client.Player.User)
 
-					player, err := models.LoadPlayer(client.Player.ID, db)
+					// player, err := models.LoadPlayer(client.Player.ID, db)
 
 					if err != nil {
 						fmt.Println("could not update player in client")
@@ -75,19 +76,19 @@ func RunHub() {
 
 						boardDisplay := gameTempl.PlayingSocket(client.Game, client.Player)
 
-						render_buffer := &bytes.Buffer{}
-						boardDisplay.Render(context.Background(), render_buffer)
-
+						buffer := &bytes.Buffer{}
+						boardDisplay.Render(context.Background(), buffer)
 					}
 
 				}
 
 				select {
-				case client.Send <- buffer:
+				case client.Send <- buffer_template:
 				default:
 					close(client.Send)
 					delete(hub.Clients, client)
 				}
+
 			}
 		}
 	}

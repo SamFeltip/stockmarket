@@ -1,5 +1,8 @@
 package pages
 
+import (
+	templates "stockmarket/templates"
+)
 script Form() {
     let form = document.querySelector("form");
     form.addEventListener("submit", (e) => {
@@ -18,7 +21,7 @@ templ Index() {
 				<header class="card-header text-center">
 					<h1>Stockmarket!</h1>
 					<h2>Welcome to stockmarket</h2>
-					<a href="/logout"><em>/logout</em></a>
+					<a href="/logout"><em>/logout ({templates.GetCurrentUser(ctx).Name})</em></a>
 				</header>
 				<div
 					class="card-body"
