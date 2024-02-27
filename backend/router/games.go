@@ -33,7 +33,6 @@ func CreateGameRoutes() {
 				return
 			}
 
-			fmt.Println("show game:", game.ID)
 			c.Set("game", game)
 
 			pageComponent := controllers.Show(db, c)

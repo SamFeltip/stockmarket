@@ -76,7 +76,7 @@ func GameDifficultyDisplay(difficulty int) string {
 
 - if needed, create a player and associate it with the game
 */
-func (game *Game) SetActiveGame(current_user *User, db *gorm.DB) (*Player, error) {
+func (game *Game) SetActiveGame(current_user *User, db *gorm.DB) (Player, error) {
 
 	player, err := game.GetPlayer(current_user)
 
@@ -87,9 +87,11 @@ func (game *Game) SetActiveGame(current_user *User, db *gorm.DB) (*Player, error
 
 		if err != nil {
 			fmt.Println("error creating player:", err)
-			return nil, err
+			return Player{}, err
 		}
 	}
+
+	current_player, err := LoadCurrentPlayer(player.ID, db)
 
 	if !player.Active {
 		fmt.Println("setting active game for:", current_user.ID, game.ID)
@@ -99,7 +101,7 @@ func (game *Game) SetActiveGame(current_user *User, db *gorm.DB) (*Player, error
 
 	if err != nil {
 		fmt.Println("error setting active game for:", current_user.ID, game.ID, err)
-		return nil, err
+		return Player{}, err
 	}
 
 	player.Active = true
@@ -109,34 +111,25 @@ func (game *Game) SetActiveGame(current_user *User, db *gorm.DB) (*Player, error
 
 	if err != nil {
 		fmt.Println("error unsetting active game for other games:", err)
-		return nil, err
+		return Player{}, err
 	}
 
 	fmt.Println("set successfully")
 
-	return player, nil
+	return current_player, nil
 }
 
-func (game Game) GenerateInsights(db *gorm.DB) error {
+func (game *Game) GeneratePlayerInsights(db *gorm.DB) error {
 
-	fmt.Println("game.ID:", game.ID)
+	fmt.Println("generating insights, game.ID:", game.ID)
 
 	player_insights := []PlayerInsight{}
 	err := db.Joins("INNER JOIN player_stocks on player_stocks.id = player_insights.player_stock_id").
 		Joins("INNER JOIN game_stocks on game_stocks.id = player_stocks.game_stock_id").
-		Where("game_stocks.game_id = ?", game.ID).Find(&player_insights).Error
+		Where("game_stocks.game_id = ?", game.ID).Delete(&player_insights).Error
 
 	if err != nil {
-		fmt.Println("could not get player insights", err)
-		return err
-	}
-
-	fmt.Println("player_insights.len:", len(player_insights))
-
-	err = db.Delete(&player_insights).Error
-
-	if err != nil {
-		fmt.Println("could not find  player insights to delete", err)
+		fmt.Println("could not find player insights to delete", err)
 	} else {
 		fmt.Println("deleted player insights")
 	}
@@ -152,11 +145,7 @@ func (game Game) GenerateInsights(db *gorm.DB) error {
 
 	fmt.Println("insights.len:", len(insights))
 
-	// get num_of_players * 10 random insights
-	var players []Player
-	db.Where("game_id = ?", game.ID).Find(&players)
-
-	player_length := len(players)
+	player_length := len(game.Players)
 
 	// shuffle insights
 	rand.Shuffle(len(insights), func(i, j int) {
@@ -169,7 +158,7 @@ func (game Game) GenerateInsights(db *gorm.DB) error {
 
 	// give 10 playerInsights to each player for each insight
 	starting_point := 0
-	for _, player := range players {
+	for _, player := range game.Players {
 
 		for i := starting_point; i < starting_point+10; i++ {
 			// get player_stock for player of top_insights[i].Stock
@@ -204,17 +193,12 @@ func (game Game) GenerateInsights(db *gorm.DB) error {
 func (game *Game) UpdateCurrentUser(db *gorm.DB) error {
 
 	current_user := game.CurrentUser
-	players := game.Players
+	// players := game.Players
 
 	fmt.Println("sorting players by id")
 	// sort players by id
-	for i := 0; i < len(players); i++ {
-		for j := i + 1; j < len(players); j++ {
-			if players[i].ID > players[j].ID {
-				players[i], players[j] = players[j], players[i]
-			}
-		}
-	}
+
+	players := SortPlayers(game.Players)
 
 	fmt.Println("finding the next user")
 	next_user := User{}

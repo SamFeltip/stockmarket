@@ -87,7 +87,7 @@ func AuthIsPlaying(c *gin.Context) {
 		return
 	}
 
-	player, err := models.LoadPlayer(playerID, db)
+	player, err := models.LoadCurrentPlayer(playerID, db)
 
 	if err != nil {
 		fmt.Println("error fetching player:", err)

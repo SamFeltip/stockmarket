@@ -11,6 +11,7 @@ import (
 	userTemplates "stockmarket/templates/users"
 	"stockmarket/websockets"
 	"strconv"
+	"strings"
 
 	"github.com/a-h/templ"
 	"github.com/gin-gonic/gin"
@@ -76,24 +77,29 @@ func BroadcastUpdateBoard(game models.Game) error {
 
 func Show(db *gorm.DB, c *gin.Context) templ.Component {
 
-	cg, _ := c.Get("game")
+	cg, exists := c.Get("game")
 	game := cg.(models.Game)
+
+	if !exists {
+		fmt.Println("no game found")
+		return templates.NoGame()
+	}
 
 	cu, _ := c.Get("user")
 	current_user := cu.(models.User)
 
 	fmt.Println("run setActiveGame", current_user.Name)
-	player, err := game.SetActiveGame(&current_user, db)
+	current_player, err := game.SetActiveGame(&current_user, db)
 
 	if err != nil {
 		fmt.Println("error setting active game:", err)
 		return templates.Error(err)
 	}
 
-	c.Set("player", player)
+	c.Set("player", current_player)
 
-	fmt.Println("player fetched:", player.User.Name, player.Game.ID)
-	fmt.Println("player active:", player.Active)
+	fmt.Println("player fetched:", current_player.User.Name, current_player.Game.ID)
+	fmt.Println("player active:", current_player.Active)
 
 	// game.Players = append(game.Players, player)
 
@@ -104,13 +110,15 @@ func Show(db *gorm.DB, c *gin.Context) templ.Component {
 		return templates.Error(err)
 	}
 
-	return templates.IngamePage(game, player)
+	fmt.Println("player stocks" + strconv.Itoa(len(current_player.PlayerStocks)))
+
+	return templates.IngamePage(game, current_player)
 }
 
 func Create(c *gin.Context) (models.Game, error) {
 	db := database.GetDb()
 
-	code := c.PostForm("code")
+	code := strings.ToLower(c.PostForm("code"))
 	difficultyStr := c.PostForm("difficulty")
 
 	if code == "" || difficultyStr == "" {

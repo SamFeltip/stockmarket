@@ -19,13 +19,13 @@ func RunHub() {
 			hub.Clients[client] = true
 		case client := <-hub.Unregister:
 			if _, ok := hub.Clients[client]; ok {
-				fmt.Println("client unregistered, deleting and closing", client.Player.User.Name)
+				fmt.Println("client unregistered, deleting and closing", client.CurrentPlayer.User.Name)
 				delete(hub.Clients, client)
 				close(client.Send)
 			}
 		case broadcastMessage := <-hub.Broadcast:
 
-			buffer_template := broadcastMessage.Buffer
+			buffer := broadcastMessage.Buffer
 			broadcast_game := broadcastMessage.Game
 			message := broadcastMessage.Message
 
@@ -34,16 +34,17 @@ func RunHub() {
 			db := database.GetDb()
 
 			for client := range hub.Clients {
-				fmt.Println("checking", client.Player.User.Name)
+				fmt.Println("checking", client.CurrentPlayer.User.Name)
 				// only send message to clients in the same game
 				if client.Game.ID != broadcast_game.ID {
 					fmt.Println("client not in game", broadcast_game.ID, "instead in", client.Game.ID)
 					continue
 				}
+				fmt.Println("client in game", broadcast_game.ID)
 
 				// buffer == nil when the template broadcast requires user context.
 				// these requests reference the DB so should be used sparingly
-				if buffer_template != nil {
+				if buffer == nil {
 					fmt.Println("creating unique buffer for each client and updating client user")
 
 					game, err := models.LoadGame(client.Game.ID, db)
@@ -52,9 +53,8 @@ func RunHub() {
 						fmt.Println("could not update game in client")
 						continue
 					}
-					player, err := game.GetPlayer(&client.Player.User)
 
-					// player, err := models.LoadPlayer(client.Player.ID, db)
+					current_player, err := models.LoadCurrentPlayer(client.CurrentPlayer.ID, db)
 
 					if err != nil {
 						fmt.Println("could not update player in client")
@@ -62,32 +62,34 @@ func RunHub() {
 					}
 
 					client.Game = game
-					client.Player = player
+					client.CurrentPlayer = current_player
 
-					fmt.Println("client.User updated", client.Player.User.Name)
+					fmt.Println("client.User updated", client.CurrentPlayer.User.Name)
 
 					if message == "game board" {
-						fmt.Println("rendering game board socket for:", client.Player.User.Name, client.Game.ID)
+						fmt.Println("rendering game board socket for:", client.CurrentPlayer.User.Name, client.Game.ID)
 
 						if err != nil {
 							fmt.Println("error getting player from game, perhaps they left and the connection wasn't removed?:", err)
 							continue
 						}
 
-						boardDisplay := gameTempl.PlayingSocket(client.Game, client.Player)
+						boardDisplay := gameTempl.PlayingSocket(client.Game, client.CurrentPlayer)
 
-						buffer := &bytes.Buffer{}
+						buffer = &bytes.Buffer{}
 						boardDisplay.Render(context.Background(), buffer)
-					}
 
+					}
 				}
 
 				select {
-				case client.Send <- buffer_template:
+				case client.Send <- buffer:
 				default:
 					close(client.Send)
 					delete(hub.Clients, client)
 				}
+
+				buffer = broadcastMessage.Buffer
 
 			}
 		}

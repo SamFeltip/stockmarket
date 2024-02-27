@@ -29,7 +29,14 @@ func CreatePlayerStockRoutes() {
 			if err != nil {
 				pageComponent = templates.NoPlayerStock()
 			} else {
-				pageComponent = templates.Show(playerStock)
+
+				cp, _ := c.Get("player")
+				cg, _ := c.Get("game")
+
+				currentPlayer := cp.(models.Player)
+				game := cg.(models.Game)
+
+				pageComponent = templates.Show(playerStock, currentPlayer.User.ID == game.CurrentUserID)
 			}
 
 			ctx := context.Background()

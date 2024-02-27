@@ -19,7 +19,7 @@ type Player struct {
 	Active       bool
 }
 
-func LoadPlayer(playerID uint, db *gorm.DB) (Player, error) {
+func LoadCurrentPlayer(playerID uint, db *gorm.DB) (Player, error) {
 
 	var player Player
 	err := db.
@@ -30,13 +30,15 @@ func LoadPlayer(playerID uint, db *gorm.DB) (Player, error) {
 		Where("id = ?", playerID).
 		First(&player).Error
 
+	player.SortPlayerStocks()
+
 	return player, err
 }
 
-func PlayerLeft(player *Player, db *gorm.DB) error {
+func PlayerLeft(player Player, db *gorm.DB) error {
 
 	player.Active = false
-	err := db.Save(player).Error
+	err := db.Save(&player).Error
 
 	if err != nil {
 		fmt.Println("could not update player to inactive")
@@ -75,7 +77,7 @@ func (player *Player) TotalValue() float64 {
 }
 
 // sort array of playerstocks by gamestock.stock.variation bubble sort
-func (player Player) SortedPlayerStocks() []PlayerStock {
+func (player *Player) SortPlayerStocks() []PlayerStock {
 
 	player_stocks := player.PlayerStocks
 	for i := 0; i < len(player_stocks); i++ {
@@ -85,6 +87,8 @@ func (player Player) SortedPlayerStocks() []PlayerStock {
 			}
 		}
 	}
+
+	player.PlayerStocks = player_stocks
 
 	return player_stocks
 }

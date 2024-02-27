@@ -47,26 +47,25 @@ func StartGame(gameID string) (templ.Component, error) {
 
 	db := database.GetDb()
 
-	game := models.Game{}
-	err := db.Model(&game).Where("id = lower(?)", gameID).Update("status", string(models.Playing)).Error
+	err := db.Model(models.Game{}).Where("lower(id) = lower(?)", gameID).Update("status", string(models.Playing)).Error
 
 	if err != nil {
 		fmt.Println("could not update game status")
 		return nil, err
 	}
 
-	fmt.Println("game status updated:", game.ID)
+	fmt.Println("game status updated:", gameID)
 
-	game, err = models.LoadGame(gameID, db)
+	game, err := models.LoadGame(gameID, db)
 
 	if err != nil {
 		fmt.Println("could not find game", err)
 		return nil, err
 	}
 
-	game.GenerateInsights(db)
+	game.GeneratePlayerInsights(db)
 
-	fmt.Println("insights made:", game.ID)
+	fmt.Println("player insights made:", game.ID)
 	err = BroadcastUpdateBoard(game)
 
 	if err != nil {

@@ -87,6 +87,13 @@ func (user *User) CreatePlayer(game *Game, db *gorm.DB) (*Player, error) {
 		}
 	}
 
+	player, err = LoadCurrentPlayer(player.ID, db)
+
+	if err != nil {
+		fmt.Println("error loading player:", err)
+		return nil, err
+	}
+
 	game.Players = append(game.Players, player)
 
 	return &game.Players[len(game.Players)-1], err

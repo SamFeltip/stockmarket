@@ -23,9 +23,19 @@ templ PlayViewStyles() {
                 "buy-button sell-button";
 
             grid-template-columns: 1fr 1fr;
-            grid-template-rows: 100px minmax(auto, 430px) 95px 44px;
+            grid-template-rows: 100px 1fr auto auto;
             
             grid-gap: 40px;
+        }
+
+		#play-view.watching {
+
+            grid-template-areas: 
+                "stocks investors"
+                "insights price-charts"
+                "insights stock-info";
+            grid-template-rows: 100px 1fr auto;
+			
         }
 
         #play-view > #stocks {
@@ -261,6 +271,7 @@ templ BuyModal(player_stock models.PlayerStock) {
 }
 
 templ SellModal(player_stock models.PlayerStock) {
+	
 	<div id="sellModal" class="modal fade" tabindex="-1">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -347,8 +358,18 @@ templ SellModal(player_stock models.PlayerStock) {
 	</div>
 }
 
-templ Show(player_stock models.PlayerStock) {
-	<div id="play-view" class="bg-white text-black rounded-bottom p-3">
+func playViewClass(isCurrentPlayer bool) string {
+	playViewClass := "bg-white text-black rounded-bottom p-3"
+	if !isCurrentPlayer {
+		playViewClass = playViewClass + " watching"
+	}
+
+	return playViewClass
+}
+
+templ Show(player_stock models.PlayerStock, isCurrentPlayer bool) {
+	
+	<div id="play-view" class={playViewClass(isCurrentPlayer)}>	
 		@PlayViewStyles()
 		<div id="stocks" class="rounded bg-secondary p-2 d-flex flex-column text-center justify-content-center">
 			<p>
@@ -438,12 +459,14 @@ templ Show(player_stock models.PlayerStock) {
 				</div>
 			</div>
 		</div>
-		<button id="buy-button" class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#buyModal">
-			Buy
-		</button>
-		<button id="sell-button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#sellModal">
-			Sell
-		</button>
+		if isCurrentPlayer {
+			<button id="buy-button" class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#buyModal">
+				Buy
+			</button>
+			<button id="sell-button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#sellModal">
+				Sell
+			</button>
+		}
 	</div>
 	@ModalStyles()
 	@BuyModal(player_stock)

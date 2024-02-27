@@ -22,8 +22,8 @@ type Client struct {
 	// Buffered channel of outbound messages.
 	Send chan *bytes.Buffer
 
-	Game   models.Game
-	Player *models.Player
+	Game          models.Game
+	CurrentPlayer models.Player
 }
 
 type BroadcastMessage struct {
@@ -32,12 +32,12 @@ type BroadcastMessage struct {
 	Message string
 }
 
-func NewClient(hub *Hub, conn *gorrilaws.Conn, player *models.Player, game models.Game) *Client {
+func NewClient(hub *Hub, conn *gorrilaws.Conn, player models.Player, game models.Game) *Client {
 	return &Client{
-		Hub:    hub,
-		Conn:   conn,
-		Player: player,
-		Game:   game,
+		Hub:           hub,
+		Conn:          conn,
+		CurrentPlayer: player,
+		Game:          game,
 
 		Send: make(chan *bytes.Buffer),
 	}

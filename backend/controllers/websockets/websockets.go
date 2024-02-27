@@ -29,10 +29,10 @@ func ServeWs(c *gin.Context) (int, gin.H) {
 		return http.StatusInternalServerError, gin.H{"error": "could not upgrade websocket"}
 	}
 
-	cp, user_exists := c.Get("player")
+	cp, player_exists := c.Get("player")
 	cg, game_exists := c.Get("game")
 
-	if !user_exists {
+	if !player_exists {
 		log.Println("websocket: no user found")
 		return http.StatusBadRequest, gin.H{"error": "no user found in request context"}
 	}
@@ -42,7 +42,7 @@ func ServeWs(c *gin.Context) (int, gin.H) {
 		return http.StatusBadRequest, gin.H{"error": "no game found in request context"}
 	}
 
-	player := cp.(*models.Player)
+	player := cp.(models.Player)
 	game := cg.(models.Game)
 
 	hub := websockets.GetHub()
