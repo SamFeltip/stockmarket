@@ -16,11 +16,12 @@ templ Feed(feed []models.FeedItem) {
         <div class="d-flex flex-row gap-1 mb-3">
             <img 
                 height="56px"
-                class="rounded"
-                src={feedItem.Player.User.ProfileRoot} alt={feedItem.Player.User.Name}
+                width="56px"
+                class={"rounded bg-secondary", templ.KV("p-2", (feedItem.Colour == "grey"))}
+                src={feedItem.ImageRoot} alt={feedItem.Title}
             />
             <div>
-                <h3 style="font-size: 1.2rem;" class="text-capitalize text-black mb-0">{feedItem.Player.User.Name}</h3>
+                <h3 style="font-size: 1.2rem;" class="text-capitalize text-black mb-0">{feedItem.Title}</h3>
                 <p style="font-size: 0.75rem;" >{feedItem.Message}</p>
             </div>
         </div>

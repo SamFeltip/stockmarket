@@ -42,7 +42,7 @@ func Edit(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 
 	game := cg.(models.Game)
 
-	_, err = models.NewFeedItem(playerStock, game, quantityAdd, db)
+	_, err = models.NewFeedItem(game, quantityAdd, models.PlayerPlay, playerStock, db)
 
 	if err != nil {
 		fmt.Println("could not create new feed item", err)

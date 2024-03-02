@@ -37,6 +37,8 @@ p {
     --bs-primary: #FFF284;
     --bs-btn-big: var(--bs-primary);
 
+    --bs-secondary-rgb: 217,217,217;
+
 }
 
 .nav {

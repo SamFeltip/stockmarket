@@ -169,6 +169,13 @@ func Create(c *gin.Context) (models.Game, error) {
 		return models.Game{}, err
 	}
 
+	_, err = models.NewFeedItem(game, 0, models.StartGame, models.PlayerStock{}, db)
+
+	if err != nil {
+		fmt.Println("could not create new feed item", err)
+		return models.Game{}, err
+	}
+
 	return game, nil
 }
 
