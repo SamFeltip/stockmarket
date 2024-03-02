@@ -20,7 +20,7 @@ templ Feed(feed []models.FeedItem) {
                 src={feedItem.Player.User.ProfileRoot} alt={feedItem.Player.User.Name}
             />
             <div>
-                <h3 style="font-size: 1.2rem;" class="text-black mb-0">{feedItem.Player.User.Name}</h3>
+                <h3 style="font-size: 1.2rem;" class="text-capitalize text-black mb-0">{feedItem.Player.User.Name}</h3>
                 <p style="font-size: 0.75rem;" >{feedItem.Message}</p>
             </div>
         </div>

@@ -126,7 +126,7 @@ func Playing(game models.Game, player models.Player) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"game-grid\" class=\"p-3\"><div id=\"profile\" class=\"card card-green d-flex flex-row align-items-center p-2\" style=\"background-color: var(--bs-card-bg);\"><img class=\"rounded\" style=\"z-index: 999; \" height=\"60px\" width=\"60px\" src=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"game-grid\" class=\"p-3\"><div id=\"profile\" class=\"card card-green d-flex flex-row align-items-center p-2 gap-2\" style=\"background-color: var(--bs-card-bg);\"><img class=\"rounded\" style=\"z-index: 999; \" height=\"60px\" width=\"60px\" src=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -142,7 +142,7 @@ func Playing(game models.Game, player models.Player) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div><h2 class=\"text-capitalize\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div><h2 class=\"text-capitalize mb-0\" style=\"font-size: 1.5rem;\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
