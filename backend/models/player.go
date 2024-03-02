@@ -27,7 +27,7 @@ func LoadCurrentPlayer(playerID uint, db *gorm.DB) (Player, error) {
 		Preload("PlayerStocks").
 		Preload("Game").
 		Preload("PlayerStocks.GameStock.Stock").
-		Where("id = ?", playerID).
+		Where("players.id = ?", playerID).
 		First(&player).Error
 
 	player.SortPlayerStocks()

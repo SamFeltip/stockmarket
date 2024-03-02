@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"strconv"
 
 	"gorm.io/gorm"
 )
@@ -104,7 +105,7 @@ func (game *Game) SetActiveGame(current_user *User, db *gorm.DB) (Player, error)
 		return Player{}, err
 	}
 
-	player.Active = true
+	current_player.Active = true
 
 	fmt.Println("unsetting active game for other games", current_user.ID, game.ID)
 	err = db.Model(&Player{}).Where("user_id = ? AND game_id != ?", current_user.ID, game.ID).Update("active", false).Error
@@ -200,7 +201,7 @@ func (game *Game) UpdateCurrentUser(db *gorm.DB) error {
 
 	players := SortPlayers(game.Players)
 
-	fmt.Println("finding the next user")
+	fmt.Println("finding the next user of ", strconv.Itoa(len(players)), " old user:", current_user.Name)
 	next_user := User{}
 	// find the next player in the list (based on current player)
 	for i, player := range players {
@@ -208,13 +209,14 @@ func (game *Game) UpdateCurrentUser(db *gorm.DB) error {
 			if i == len(players)-1 {
 				next_user = players[0].User
 			} else {
-				next_user = players[0].User
+				next_user = players[i+1].User
 			}
 			break
 		}
 	}
 
-	fmt.Println("setting next user:", next_user.ID)
+	fmt.Println("setting next user:", next_user.Name)
+
 	err := db.Model(&game).Where("id = lower(?)", game.ID).Update("current_user_id", next_user.ID).Error
 
 	if err != nil {

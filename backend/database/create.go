@@ -7,6 +7,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var db *gorm.DB
@@ -14,7 +15,9 @@ var db *gorm.DB
 func SetupDb() *gorm.DB {
 
 	dsn := "host=localhost user=me password=def78-brglger-45y$u3g dbname=postgres port=5433 sslmode=disable"
-	newdb, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	newdb, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 
 	db = newdb
 
