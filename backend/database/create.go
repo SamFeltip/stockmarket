@@ -96,6 +96,11 @@ func SetupDb(dsn string, log_mode logger.LogLevel) *gorm.DB {
 		log.Fatal(err)
 	}
 
+	err = db.AutoMigrate(&models.FeedItem{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return db
 
 }

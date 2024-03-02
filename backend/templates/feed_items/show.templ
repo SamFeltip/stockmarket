@@ -1,0 +1,29 @@
+package feed_items
+
+import (
+    "stockmarket/models"
+)
+
+templ NoFeed(){
+    <div id="feed-body">
+        <p>no feed items yet</p>
+    </div>
+}
+
+templ Feed(feed []models.FeedItem) {
+    <div id="feed-body">
+    for _, feedItem := range feed {
+        <div class="d-flex flex-row gap-1 mb-3">
+            <img 
+                height="56px"
+                class="rounded"
+                src={feedItem.Player.User.ProfileRoot} alt={feedItem.Player.User.Name}
+            />
+            <div>
+                <h3 style="font-size: 1.2rem;" class="text-black mb-0">{feedItem.Player.User.Name}</h3>
+                <p style="font-size: 0.75rem;" >{feedItem.Message}</p>
+            </div>
+        </div>
+    }
+    </div>
+}

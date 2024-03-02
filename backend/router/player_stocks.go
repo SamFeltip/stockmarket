@@ -28,34 +28,27 @@ func CreatePlayerStockRoutes() {
 			var pageComponent templ.Component
 			if err != nil {
 				pageComponent = templates.NoPlayerStock()
-			} else {
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
 
-				cp, exists := c.Get("player")
-
-				if !exists {
-					fmt.Println("could not get player from context")
-					pageComponent = templates.Error(fmt.Errorf("could not get player from context"))
-					ctx := context.Background()
-					pageComponent.Render(ctx, c.Writer)
-					return
-				}
-
-				cg, exists := c.Get("game")
-
-				if !exists {
-					fmt.Println("could not get game from context")
-					pageComponent = templates.Error(fmt.Errorf("could not get game from context"))
-					ctx := context.Background()
-					pageComponent.Render(ctx, c.Writer)
-					return
-				}
-
-				currentPlayer := cp.(models.Player)
-				game := cg.(models.Game)
-
-				isCurrentPlayer := currentPlayer.User.ID == game.CurrentUserID
-				pageComponent = templates.Show(playerStock, isCurrentPlayer)
 			}
+
+			currentPlayer := playerStock.Player
+
+			game := models.Game{}
+			err = db.Where("id = ?", playerStock.GameStock.GameID).First(&game).Error
+
+			if err != nil {
+				fmt.Println("error fetching game for player stock", err)
+				pageComponent = gameTemplates.Error(err)
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
+
+			isCurrentPlayer := currentPlayer.User.ID == game.CurrentUserID
+			pageComponent = templates.Show(playerStock, isCurrentPlayer)
 
 			ctx := context.Background()
 			pageComponent.Render(ctx, c.Writer)

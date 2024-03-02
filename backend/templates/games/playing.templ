@@ -139,34 +139,7 @@ templ Playing(game models.Game, player models.Player) {
 				<h2 class="text-black">
 					Feed
 				</h2>
-				<div>
-					Period 2
-					<br/>
-					Players get a second turn
-					<br/>
-					Phoebe
-					<br/>
-					Skipped their go
-					<br/>
-					Callum
-					<br/>
-					Sold 10,000 shares in UB
-					<br/>
-					Daniel James Blackford
-					<br/>
-					Bought 25,000 shares of Legal & General
-					<br/>
-					Sol
-					<br/>
-					Skipped their go
-					<br/>
-					Dan
-					<br/>
-					Collected £10,000
-					<br/>
-					Sam
-					<br/>
-					Bought 5,000 shares in Trusthouse Forte
+				<div id="feed-body" hx-get={ fmt.Sprintf("/feed_items/show/%s", game.ID) } hx-swap="outerHTML" hx-trigger="load">
 				</div>
 			</div>
 			if game.CurrentUser.ID == player.User.ID {
