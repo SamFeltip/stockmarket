@@ -23,7 +23,7 @@ func init() {
 
 func main() {
 
-	database.SetupDb()
+	database.SetupDevDb()
 	websockets.InitializeHub()
 
 	r := router.SetupRoutes()

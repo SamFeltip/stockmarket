@@ -99,7 +99,7 @@ func CreatePlayerStockRoutes() {
 				return
 			}
 
-			fmt.Println("playerStockID", playerStockID)
+			fmt.Println("form data gathered: playerStockID:", playerStockID, "playerStockQuantityAdd:", playerStockQuantityAdd)
 
 			pageComponent, err := controllers.Edit(c, db)
 			ctx := context.Background()

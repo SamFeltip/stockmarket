@@ -28,6 +28,46 @@ var Playing GameStatus = "playing"
 var Evaluating GameStatus = "evaluating"
 var Finished GameStatus = "finished"
 
+/*
+creates a new game and all possible game stocks
+
+output: game (code from c post difficulty from gin context, user from gin context)
+
+also runs CreateGameStocks
+*/
+func CreateGame(code string, difficulty int, current_user User, db *gorm.DB) (Game, error) {
+
+	fmt.Println("create game:", code, difficulty)
+
+	game := Game{
+		ID:          code,
+		Difficulty:  difficulty,
+		Status:      string(Waiting),
+		CurrentUser: current_user,
+	}
+
+	db.Create(&game)
+
+	// get all stocks
+	fmt.Println("create game stocks: ", code)
+	game_stocks, err := CreateGameStocks(code, db)
+
+	if err != nil {
+		fmt.Println("error creating game stocks:", err)
+		return Game{}, err
+	}
+
+	game.GameStocks = game_stocks
+	db.Save(&game)
+
+	if err != nil {
+		fmt.Println("error setting active game:", err)
+		return Game{}, err
+	}
+
+	return game, nil // passed into templates
+}
+
 func LoadGame(gameID string, db *gorm.DB) (Game, error) {
 
 	var game Game

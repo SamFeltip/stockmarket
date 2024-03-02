@@ -169,7 +169,7 @@ func Create(c *gin.Context) (models.Game, error) {
 		return models.Game{}, err
 	}
 
-	return game, nil // passed into templates
+	return game, nil
 }
 
 func New(c *gin.Context, db *gorm.DB) {

@@ -12,11 +12,31 @@ import (
 
 var db *gorm.DB
 
-func SetupDb() *gorm.DB {
+func UndoMigrations(db *gorm.DB) {
+	db.Migrator().DropTable(&models.PlayerInsight{})
+	db.Migrator().DropTable(&models.Insight{})
+	db.Migrator().DropTable(&models.PlayerStock{})
+	db.Migrator().DropTable(&models.GameStock{})
+	db.Migrator().DropTable(&models.Stock{})
+	db.Migrator().DropTable(&models.Player{})
+	db.Migrator().DropTable(&models.Game{})
+	db.Migrator().DropTable(&models.User{})
+}
 
+func SetupTestDb(log_mode logger.LogLevel) *gorm.DB {
+	dsn := "host=localhost user=me password=password dbname=stockmarket_test port=5433 sslmode=disable"
+	return SetupDb(dsn, log_mode)
+}
+
+func SetupDevDb() *gorm.DB {
 	dsn := "host=localhost user=me password=def78-brglger-45y$u3g dbname=postgres port=5433 sslmode=disable"
+	return SetupDb(dsn, logger.Info)
+}
+
+func SetupDb(dsn string, log_mode logger.LogLevel) *gorm.DB {
+
 	newdb, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger: logger.Default.LogMode(log_mode),
 	})
 
 	db = newdb
