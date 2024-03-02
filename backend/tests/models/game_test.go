@@ -60,7 +60,7 @@ func TestCreateGame(t *testing.T) {
 }
 
 func TestUpdateCurrentUser(t *testing.T) {
-	db := database.SetupTestDb(logger.Silent)
+	db := database.SetupTestDb(logger.Info)
 	defer database.UndoMigrations(db)
 
 	// Create two users and save them to the database
@@ -80,6 +80,26 @@ func TestUpdateCurrentUser(t *testing.T) {
 
 	game, _ := models.CreateGame("game1", 1, user1, db)
 
+	player1 := models.Player{
+		User:   user1,
+		Game:   game,
+		Active: true,
+		Cash:   100000,
+	}
+
+	player2 := models.Player{
+		User:   user2,
+		Game:   game,
+		Active: true,
+		Cash:   100000,
+	}
+
+	db.Create(&player1)
+	db.Create(&player2)
+
+	game.Players = append(game.Players, player1)
+	game.Players = append(game.Players, player2)
+
 	// Call UpdateCurrentUser to update the user
 	err := game.UpdateCurrentUser(db)
 	if err != nil {
@@ -88,7 +108,7 @@ func TestUpdateCurrentUser(t *testing.T) {
 
 	// Retrieve the game from the database
 	var retrievedGame models.Game
-	db.First(&retrievedGame, game.ID)
+	db.First(&retrievedGame, "id = ?", game.ID)
 
 	// Check that the current user was updated correctly
 	assert.Equal(t, user2.ID, retrievedGame.CurrentUserID)
@@ -100,7 +120,7 @@ func TestUpdateCurrentUser(t *testing.T) {
 	}
 
 	// Retrieve the game from the database again
-	db.First(&retrievedGame, game.ID)
+	db.First(&retrievedGame, "id = ?", game.ID)
 
 	// Check that the current user was cycled correctly
 	assert.Equal(t, user1.ID, retrievedGame.CurrentUserID)

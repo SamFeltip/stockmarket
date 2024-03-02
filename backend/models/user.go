@@ -57,12 +57,6 @@ func (user *User) CreatePlayer(game *Game, db *gorm.DB) (*Player, error) {
 		return nil, err
 	}
 
-	// create player stocks
-	if err != nil {
-		fmt.Println("error fetching stocks:", err)
-		return nil, err
-	}
-
 	game_stocks := []GameStock{}
 
 	err = db.Where("game_id = ?", game.ID).Find(&game_stocks).Error
@@ -72,7 +66,7 @@ func (user *User) CreatePlayer(game *Game, db *gorm.DB) (*Player, error) {
 		return nil, err
 	}
 
-	for _, game_stock := range game.GameStocks {
+	for _, game_stock := range game_stocks {
 		player_stock := PlayerStock{
 			Player:    player,
 			GameStock: game_stock,

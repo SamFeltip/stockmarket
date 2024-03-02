@@ -231,7 +231,17 @@ func (game *Game) GeneratePlayerInsights(db *gorm.DB) error {
 	return nil
 }
 
+/*
+update the current user to the next user in the game
+
+requires game.Players.User is preloaded
+*/
 func (game *Game) UpdateCurrentUser(db *gorm.DB) error {
+
+	if len(game.Players) == 0 {
+		fmt.Println("no players in game")
+		return errors.New("no players in game")
+	}
 
 	current_user := game.CurrentUser
 	// players := game.Players
@@ -245,6 +255,12 @@ func (game *Game) UpdateCurrentUser(db *gorm.DB) error {
 	next_user := User{}
 	// find the next player in the list (based on current player)
 	for i, player := range players {
+
+		if player.User.Name == "" {
+			fmt.Println("player user must be preloaded")
+			return errors.New("player user must be preloaded")
+		}
+
 		if player.User.ID == current_user.ID {
 			if i == len(players)-1 {
 				next_user = players[0].User
@@ -257,15 +273,15 @@ func (game *Game) UpdateCurrentUser(db *gorm.DB) error {
 
 	fmt.Println("setting next user:", next_user.Name)
 
-	err := db.Model(&game).Where("id = lower(?)", game.ID).Update("current_user_id", next_user.ID).Error
+	game.CurrentUser = next_user
+
+	err := db.Save(&game).Error
+	// err := db.Model(&game).Update("current_user_id", next_user.ID).Error
 
 	if err != nil {
 		fmt.Println("could not update current player", err)
 		return err
 	}
-
-	game.CurrentUser = next_user
-	game.CurrentUserID = next_user.ID
 
 	return nil
 }
