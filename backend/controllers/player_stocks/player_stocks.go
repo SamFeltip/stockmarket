@@ -40,6 +40,13 @@ func Edit(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 		return gameTemplates.Error(err), err
 	}
 
+	play, err := models.NewPlay(playerStock, db)
+
+	if err != nil {
+		fmt.Println("could not create new play", err)
+		return gameTemplates.Error(err), err
+	}
+
 	game := cg.(models.Game)
 
 	err = game.UpdateCurrentUser(db)

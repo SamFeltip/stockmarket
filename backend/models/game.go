@@ -19,6 +19,7 @@ type Game struct {
 	GameStocks    []GameStock `gorm:"constraint:OnDelete:CASCADE"`
 	CurrentUser   User
 	CurrentUserID uint
+	Plays         []Play `gorm:"constraint:OnDelete:CASCADE"`
 }
 
 type GameStatus string

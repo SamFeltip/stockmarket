@@ -17,6 +17,26 @@ type PlayerStock struct {
 	Quantity       int
 }
 
+func GetPlayerStock(playerStockID string, db *gorm.DB) (PlayerStock, error) {
+	var playerStock PlayerStock
+
+	// player_stock.GameStock.Stock.Name
+
+	err := db.
+		Preload("GameStock").
+		Preload("GameStock.Stock").
+		Preload("GameStock.PlayerStocks").
+		Preload("GameStock.PlayerStocks.Player").
+		Preload("GameStock.PlayerStocks.Player.User").
+		Preload("Player").
+		Preload("Player.User").
+		Preload("PlayerInsights").
+		Preload("PlayerInsights.Insight").
+		Where("id = ?", playerStockID).First(&playerStock).Error
+
+	return playerStock, err
+}
+
 func (player_stock PlayerStock) TotalInsight() float64 {
 
 	fmt.Println("player_stock stock: ", player_stock.GameStock.Stock.Name)
