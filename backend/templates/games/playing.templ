@@ -9,9 +9,11 @@ import (
 templ GameGridStyle() {
 	<style>
         #game-grid {
-            width: 100vw;
-            height: 100vh;
+			height: 100vh;
+			max-height: -webkit-fill-available;
+
             display: grid;
+
             grid-template-areas: 
                 "profile    now-playing header"
                 "content    content     feed";
