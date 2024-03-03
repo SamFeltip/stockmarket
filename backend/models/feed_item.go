@@ -52,15 +52,7 @@ var PlayerPlay FeedItemMessage = "playerPlay"
 var PlayerPass FeedItemMessage = "playerPass"
 var PeriodNew FeedItemMessage = "periodNew"
 
-func NewFeedItem(game Game, quantity int, feedItemMessage FeedItemMessage, playerStock PlayerStock, db *gorm.DB) (FeedItem, error) {
-
-	game_stock := GameStock{}
-	player := Player{}
-
-	if playerStock.ID != 0 {
-		player = playerStock.Player
-		game_stock = playerStock.GameStock
-	}
+func NewFeedItem(game Game, quantity int, feedItemMessage FeedItemMessage, player Player, game_stock GameStock, db *gorm.DB) (FeedItem, error) {
 
 	feed_item := FeedItem{
 		GameStock: game_stock,
@@ -69,13 +61,13 @@ func NewFeedItem(game Game, quantity int, feedItemMessage FeedItemMessage, playe
 	}
 
 	if quantity > 0 {
-		feed_item.Message = fmt.Sprintf("bought %d shares in %s", quantity, playerStock.GameStock.Stock.Name)
-		feed_item.Title = playerStock.Player.User.Name
-		feed_item.ImageRoot = playerStock.Player.User.ProfileRoot
+		feed_item.Message = fmt.Sprintf("bought %d shares in %s", quantity, game_stock.Stock.Name)
+		feed_item.Title = player.User.Name
+		feed_item.ImageRoot = player.User.ProfileRoot
 	} else if quantity < 0 {
-		feed_item.Message = fmt.Sprintf("sold %d shares in %s", quantity*-1, playerStock.GameStock.Stock.Name)
-		feed_item.Title = playerStock.Player.User.Name
-		feed_item.ImageRoot = playerStock.Player.User.ProfileRoot
+		feed_item.Message = fmt.Sprintf("sold %d shares in %s", quantity*-1, game_stock.Stock.Name)
+		feed_item.Title = player.User.Name
+		feed_item.ImageRoot = player.User.ProfileRoot
 	}
 
 	if feedItemMessage == StartGame {
@@ -83,6 +75,12 @@ func NewFeedItem(game Game, quantity int, feedItemMessage FeedItemMessage, playe
 		feed_item.Title = "game started"
 		feed_item.ImageRoot = "/static/imgs/icons/Handshake.svg"
 		feed_item.Colour = "grey"
+	}
+
+	if feedItemMessage == PlayerPass {
+		feed_item.Message = "passed their go"
+		feed_item.Title = player.User.Name
+		feed_item.ImageRoot = player.User.ProfileRoot
 	}
 
 	fmt.Println("creating new FeedItem", feed_item)

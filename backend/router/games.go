@@ -133,6 +133,37 @@ func CreateGameRoutes() {
 			baseComponent.Render(ctx, c.Writer)
 		})
 
+	r.POST("/api/games/action",
+		func(c *gin.Context) { middleware.AuthCurrentPlayer(c) },
+		func(c *gin.Context) {
+			db := database.GetDb()
+			gameAction := c.PostForm("game_action")
+
+			if gameAction == "" {
+				fmt.Println("no gameID or play action in post request")
+				pageComponent := templates.Error(fmt.Errorf("no gameID or play action in post request"))
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
+
+			fmt.Println("form data gathered", "gameAction:", gameAction)
+
+			pageComponent, err := controllers.PlayAction(c, db)
+			ctx := context.Background()
+			pageComponent.Render(ctx, c.Writer)
+
+			if err != nil {
+				fmt.Println("error editing player stock, don't broadcast", err)
+				return
+			}
+
+			cg, _ := c.Get("game")
+			game := cg.(models.Game)
+
+			controllers.BroadcastUpdateBoard(game)
+		})
+
 	r.GET("/games",
 		func(c *gin.Context) { middleware.AuthIsLoggedIn(c) },
 		func(c *gin.Context) {

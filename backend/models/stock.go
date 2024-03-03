@@ -62,6 +62,8 @@ func CreateGameStocks(gameID string, db *gorm.DB) ([]GameStock, error) {
 }
 
 func (gameStock GameStock) SharesAvailable() int {
+	fmt.Println("game stock", gameStock.ID)
+
 	var total int = 0
 
 	for _, playerStock := range gameStock.PlayerStocks {

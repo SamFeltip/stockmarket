@@ -11,7 +11,7 @@ templ NoFeed(){
 }
 
 templ Feed(feed []models.FeedItem) {
-    <div id="feed-body">
+    <div id="feed-body" class="d-flex flex-column gap-1 overflow-auto" style="max-height: 60vh;">
     for _, feedItem := range feed {
         <div class="d-flex flex-row gap-1 mb-3">
             <img 

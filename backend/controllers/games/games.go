@@ -169,7 +169,7 @@ func Create(c *gin.Context) (models.Game, error) {
 		return models.Game{}, err
 	}
 
-	_, err = models.NewFeedItem(game, 0, models.StartGame, models.PlayerStock{}, db)
+	_, err = models.NewFeedItem(game, 0, models.StartGame, models.Player{}, models.GameStock{}, db)
 
 	if err != nil {
 		fmt.Println("could not create new feed item", err)

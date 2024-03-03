@@ -7,6 +7,8 @@ import (
 	templates "stockmarket/templates/games"
 
 	"github.com/a-h/templ"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func UpdateGameDifficulty(gameID string, difficulty int) (templ.Component, error) {
@@ -76,4 +78,42 @@ func StartGame(gameID string) (templ.Component, error) {
 	baseComponent := templates.WaitingLoading()
 
 	return baseComponent, nil
+}
+
+func PlayAction(c *gin.Context, db *gorm.DB) (templ.Component, error) {
+	gameAction, _ := c.GetPostForm("game_action")
+
+	cg, exists := c.Get("game")
+
+	if !exists {
+		fmt.Println("game doesn't exist in context")
+		return templates.Error(fmt.Errorf("game doesn't exist in context")), fmt.Errorf("game doesn't exist in context")
+	}
+
+	game := cg.(models.Game)
+
+	cp, exists := c.Get("player")
+
+	if !exists {
+		fmt.Println("player doesn't exist in context")
+		return templates.Error(fmt.Errorf("player doesn't exist in context")), fmt.Errorf("player doesn't exist in context")
+	}
+
+	player := cp.(models.Player)
+
+	// switch case
+	switch gameAction {
+	case string(models.PlayerPass):
+		models.NewFeedItem(game, 0, models.PlayerPass, player, models.GameStock{}, db)
+	}
+
+	// update current user
+	err := game.UpdateCurrentUser(db)
+
+	if err != nil {
+		fmt.Println("could not update current player", err)
+		return templates.Error(err), err
+	}
+
+	return templates.Loading(), nil
 }

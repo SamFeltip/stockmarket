@@ -397,7 +397,7 @@ templ Show(player_stock models.PlayerStock, isCurrentPlayer bool) {
 				<h4 class="text-black">Your insights</h4>
 				@TotalInsightButton(player_stock)
 			</div>
-			<div class="d-grid gap-1 mh-100 overflow-scroll" style="grid-template-columns: 1fr 1fr;">
+			<div class="d-grid gap-1 overflow-auto" style="grid-template-columns: 1fr 1fr; max-height: 60vh;">
 				for _, player_insights := range player_stock.PlayerInsights {
 					<div class="card">
 						<div class="card-body text-center">
@@ -450,7 +450,7 @@ templ Show(player_stock models.PlayerStock, isCurrentPlayer bool) {
 				<div class="card flex-fill">
 					<div class="card-body text-center">
 						<p class="fs-5">
-							100,000
+							{strconv.Itoa(player_stock.GameStock.SharesAvailable())}
 						</p>
 						<p class="text-secondary">
 							Shares available

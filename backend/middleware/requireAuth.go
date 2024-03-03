@@ -222,5 +222,27 @@ func AuthCurrentPlayer(c *gin.Context) {
 		return
 	}
 
+	player_ref, err := game.GetPlayer(&user)
+
+	if err != nil {
+		fmt.Println("error fetching player:", err)
+		pageComponent := templates.Error(err)
+		ctx := context.Background()
+		pageComponent.Render(ctx, c.Writer)
+		return
+	}
+
+	player, err := models.LoadCurrentPlayer(player_ref.ID, db)
+
+	if err != nil {
+		fmt.Println("error fetching player:", err)
+		pageComponent := templates.Error(err)
+		ctx := context.Background()
+		pageComponent.Render(ctx, c.Writer)
+		return
+	}
+
+	c.Set("player", player)
+
 	c.Next()
 }

@@ -137,17 +137,32 @@ templ Playing(game models.Game, player models.Player) {
 			<div id="play-view" class="bg-white text-black rounded-bottom p-3" hx-swap="outerHTML" hx-trigger="load" hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(player.PlayerStocks[0].ID), 10)) }></div>
 		</div>
 		<aside class="rounded bg-white text-black p-3">
-			<div>
+			<div class="d-grid" style="grid-template-rows: auto 1fr;">
 				<h2 class="text-black">
 					Feed
 				</h2>
-				<div id="feed-body" hx-get={ fmt.Sprintf("/feed_items/show/%s", game.ID) } hx-swap="outerHTML" hx-trigger="load">
+				<div class="d-flex">
+					<div id="feed-body" hx-get={ fmt.Sprintf("/feed_items/show/%s", game.ID) } hx-swap="outerHTML" hx-trigger="load"></div>
 				</div>
 			</div>
 			if game.CurrentUser.ID == player.User.ID {
-				<button id="pass-button" class="btn btn-secondary">
-					PASS
-				</button>
+				<form
+					hx-post="/api/games/action"
+					hx-target="main"
+					hx-swap="innerHTML"
+					hx-trigger="submit"
+				>
+					<input type="hidden" name="gameID" value={game.ID}/>
+					<input type="hidden" name="game_action" value={string(models.PlayerPass)}/>
+
+					<button
+						type="submit"
+						id="pass-button"
+						class="btn btn-secondary w-100"
+					>
+						PASS
+					</button>
+				</form>
 			}
 		</aside>
 	</div>

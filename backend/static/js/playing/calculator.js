@@ -136,9 +136,9 @@ export class StockCalculator extends HTMLElement {
     }
 
     // screw you, im not using OR statements it will make this code unreadable as hell, Idgaf
-    PlayerCanBuyStockQuantity(stocks_to_buy) {
-        let newStockQuantity = (this.addPlayerStockQuantity + stocks_to_buy)
-        console.log({quantity: stocks_to_buy})
+    PlayerCanBuyStockQuantity(newStockQuantity) {
+
+        console.log({quantity: newStockQuantity})
         if (newStockQuantity < 0) { return [false, "cannot purchase less than 0 stocks"] }
         if (newStockQuantity * this.gameStockValue > this.playerCash) { return [false, "not enough cash"] }
         if(this.gameStockSharesAvailable - newStockQuantity < 0) {return [false, "not enough stocks available"]}
@@ -219,7 +219,7 @@ export class StockCalculator extends HTMLElement {
         this.querySelectorAll('.rem-stock').forEach(rem_stock_button => {
             rem_stock_button.addEventListener('click', () => {
 
-                var [can_buy, err] = this.PlayerCanSellStockQuantity(1000)
+                var [can_buy, err] = this.PlayerCanSellStockQuantity(this.addPlayerStockQuantity - 1000)
 
                 if(!can_buy){
                     console.error(`cannot purchase: ${err}`)
@@ -233,7 +233,7 @@ export class StockCalculator extends HTMLElement {
 
         this.querySelectorAll('.add-stock').forEach(add_stock_button => {
             add_stock_button.addEventListener('click', () => {
-                var [can_buy, err] = this.PlayerCanBuyStockQuantity(1000)
+                var [can_buy, err] = this.PlayerCanBuyStockQuantity(this.addPlayerStockQuantity + 1000)
 
                 if(!can_buy){
                     console.error(`cannot purchase: ${err}`)
@@ -260,6 +260,14 @@ export class StockCalculator extends HTMLElement {
 
             if (target == null || target.value == null) {
                 throw new Error("input.input-stock event listener failed ")
+            }
+
+
+            var [can_buy, err] = this.PlayerCanSellStockQuantity(target.value)
+
+            if(!can_buy){
+                console.error(`cannot purchase: ${err}`)
+                return
             }
 
             this.addPlayerStockQuantity = parseInt(target.value)
