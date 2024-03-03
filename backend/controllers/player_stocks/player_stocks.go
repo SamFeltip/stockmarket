@@ -49,6 +49,10 @@ func Edit(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 		return gameTemplates.Error(err), err
 	}
 
+	playerStock.Player.Cash -= quantityAdd * int(playerStock.GameStock.Value)
+
+	db.Save(&playerStock.Player)
+
 	err = game.UpdateCurrentUser(db)
 
 	if err != nil {
