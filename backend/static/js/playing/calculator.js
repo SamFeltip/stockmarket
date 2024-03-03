@@ -61,7 +61,22 @@ export class StockCalculator extends HTMLElement {
 
         this.setAttribute('playerStock-quantity-add', rounded_stock_count.toString())
 
-        /* @type {HTMLDivElement?} */
+        console.log("***")
+        console.log(`gameStockSharesAvailable: ${this.gameStockSharesAvailable}`)
+        console.log(`playerCash: ${this.playerCash}`)
+        console.log(`gameStockValue: ${this.gameStockValue}`)
+        console.log(`rounded_stock_count: ${rounded_stock_count}`)
+        console.log(`addPlayerStockQuantity: ${this.addPlayerStockQuantity}`)
+        console.log("***")
+
+        this.gameStockSharesAvailable = this.gameStockSharesAvailable + (this.addPlayerStockQuantity - rounded_stock_count)
+        this.playerCash = this.playerCash - (this.addPlayerStockQuantity - rounded_stock_count) * this.gameStockValue
+
+        console.log(`set gameStockSharesAvailable: ${this.gameStockSharesAvailable}`)
+        console.log(`set playerCash: ${this.playerCash}`)
+        console.log("^^^")
+        
+        /** @type {HTMLDivElement?} */
         let transaction_body_elem = this.querySelector('.transaction-body')
 
         if (transaction_body_elem == null) {
@@ -102,6 +117,10 @@ export class StockCalculator extends HTMLElement {
         return parseInt(game_stock_shares_available_attr)
     }
 
+    set gameStockSharesAvailable(value) {
+        this.setAttribute('gamestock-sharesavailable', value.toString())
+    }
+
     get playerCash() {
         let player_cash_attr = this.getAttribute('player-cash')
 
@@ -110,6 +129,28 @@ export class StockCalculator extends HTMLElement {
         }
 
         return parseInt(player_cash_attr)
+    }
+
+    set playerCash(value) {
+        this.setAttribute('player-cash', value.toString())
+    }
+
+    // screw you, im not using OR statements it will make this code unreadable as hell, Idgaf
+    PlayerCanBuyStockQuantity(stocks_to_buy) {
+        let newStockQuantity = (this.addPlayerStockQuantity + stocks_to_buy)
+        console.log({quantity: stocks_to_buy})
+        if (newStockQuantity < 0) { return [false, "cannot purchase less than 0 stocks"] }
+        if (newStockQuantity * this.gameStockValue > this.playerCash) { return [false, "not enough cash"] }
+        if(this.gameStockSharesAvailable - newStockQuantity < 0) {return [false, "not enough stocks available"]}
+        // if (quantity > this.gameStockSharesAvailable) { return [false, "not enough shares available"] }
+
+        return [true, ""]
+    }
+
+    PlayerCanSellStockQuantity(stocks_to_sell) {
+        let newStockQuantity = this.addPlayerStockQuantity - stocks_to_sell
+        if(newStockQuantity < 0) {return [false, "cannot sell stocks you do not have"]}
+        return [true, ""]
     }
 
     constructor() {
@@ -165,7 +206,7 @@ export class StockCalculator extends HTMLElement {
                             ${this.gameStockSharesAvailable - this.addPlayerStockQuantity} Stocks left to buy
                         </p>
                         <p>
-                            £${this.playerCash - this.addPlayerStockQuantity} Cash available
+                            £${this.playerCash - (this.addPlayerStockQuantity * this.gameStockValue)} Cash available
                         </p>
                     </div>
                 </div>
@@ -177,14 +218,28 @@ export class StockCalculator extends HTMLElement {
 
         this.querySelectorAll('.rem-stock').forEach(rem_stock_button => {
             rem_stock_button.addEventListener('click', () => {
-                if (this.addPlayerStockQuantity >= 1000) {
-                    this.addPlayerStockQuantity -= 1000
+
+                var [can_buy, err] = this.PlayerCanSellStockQuantity(1000)
+
+                if(!can_buy){
+                    console.error(`cannot purchase: ${err}`)
+                    return
                 }
+
+                this.addPlayerStockQuantity -= 1000
+
             })
         })
 
         this.querySelectorAll('.add-stock').forEach(add_stock_button => {
             add_stock_button.addEventListener('click', () => {
+                var [can_buy, err] = this.PlayerCanBuyStockQuantity(1000)
+
+                if(!can_buy){
+                    console.error(`cannot purchase: ${err}`)
+                    return
+                }
+
                 this.addPlayerStockQuantity += 1000
             })
         })
