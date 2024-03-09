@@ -46,7 +46,7 @@ func TestCreateGame(t *testing.T) {
 	}
 
 	// Check that the game was created correctly
-	assert.Equal(t, 1, game.Difficulty)
+	assert.Equal(t, 1, game.PeriodCount)
 	assert.Equal(t, user.ID, game.CurrentUserID)
 	assert.Equal(t, "waiting", game.Status)
 
