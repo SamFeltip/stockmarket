@@ -23,6 +23,8 @@ type FeedItem struct {
 
 	Game   Game
 	GameID string
+
+	Period int
 }
 
 func LoadFeedItems(game_id string, db *gorm.DB) ([]FeedItem, error) {
@@ -58,6 +60,7 @@ func NewFeedItem(game Game, quantity int, feedItemMessage FeedItemMessage, playe
 		GameStock: game_stock,
 		Player:    player,
 		Game:      game,
+		Period:    game.CurrentPeriod,
 	}
 
 	if quantity > 0 {

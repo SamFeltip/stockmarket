@@ -104,7 +104,7 @@ templ Playing(game models.Game, player models.Player) {
 			<h1>Stockmarket!</h1>
 			<div class="d-flex justify-content-between">
 				<div>
-					Turn { strconv.Itoa(game.CurrentTurn() + 1) }/{ strconv.Itoa(len(game.Players) * 3) }
+					Turn { strconv.Itoa(game.CurrentTurn()) }/{ strconv.Itoa(len(game.Players) * 3) }
 				</div>
 				<div>
 					Period { strconv.Itoa(game.CurrentPeriod + 1) }/{ strconv.Itoa(game.PeriodCount + 1) }

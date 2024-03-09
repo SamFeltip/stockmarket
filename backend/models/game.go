@@ -79,6 +79,7 @@ func LoadGame(gameID string, db *gorm.DB) (Game, error) {
 		Preload("CurrentUser").
 		Preload("Players").
 		Preload("Players.User").
+		Preload("Plays").
 		Where("lower(games.id) = lower(?)", gameID).
 		First(&game).Error
 
@@ -289,8 +290,17 @@ func (game *Game) UpdateCurrentUser(db *gorm.DB) error {
 }
 
 /*
-requiest game.Players is preloaded
+requires game.Plays is preloaded
 */
 func (game *Game) CurrentTurn() int {
-	return 0
+
+	var currentPeriodPlays []FeedItem
+	for _, feedItem := range game.Plays {
+		if feedItem.Period == game.CurrentPeriod {
+			currentPeriodPlays = append(currentPeriodPlays, feedItem)
+		}
+	}
+
+	return len(currentPeriodPlays)
+
 }
