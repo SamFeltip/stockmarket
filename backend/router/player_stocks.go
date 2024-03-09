@@ -52,8 +52,8 @@ func CreatePlayerStockRoutes() {
 			// total insights for player stock
 			db.Table("player_insights as pi").
 				Select("sum(i.value) as total_insight, gs.value as stock_value, gs.game_id, s.name as stock_name, s.image_path as stock_img").
-				Joins("inner join insights as i on i.id = pi.insight_id").
-				Joins("inner join player_stocks as ps on ps.id = pi.player_stock_id").
+				Joins("left join insights as i on i.id = pi.insight_id").
+				Joins("left join player_stocks as ps on ps.id = pi.player_stock_id").
 				Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 				Joins("inner join stocks as s on s.id = gs.stock_id").
 				Where("ps.id = ?", playerStockIDString).
@@ -124,7 +124,7 @@ func CreatePlayerStockRoutes() {
 		})
 
 	r.GET("/player_stocks/preview/:playerStockID",
-		func(c *gin.Context) { middleware.AuthIsPlaying(c) },
+		func(c *gin.Context) { middleware.AuthIsLoggedIn(c) },
 		func(c *gin.Context) {
 			db := database.GetDb()
 
@@ -135,8 +135,8 @@ func CreatePlayerStockRoutes() {
 
 			db.Table("player_stocks as ps").
 				Select("sum(i.value) as total_insight, gs.value as stock_value, s.name as stock_name, s.image_path as stock_img").
-				Joins("inner join player_insights as pi on pi.player_stock_id = ps.id").
-				Joins("inner join insights as i on i.id = pi.insight_id").
+				Joins("left join player_insights as pi on pi.player_stock_id = ps.id").
+				Joins("left join insights as i on i.id = pi.insight_id").
 				Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 				Joins("inner join stocks as s on s.id = gs.stock_id").
 				Where("ps.id = ?", player_stock_id).
