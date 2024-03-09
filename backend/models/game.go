@@ -27,7 +27,7 @@ type GameStatus string
 
 var Waiting GameStatus = "waiting"
 var Playing GameStatus = "playing"
-var Evaluating GameStatus = "evaluating"
+var Closed GameStatus = "closed"
 var Finished GameStatus = "finished"
 
 /*

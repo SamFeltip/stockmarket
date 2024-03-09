@@ -1,15 +1,10 @@
 package games
 
 import (
-	"bytes"
-	"context"
 	"fmt"
 	"stockmarket/database"
 	"stockmarket/models"
-	websocketModels "stockmarket/models/websockets"
 	templates "stockmarket/templates/games"
-	userTemplates "stockmarket/templates/users"
-	"stockmarket/websockets"
 	"strconv"
 	"strings"
 
@@ -17,63 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
-
-func BroadcastUpdatePlayersList(game *models.Game) error {
-
-	userCardList := userTemplates.CardListSocket(game.Players)
-
-	buffer := &bytes.Buffer{}
-	userCardList.Render(context.Background(), buffer)
-
-	if len(game.Players) == 0 {
-		fmt.Println("no players to broadcast")
-		return nil
-	}
-
-	broadcastMessage := websocketModels.BroadcastMessage{
-		Game:   *game,
-		Buffer: buffer,
-	}
-
-	hub := websockets.GetHub()
-	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
-
-	return nil
-}
-
-func BroadcastUpdatePeriodCount(game models.Game) error {
-
-	periodCountDisplay := templates.PeriodCountOptionsSocket(game)
-
-	buffer := &bytes.Buffer{}
-	periodCountDisplay.Render(context.Background(), buffer)
-
-	broadcastMessage := websocketModels.BroadcastMessage{
-		Game:   game,
-		Buffer: buffer,
-	}
-
-	hub := websockets.GetHub()
-	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
-
-	return nil
-}
-
-func BroadcastUpdateBoard(game models.Game) error {
-
-	fmt.Println("broadcasting show board: capturing playing socket template")
-
-	broadcastMessage := websocketModels.BroadcastMessage{
-		Game:    game,
-		Buffer:  nil,
-		Message: "game board",
-	}
-
-	fmt.Println("broadcasting show board: sending playing socket template")
-	hub := websockets.GetHub()
-	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
-	return nil
-}
 
 func Show(db *gorm.DB, c *gin.Context) templ.Component {
 
@@ -180,7 +118,6 @@ func Create(c *gin.Context) (models.Game, error) {
 }
 
 func New(c *gin.Context, db *gorm.DB) {
-
 }
 
 func Index(c *gin.Context) templ.Component {

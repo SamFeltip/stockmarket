@@ -150,18 +150,14 @@ func CreateGameRoutes() {
 			fmt.Println("form data gathered", "gameAction:", gameAction)
 
 			pageComponent, err := controllers.PlayAction(c, db)
-			ctx := context.Background()
-			pageComponent.Render(ctx, c.Writer)
 
 			if err != nil {
-				fmt.Println("error editing player stock, don't broadcast", err)
+				fmt.Println("error editing player stock", err)
 				return
 			}
 
-			cg, _ := c.Get("game")
-			game := cg.(models.Game)
-
-			controllers.BroadcastUpdateBoard(game)
+			ctx := context.Background()
+			pageComponent.Render(ctx, c.Writer)
 		})
 
 	r.GET("/games",

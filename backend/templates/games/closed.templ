@@ -1,0 +1,15 @@
+package games
+
+import (
+    "stockmarket/models"
+)
+
+templ Closed(game models.Game){
+    <h1>Closed</h1>
+}
+
+templ ClosedSocket(game models.Game){
+	<div hx-swap-oob="innerHTML:main">
+		@Closed(game)
+	</div>
+}

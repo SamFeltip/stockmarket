@@ -68,7 +68,7 @@ func StartGame(gameID string) (templ.Component, error) {
 	game.GeneratePlayerInsights(db)
 
 	fmt.Println("player insights made:", game.ID)
-	err = BroadcastUpdateBoard(game)
+	err = BroadcastUpdatePlayBoard(game)
 
 	if err != nil {
 		fmt.Println("could not broadcast start play")
@@ -101,17 +101,44 @@ func PlayAction(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 
 	player := cp.(models.Player)
 
+	var err = error(nil)
+
 	// switch case
 	switch gameAction {
 	case string(models.PlayerPass):
-		models.NewFeedItem(game, 0, models.PlayerPass, player, models.GameStock{}, db)
+		feedItem, feed_err := models.NewFeedItem(game, 0, models.PlayerPass, player, models.GameStock{}, db)
+		err = feed_err
+		game.Plays = append(game.Plays, feedItem)
+	}
+
+	if err != nil {
+		fmt.Println("could not create new feed item", err)
+		return templates.Error(err), err
+	}
+
+	template, err := CheckForMarketClose(game, db)
+
+	if err != nil {
+		fmt.Println("could not check for market close", err)
+		return templates.Error(err), err
+	}
+
+	if template != nil {
+		return template, nil
 	}
 
 	// update current user
-	err := game.UpdateCurrentUser(db)
+	err = game.UpdateCurrentUser(db)
 
 	if err != nil {
 		fmt.Println("could not update current player", err)
+		return templates.Error(err), err
+	}
+
+	err = BroadcastUpdatePlayBoard(game)
+
+	if err != nil {
+		fmt.Println("could not broadcast update board", err)
 		return templates.Error(err), err
 	}
 

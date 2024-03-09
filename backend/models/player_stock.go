@@ -6,6 +6,13 @@ import (
 	"gorm.io/gorm"
 )
 
+type PlayerStockPreview struct {
+	TotalInsight float64
+	StockValue   float64
+	StockName    string
+	StockImg     string
+}
+
 type PlayerStock struct {
 	gorm.Model
 	ID             uint `gorm:"primaryKey"`

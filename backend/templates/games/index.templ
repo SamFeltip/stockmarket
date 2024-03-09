@@ -6,13 +6,13 @@ import(
 
 func IngamePage(game models.Game, current_player models.Player) templ.Component {
 
-	if game.Status == "playing" {
+	if game.Status == string(models.Playing) {
 		pageComponent := Playing(game, current_player)
 		return pageComponent
 	}
 
-	if game.Status == "showing" {
-		pageComponent := Showing(game)
+	if game.Status == string(models.Closed) {
+		pageComponent := Closed(game)
 		return pageComponent
 	}
 

@@ -63,14 +63,19 @@ func CreatePlayerStockRoutes() {
 			// get a player stock for the game stock and player
 			player_stock_id := c.Param("playerStockID")
 
-			player_stock := models.PlayerStock{}
-			db.
-				Preload("GameStock.Stock").
-				Preload("PlayerInsights.Insight").
-				Where("id = ?", player_stock_id).
-				First(&player_stock)
+			var playerStockPreview models.PlayerStockPreview
 
-			pageComponent := templates.PlayerStockPreview(player_stock)
+			db.Table("player_stocks as ps").
+				Select("sum(i.value) as total_insight, gs.value as stock_value, s.name as stock_name, s.image_path as stock_img").
+				Joins("inner join player_insights as pi on pi.player_stock_id = ps.id").
+				Joins("inner join insights as i on i.id = pi.insight_id").
+				Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+				Joins("inner join stocks as s on s.id = gs.stock_id").
+				Where("ps.id = ?", player_stock_id).
+				Group("stock_value, stock_name, stock_img").
+				Scan(&playerStockPreview)
+
+			pageComponent := templates.PlayerStockPreview(playerStockPreview)
 
 			ctx := context.Background()
 			pageComponent.Render(ctx, c.Writer)
@@ -106,7 +111,7 @@ func CreatePlayerStockRoutes() {
 			cg, _ := c.Get("game")
 			game := cg.(models.Game)
 
-			gamecontrollers.BroadcastUpdateBoard(game)
+			gamecontrollers.BroadcastUpdatePlayBoard(game)
 
 		})
 }

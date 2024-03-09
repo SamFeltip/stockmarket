@@ -78,19 +78,19 @@ templ TotalInsightButton(player_stock models.PlayerStock) {
 	}
 }
 
-templ TotalInsight(player_stock models.PlayerStock) {
-	if player_stock.TotalInsight() > 0 {
+templ TotalInsight(playerStockPreview models.PlayerStockPreview) {
+	if playerStockPreview.TotalInsight > 0 {
 		<div class="total-insight text-success d-flex flex-row align-items-center">
 			<img height="6px" class="pe-2" src="/static/imgs/icons/stock_up.svg" alt="stock up arrow"/>
 			<p style="font-size: 0.75rem">
-				£{ fmt.Sprintf("%.2f", player_stock.TotalInsight()) }
+				£{ fmt.Sprintf("%.2f", playerStockPreview.TotalInsight) }
 			</p>
 		</div>
-	} else if player_stock.TotalInsight() < 0 {
+	} else if playerStockPreview.TotalInsight < 0 {
 		<div class="total-insight text-danger d-flex flex-row align-items-center">
 			<img height="6px" class="pe-2" src="/static/imgs/icons/stock_down.svg" alt="stock down arrow"/>
 			<p style="font-size: 0.75rem">
-				£{ fmt.Sprintf("%.2f", player_stock.TotalInsight()) }
+				£{ fmt.Sprintf("%.2f", playerStockPreview.TotalInsight) }
 			</p>
 		</div>
 	} else {
@@ -103,20 +103,20 @@ templ TotalInsight(player_stock models.PlayerStock) {
 }
 
 
-templ PlayerStockPreview(player_stock models.PlayerStock) {
+templ PlayerStockPreview(playerStockPreview models.PlayerStockPreview) {
 
 	<div class="d-flex justify-content-between flex-fill">
 		<div class="d-flex flex-row align-items-center gap-1">
-			<img width="30px" src={ player_stock.GameStock.Stock.ImagePath } alt={ player_stock.GameStock.Stock.Name }/>
+			<img width="30px" src={ playerStockPreview.StockImg } alt={ playerStockPreview.StockName }/>
 			<h5 class="modal-title" style="max-width: 6rem;">
-                { player_stock.GameStock.Stock.Name }
+                { playerStockPreview.StockName }
             </h5>
 		</div>
         <div class="text-end">
             <p>
-                £{ fmt.Sprintf("%.2f", player_stock.GameStock.Value) }
+                £{ fmt.Sprintf("%.2f", playerStockPreview.StockValue) }
             </p>
-		    @TotalInsight(player_stock)
+		    @TotalInsight(playerStockPreview)
         </div>
 	</div>
 }
@@ -187,7 +187,12 @@ templ BuyModal(player_stock models.PlayerStock) {
 		<div class="modal-dialog">
 			<div class="modal-content">
                 <div class="modal-header">
-				    @PlayerStockPreview(player_stock)
+				    @PlayerStockPreview(models.PlayerStockPreview{
+						StockImg: player_stock.GameStock.Stock.ImagePath,
+						StockName: player_stock.GameStock.Stock.Name,
+						StockValue: player_stock.GameStock.Value,
+						TotalInsight: player_stock.TotalInsight(),
+					})
                 </div>
 
 				<div class="modal-body d-flex flex-column row-gap-3">
@@ -281,7 +286,12 @@ templ SellModal(player_stock models.PlayerStock) {
 						<img width="30px" src={ player_stock.GameStock.Stock.ImagePath } alt={ player_stock.GameStock.Stock.Name }/>
 						<h5 class="modal-title">{ player_stock.GameStock.Stock.Name }</h5>
 					</div>
-					@TotalInsight(player_stock)
+					@TotalInsight(models.PlayerStockPreview{
+						StockImg: player_stock.GameStock.Stock.ImagePath,
+						StockName: player_stock.GameStock.Stock.Name,
+						StockValue: player_stock.GameStock.Value,
+						TotalInsight: player_stock.TotalInsight(),
+					})
 				</div>
 
 				<div class="modal-body d-flex flex-column row-gap-3">

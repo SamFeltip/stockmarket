@@ -2,6 +2,7 @@ package player_stocks
 
 import (
 	"fmt"
+	gameController "stockmarket/controllers/games"
 	"stockmarket/models"
 	gameTemplates "stockmarket/templates/games"
 	"strconv"
@@ -42,16 +43,28 @@ func Edit(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 
 	game := cg.(models.Game)
 
-	_, err = models.NewFeedItem(game, quantityAdd, models.PlayerPlay, playerStock.Player, playerStock.GameStock, db)
+	feedItem, err := models.NewFeedItem(game, quantityAdd, models.PlayerPlay, playerStock.Player, playerStock.GameStock, db)
 
 	if err != nil {
 		fmt.Println("could not create new feed item", err)
 		return gameTemplates.Error(err), err
 	}
 
-	playerStock.Player.Cash -= quantityAdd * int(playerStock.GameStock.Value)
+	game.Plays = append(game.Plays, feedItem)
 
+	playerStock.Player.Cash -= quantityAdd * int(playerStock.GameStock.Value)
 	db.Save(&playerStock.Player)
+
+	template, err := gameController.CheckForMarketClose(game, db)
+
+	if err != nil {
+		fmt.Println("could not check for market close", err)
+		return gameTemplates.Error(err), err
+	}
+
+	if template != nil {
+		return template, nil
+	}
 
 	err = game.UpdateCurrentUser(db)
 
