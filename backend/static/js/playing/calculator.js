@@ -10,13 +10,19 @@ export class StockCalculator extends HTMLElement {
             "gameStock-value",
             "gameStock-sharesAvailable", //={strconv.Itoa(player_stock.GameStock.SharesAvailable())}
             "player-cash", //={strconv.Itoa(player_stock.Player.Cash)}
-            "playerStock-quantity-add"
+            "playerStock-quantity-add",
+            "mode"
         ]
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
         console.log(`Attribute ${name} changed from ${oldValue} to ${newValue}`);
     }
+
+    get mode() {
+        return this.getAttribute('mode')
+    }
+
 
     get gameStockValue() {
         let game_stock_value_attr = this.getAttribute('gamestock-value')
@@ -136,19 +142,24 @@ export class StockCalculator extends HTMLElement {
     }
 
     // screw you, im not using OR statements it will make this code unreadable as hell, Idgaf
-    PlayerCanBuyStockQuantity(newStockQuantity) {
+    PlayerCanBuyStockQuantity(stocks_to_buy) {
 
-        console.log({quantity: newStockQuantity})
-        if (newStockQuantity < 0) { return [false, "cannot purchase less than 0 stocks"] }
-        if (newStockQuantity * this.gameStockValue > this.playerCash) { return [false, "not enough cash"] }
-        if(this.gameStockSharesAvailable - newStockQuantity < 0) {return [false, "not enough stocks available"]}
+        console.log({fn: "buy", mode: this.mode, playerStockQuantity: this.playerStockQuantity, addPlayerStockQuantity: this.addPlayerStockQuantity, newStockQuantity: stocks_to_buy})
+
+        if(this.mode == "sell" && stocks_to_buy > 0) {return [false, "cannot sell positive stocks"]}
+
+        if (stocks_to_buy * this.gameStockValue > this.playerCash) { return [false, "not enough cash"] }
+        if(this.gameStockSharesAvailable - stocks_to_buy < 0) {return [false, "not enough stocks available"]}
         // if (quantity > this.gameStockSharesAvailable) { return [false, "not enough shares available"] }
 
         return [true, ""]
     }
 
     PlayerCanSellStockQuantity(stocks_to_sell) {
-        let newStockQuantity = this.addPlayerStockQuantity - stocks_to_sell
+        let newStockQuantity = this.playerStockQuantity + stocks_to_sell
+        console.log({playerStockQuantity: this.playerStockQuantity, addPlayerStockQuantity: this.addPlayerStockQuantity, stocks_to_sell, newStockQuantity})
+        
+        if(this.mode == "buy" && stocks_to_sell < 0) {return [false, "cannot buy negative stocks"]}
         if(newStockQuantity < 0) {return [false, "cannot sell stocks you do not have"]}
         return [true, ""]
     }
@@ -171,6 +182,10 @@ export class StockCalculator extends HTMLElement {
             throw new Error("player-cash attribute is required")
         }
 
+        if(this.getAttribute('mode') == null){
+            throw new Error("mode attribute is required")
+        }
+
         this.addPlayerStockQuantity = 0;
     }
 
@@ -187,7 +202,7 @@ export class StockCalculator extends HTMLElement {
                         ${this.playerStockQuantity} Shares = £${this.playerStockQuantity * this.gameStockValue}
                     </p>
                     <p>
-                        ${this.gameStockSharesAvailable} Stocks left to buy
+                        ${this.gameStockSharesAvailable} Stocks left to ${this.mode}
                     </p>
                     <p>
                         £${this.playerCash} Cash available
@@ -203,7 +218,7 @@ export class StockCalculator extends HTMLElement {
                             ${this.playerStockQuantity + this.addPlayerStockQuantity} Shares = £${(this.playerStockQuantity + this.addPlayerStockQuantity) * this.gameStockValue}
                         </p>
                         <p>
-                            ${this.gameStockSharesAvailable - this.addPlayerStockQuantity} Stocks left to buy
+                            ${this.gameStockSharesAvailable - this.addPlayerStockQuantity} Stocks left to ${this.mode}
                         </p>
                         <p>
                             £${this.playerCash - (this.addPlayerStockQuantity * this.gameStockValue)} Cash available

@@ -13,7 +13,8 @@ import (
 type Game struct {
 	gorm.Model
 	ID            string
-	Difficulty    int
+	PeriodCount   int
+	CurrentPeriod int
 	Status        string
 	Players       []Player    `gorm:"constraint:OnDelete:CASCADE"`
 	GameStocks    []GameStock `gorm:"constraint:OnDelete:CASCADE"`
@@ -32,17 +33,17 @@ var Finished GameStatus = "finished"
 /*
 creates a new game and all possible game stocks
 
-output: game (code from c post difficulty from gin context, user from gin context)
+output: game (code from c post PeriodCount from gin context, user from gin context)
 
 also runs CreateGameStocks
 */
-func CreateGame(code string, difficulty int, current_user User, db *gorm.DB) (Game, error) {
+func CreateGame(code string, periodCount int, current_user User, db *gorm.DB) (Game, error) {
 
-	fmt.Println("create game:", code, difficulty)
+	fmt.Println("create game:", code, periodCount)
 
 	game := Game{
 		ID:          code,
-		Difficulty:  difficulty,
+		PeriodCount: periodCount,
 		Status:      string(Waiting),
 		CurrentUser: current_user,
 	}
@@ -100,8 +101,8 @@ func (game Game) UpdateStatus(status GameStatus, db *gorm.DB) error {
 	return err
 }
 
-func GameDifficultyDisplay(difficulty int) string {
-	switch difficulty {
+func GamePeriodCountDisplay(periodCount int) string {
+	switch periodCount {
 	case 0:
 		return "Short"
 	case 1:
@@ -285,4 +286,11 @@ func (game *Game) UpdateCurrentUser(db *gorm.DB) error {
 	}
 
 	return nil
+}
+
+/*
+requiest game.Players is preloaded
+*/
+func (game *Game) CurrentTurn() int {
+	return 0
 }

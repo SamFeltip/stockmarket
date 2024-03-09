@@ -8,7 +8,7 @@ import (
 )
 
 
-templ DifficultyOptionStyles(){
+templ PeriodCountOptionStyles(){
     <style>
         .btn-check .btn {
             border-radius: 0 !important;
@@ -21,21 +21,21 @@ templ DifficultyOptionStyles(){
     </style>
 }
 
-templ DifficultyOptions(game models.Game, errMsg string) {
+templ PeriodCountOptions(game models.Game, errMsg string) {
     <input type="hidden" name="gameID" value={game.ID}/>
     <span>
-        <input type="radio" class="btn-check" name="game-length" id="option1" autocomplete="off" value="0" checked?={game.Difficulty == 0}/>
-        <label class="btn bg-dark" for="option1">{models.GameDifficultyDisplay(0)}</label>
+        <input type="radio" class="btn-check" name="game-length" id="option1" autocomplete="off" value="0" checked?={game.PeriodCount == 0}/>
+        <label class="btn bg-dark" for="option1">{models.GamePeriodCountDisplay(0)}</label>
     </span>
     
     <span>
-        <input type="radio" class="btn-check" name="game-length" id="option2" autocomplete="off" value="1" checked?={game.Difficulty == 1}/>
-        <label class="btn bg-dark" for="option2">{models.GameDifficultyDisplay(1)}</label>
+        <input type="radio" class="btn-check" name="game-length" id="option2" autocomplete="off" value="1" checked?={game.PeriodCount == 1}/>
+        <label class="btn bg-dark" for="option2">{models.GamePeriodCountDisplay(1)}</label>
     </span>
 
     <span>
-        <input type="radio" class="btn-check" name="game-length" id="option3" autocomplete="off" value="2" checked?={game.Difficulty == 2}/>
-        <label class="btn bg-dark" for="option3">{models.GameDifficultyDisplay(2)}</label>
+        <input type="radio" class="btn-check" name="game-length" id="option3" autocomplete="off" value="2" checked?={game.PeriodCount == 2}/>
+        <label class="btn bg-dark" for="option3">{models.GamePeriodCountDisplay(2)}</label>
     </span>
     if errMsg != "" {
         <p>
@@ -46,10 +46,10 @@ templ DifficultyOptions(game models.Game, errMsg string) {
     }
 }
 
-templ DifficultyOptionsSocket(game models.Game){
+templ PeriodCountOptionsSocket(game models.Game){
 
 	<div hx-swap-oob="innerHTML:#game-difficulty">
-		{models.GameDifficultyDisplay(game.Difficulty)}
+		{models.GamePeriodCountDisplay(game.PeriodCount)}
 	</div>
 }
 
@@ -77,14 +77,14 @@ templ Waiting(game models.Game) {
             
             if templates.IsCurrentUserTurn(ctx) {
                 <form hx-post="/api/games/difficulty" hx-trigger="change" hx-swap="innerHTML" hx-target="#difficulty-options-setter">
-                    @DifficultyOptionStyles()
+                    @PeriodCountOptionStyles()
                     <div class="radio-row" id="difficulty-options-setter">
-                        @DifficultyOptions(game, "")
+                        @PeriodCountOptions(game, "")
                     </div>
                 </form>
             } else {
                 <div class="btn bg-dark" id="game-difficulty">
-                    {models.GameDifficultyDisplay(game.Difficulty)}
+                    {models.GamePeriodCountDisplay(game.PeriodCount)}
                 </div>
             }
 

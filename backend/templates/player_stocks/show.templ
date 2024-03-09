@@ -197,6 +197,7 @@ templ BuyModal(player_stock models.PlayerStock) {
 						gameStock-value={ strconv.FormatFloat(player_stock.GameStock.Value, 'f', -1, 64) }
 						gameStock-sharesAvailable={ strconv.Itoa(player_stock.GameStock.SharesAvailable()) }
 						player-cash={ strconv.Itoa(player_stock.Player.Cash) }
+						mode="buy"
 					>
 						<form 
 							id="buyStock" 
@@ -287,9 +288,10 @@ templ SellModal(player_stock models.PlayerStock) {
 					<stock-calculator
 						class="d-flex flex-row gap-1"
 						playerStock-quantity={ strconv.Itoa(player_stock.Quantity) }
-						gameStock-value={ strconv.FormatFloat(player_stock.GameStock.Value, 'f', -1, 64) }
+						gameStock-value={ strconv.FormatFloat(player_stock.GameStock.Value, 'f', 1, 64) }
 						gameStock-sharesAvailable={ strconv.Itoa(player_stock.GameStock.SharesAvailable()) }
 						player-cash={ strconv.Itoa(player_stock.Player.Cash) }
+						mode="sell"
 					>
 						<form 
 							id="sellStock" 
@@ -330,12 +332,12 @@ templ SellModal(player_stock models.PlayerStock) {
 									/>
 								</div>
 								<div class="stock-btns d-flex gap-2">
-									<button type="button" class="rem-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center ">-</button>
-									<button type="button" class="add-stock btn btn-success flex-fill d-flex justify-content-center align-items-center ">+</button>
+									<button type="button" class="add-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center ">-</button>
+									<button type="button" class="rem-stock btn btn-success flex-fill d-flex justify-content-center align-items-center ">+</button>
 								</div>
 								<div class="cash-btns d-flex gap-2">
-									<button type="button" class="rem-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center ">-</button>
-									<button type="button" class="add-stock btn btn-success flex-fill d-flex justify-content-center align-items-center ">+</button>
+									<button type="button" class="add-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center ">-</button>
+									<button type="button" class="rem-stock btn btn-success flex-fill d-flex justify-content-center align-items-center ">+</button>
 								</div>
 								<div class="transaction-body"></div>
 							</div>

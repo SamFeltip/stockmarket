@@ -41,12 +41,12 @@ func BroadcastUpdatePlayersList(game *models.Game) error {
 	return nil
 }
 
-func BroadcastUpdateDifficulty(game models.Game) error {
+func BroadcastUpdatePeriodCount(game models.Game) error {
 
-	difficultyDisplay := templates.DifficultyOptionsSocket(game)
+	periodCountDisplay := templates.PeriodCountOptionsSocket(game)
 
 	buffer := &bytes.Buffer{}
-	difficultyDisplay.Render(context.Background(), buffer)
+	periodCountDisplay.Render(context.Background(), buffer)
 
 	broadcastMessage := websocketModels.BroadcastMessage{
 		Game:   game,
@@ -119,14 +119,14 @@ func Create(c *gin.Context) (models.Game, error) {
 	db := database.GetDb()
 
 	code := strings.ToLower(c.PostForm("code"))
-	difficultyStr := c.PostForm("difficulty")
+	periodCountStr := c.PostForm("difficulty")
 
-	if code == "" || difficultyStr == "" {
-		fmt.Println("no code or difficulty in form")
-		return models.Game{}, fmt.Errorf("no code or difficulty in form")
+	if code == "" || periodCountStr == "" {
+		fmt.Println("no code or periodCount in form")
+		return models.Game{}, fmt.Errorf("no code or periodCount in form")
 	}
 
-	difficulty, err := strconv.Atoi(difficultyStr)
+	periodCount, err := strconv.Atoi(periodCountStr)
 	if err != nil {
 		// handle error, e.g. return an error response
 		fmt.Println("couldnt convert to int")
@@ -141,11 +141,11 @@ func Create(c *gin.Context) (models.Game, error) {
 		return models.Game{}, err
 	}
 
-	fmt.Println("create game:", code, difficulty)
+	fmt.Println("create game:", code, periodCount)
 
 	game := models.Game{
 		ID:          code,
-		Difficulty:  difficulty,
+		PeriodCount: periodCount,
 		Status:      string(models.Waiting),
 		CurrentUser: current_user,
 	}

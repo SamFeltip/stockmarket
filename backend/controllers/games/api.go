@@ -11,17 +11,17 @@ import (
 	"gorm.io/gorm"
 )
 
-func UpdateGameDifficulty(gameID string, difficulty int) (templ.Component, error) {
+func UpdateGamePeriodCount(gameID string, periodCount int) (templ.Component, error) {
 
 	db := database.GetDb()
 
 	game := models.Game{}
-	err := db.Model(&game).Where("lower(games.id) = lower(?)", gameID).Update("difficulty", difficulty).Error
+	err := db.Model(&game).Where("lower(games.id) = lower(?)", gameID).Update("period_count", periodCount).Error
 
 	errMsg := ""
 
 	if err != nil {
-		fmt.Println("could not update game difficulty")
+		fmt.Println("could not update game PeriodCount")
 		return nil, err
 	}
 
@@ -33,15 +33,15 @@ func UpdateGameDifficulty(gameID string, difficulty int) (templ.Component, error
 		return nil, err
 	}
 
-	err = BroadcastUpdateDifficulty(game)
+	err = BroadcastUpdatePeriodCount(game)
 
 	if err != nil {
-		fmt.Println("could not broadcast difficulty update")
-		errMsg = "could not broadcast difficulty update"
+		fmt.Println("could not broadcast PeriodCount update")
+		errMsg = "could not broadcast PeriodCount update"
 		return nil, err
 	}
 
-	baseComponent := templates.DifficultyOptions(game, errMsg)
+	baseComponent := templates.PeriodCountOptions(game, errMsg)
 	return baseComponent, nil
 }
 

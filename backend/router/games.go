@@ -78,24 +78,24 @@ func CreateGameRoutes() {
 		func(c *gin.Context) { middleware.AuthCurrentPlayer(c) },
 		func(c *gin.Context) {
 
-			// log form in context (form contains gameID and difficulty)
+			// log form in context (form contains gameID and periodCount)
 			c.Request.ParseForm()
 			fmt.Println(c.Request.Form["gameID"])
 			fmt.Println(c.Request.Form["game-length"])
 
 			gameID := c.Request.Form["gameID"][0]
-			difficultyStr := c.Request.Form["game-length"][0]
+			periodCountStr := c.Request.Form["game-length"][0]
 
-			difficulty, err := strconv.Atoi(difficultyStr)
+			periodCount, err := strconv.Atoi(periodCountStr)
 			if err != nil {
-				fmt.Println("could not convert difficulty to int", difficultyStr)
+				fmt.Println("could not convert periodCount to int", periodCountStr)
 				pageComponent := templates.Error(err)
 				ctx := context.Background()
 				pageComponent.Render(ctx, c.Writer)
 				return
 			}
 
-			baseComponent, err := controllers.UpdateGameDifficulty(gameID, difficulty)
+			baseComponent, err := controllers.UpdateGamePeriodCount(gameID, periodCount)
 			if err != nil {
 				pageComponent := templates.Error(err)
 				ctx := context.Background()
@@ -115,7 +115,7 @@ func CreateGameRoutes() {
 		func(c *gin.Context) {
 			fmt.Println("start game")
 
-			// log form in context (form contains gameID and difficulty)
+			// log form in context (form contains gameID and periodCount)
 			c.Request.ParseForm()
 			gameID := c.Request.Form["gameID"][0]
 
