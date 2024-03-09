@@ -6,12 +6,6 @@ import (
 	"fmt"
 )
 
-templ NoPlayerStock() {
-	<p>
-		stock not found
-	</p>
-}
-
 templ PlayViewStyles() {
 	<style>
         #play-view {
@@ -60,24 +54,6 @@ templ PlayViewStyles() {
     </style>
 }
 
-templ TotalInsightButton(player_stock models.PlayerStock) {
-	if player_stock.TotalInsight() > 0 {
-		<div class="btn btn-success">
-			<img class="pe-2" height="16px" src="/static/imgs/icons/stock_up_black.svg" alt="stock up arrow"/>
-			£{ fmt.Sprintf("%.2f", player_stock.TotalInsight()) }
-		</div>
-	} else if player_stock.TotalInsight() < 0 {
-		<div class="btn btn-danger">
-			<img class="pe-2" height="16px" src="/static/imgs/icons/stock_down_black.svg" alt="stock down arrow"/>
-			£{ fmt.Sprintf("%.2f", player_stock.TotalInsight()) }
-		</div>
-	} else {
-		<div class="btn btn-secondary">
-			boring!
-		</div>
-	}
-}
-
 templ TotalInsight(playerStockPreview models.PlayerStockPreview) {
 	if playerStockPreview.TotalInsight > 0 {
 		<div class="total-insight text-success d-flex flex-row align-items-center">
@@ -122,355 +98,133 @@ templ PlayerStockPreview(playerStockPreview models.PlayerStockPreview) {
 }
 
 
-templ ModalStyles() {
-	<style>
-        .modal .purchase-form {
-            display: grid;
-            grid-template-areas:
-                "label . value"
-                "input-stock space input-cash"
-                "stock-btns . cash-btns"
-                "transaction-body transaction-body transaction-body";
-            grid-template-columns: 1fr 1rem 1fr;
-            grid-template-rows: 1fr 1fr 2rem;
-            row-gap: 1rem;
-        }
 
-        .modal .header-amount-of-stocks {
-            grid-area: label;
-        }
-
-        .modal .header-value {
-            grid-area: value;
-        }
-
-        .modal .input-cash-group {
-            grid-area: input-cash;
-        }
-
-        .modal .input-stock-group {
-            grid-area: input-stock;
-        }
-
-        .modal .stock-btns {
-            grid-area: stock-btns;
-        }
-
-        .modal .cash-btns {
-            grid-area: cash-btns;
-        }
-
-
-        .modal .transaction-body {
-            grid-area: transaction-body;
-        }
-
-
-        .modal .equals {
-            grid-area: space;
-        }
-
-        .modal .total-insight p {
-            font-size: 1rem !important;
-        }
-
-        .modal .total-insight img {
-            height: 8px;
-        }
-        
-    </style>
+templ PlayerStockPlayer(playerStockPlayerResult models.PlayerStockPlayerResult) {
+	<div id="stocks" class="rounded bg-secondary p-2 d-flex flex-column text-center justify-content-center">
+		<p>
+			{ strconv.Itoa(playerStockPlayerResult.StocksHeld) } Shares held
+		</p>
+		<p>
+			£{ fmt.Sprintf("%.2f", playerStockPlayerResult.StockValue) } stock evaluation
+		</p>
+	</div>
 }
 
-// use bootstrap modal
-templ BuyModal(player_stock models.PlayerStock) {
-	<div id="buyModal" class="modal fade" tabindex="-1">
-		<div class="modal-dialog">
-			<div class="modal-content">
-                <div class="modal-header">
-				    @PlayerStockPreview(models.PlayerStockPreview{
-						StockImg: player_stock.GameStock.Stock.ImagePath,
-						StockName: player_stock.GameStock.Stock.Name,
-						StockValue: player_stock.GameStock.Value,
-						TotalInsight: player_stock.TotalInsight(),
-					})
-                </div>
-
-				<div class="modal-body d-flex flex-column row-gap-3">
-					<stock-calculator
-						class="d-flex flex-row gap-1"
-						playerStock-quantity={ strconv.Itoa(player_stock.Quantity) }
-						gameStock-value={ strconv.FormatFloat(player_stock.GameStock.Value, 'f', -1, 64) }
-						gameStock-sharesAvailable={ strconv.Itoa(player_stock.GameStock.SharesAvailable()) }
-						player-cash={ strconv.Itoa(player_stock.Player.Cash) }
-						mode="buy"
-					>
-						<form 
-							id="buyStock" 
-							hx-post="/player_stocks/edit"
-							hx-target="main"
-							hx-swap="innerHTML"
-						>
-							<input type="hidden" id="playerStockID" name="PlayerStockID" value={ strconv.FormatUint(uint64(player_stock.ID), 10) }/>
-							<input type="hidden" name="gameID" value={ player_stock.GameStock.GameID }/>
-							
-							<div class="purchase-form flex-fill">
-								<h6 class="mb-0 header-amount-of-stocks">
-									Amount of stocks
-								</h6>
-								<h6 class="mb-0 header-value">
-									Value
-								</h6>
-								<div class="input-stock-group input-group mb-0">
-									<input
-										type="number"
-										step="1000"
-										min="0"
-										class="form-control input-stock"
-										name="PlayerStockQuantityAdd"
-									/>
-								</div>
-								<div class="equals d-flex justify-content-center align-items-center flex-fill">
-									=
-								</div>
-								<div class="input-cash-group input-group mb-0">
-									<span class="input-group-text text-black">£</span>
-									<input
-										class="form-control input-cash"
-										type="number"
-										steps="1000"
-										min="0"
-										value="0"
-									/>
-								</div>
-								<div class="stock-btns d-flex gap-2">
-									<button type="button" class="rem-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center ">-</button>
-									<button type="button" class="add-stock btn btn-success flex-fill d-flex justify-content-center align-items-center ">+</button>
-								</div>
-								<div class="cash-btns d-flex gap-2">
-									<button type="button" class="rem-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center ">-</button>
-									<button type="button" class="add-stock btn btn-success flex-fill d-flex justify-content-center align-items-center ">+</button>
-								</div>
-								<div class="transaction-body"></div>
-							</div>
-						</form>
-					</stock-calculator>
+templ Investors(investors []models.InvestorResult) {
+	<div id="investors">
+		<h4 class="text-black">Investors</h4>
+		<div class="d-flex flex-row gap-2">
+			for _, investor := range investors {
+				<div class="d-flex flex-column align-items-center">
+					<img class="rounded" width="56px" src={ investor.ProfileRoot } alt={ investor.Name }/>
+					<p>
+						{ strconv.Itoa(investor.Quantity) }
+					</p>
 				</div>
-				<div class="modal-footer d-flex flex-row">
-					<button
-						type="button"
-						class="btn btn-secondary flex-fill"
-						data-bs-dismiss="modal"
-					>
-						Cancel
-					</button>
-					<input
-						data-bs-dismiss="modal"
-						class="btn btn-success flex-fill"
-						type="submit"
-						form="buyStock"
-						value="Buy"
-					/>
-				</div>
-			</div>
+			}
 		</div>
 	</div>
 }
 
-templ SellModal(player_stock models.PlayerStock) {
-	
-	<div id="sellModal" class="modal fade" tabindex="-1">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header d-flex justify-content-between">
-					<div class="d-flex flex-row align-items-center gap-1">
-						<img width="30px" src={ player_stock.GameStock.Stock.ImagePath } alt={ player_stock.GameStock.Stock.Name }/>
-						<h5 class="modal-title">{ player_stock.GameStock.Stock.Name }</h5>
-					</div>
-					@TotalInsight(models.PlayerStockPreview{
-						StockImg: player_stock.GameStock.Stock.ImagePath,
-						StockName: player_stock.GameStock.Stock.Name,
-						StockValue: player_stock.GameStock.Value,
-						TotalInsight: player_stock.TotalInsight(),
-					})
-				</div>
-
-				<div class="modal-body d-flex flex-column row-gap-3">
-					<stock-calculator
-						class="d-flex flex-row gap-1"
-						playerStock-quantity={ strconv.Itoa(player_stock.Quantity) }
-						gameStock-value={ strconv.FormatFloat(player_stock.GameStock.Value, 'f', 1, 64) }
-						gameStock-sharesAvailable={ strconv.Itoa(player_stock.GameStock.SharesAvailable()) }
-						player-cash={ strconv.Itoa(player_stock.Player.Cash) }
-						mode="sell"
-					>
-						<form 
-							id="sellStock" 
-							hx-post="/player_stocks/edit"
-							hx-target="main"
-							hx-swap="innerHTML"
-						>
-							<input type="hidden" id="playerStockID" name="PlayerStockID" value={ strconv.FormatUint(uint64(player_stock.ID), 10) }/>
-							<input type="hidden" name="gameID" value={ player_stock.GameStock.GameID }/>
-							
-							<div class="purchase-form flex-fill">
-								<h6 class="mb-0 header-amount-of-stocks">
-									Amount of stocks
-								</h6>
-								<h6 class="mb-0 header-value">
-									Value
-								</h6>
-								<div class="input-stock-group input-group mb-0">
-									<input
-										type="number"
-										step="1000"
-										min="0"
-										class="form-control input-stock"
-										name="PlayerStockQuantityAdd"
-									/>
-								</div>
-								<div class="equals d-flex justify-content-center align-items-center flex-fill">
-									=
-								</div>
-								<div class="input-cash-group input-group mb-0">
-									<span class="input-group-text text-black">£</span>
-									<input
-										class="form-control input-cash"
-										type="number"
-										steps="1000"
-										min="0"
-										value="0"
-									/>
-								</div>
-								<div class="stock-btns d-flex gap-2">
-									<button type="button" class="add-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center ">-</button>
-									<button type="button" class="rem-stock btn btn-success flex-fill d-flex justify-content-center align-items-center ">+</button>
-								</div>
-								<div class="cash-btns d-flex gap-2">
-									<button type="button" class="add-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center ">-</button>
-									<button type="button" class="rem-stock btn btn-success flex-fill d-flex justify-content-center align-items-center ">+</button>
-								</div>
-								<div class="transaction-body"></div>
-							</div>
-						</form>
-					</stock-calculator>
-				</div>
-
-				<div class="modal-footer d-flex flex-row">
-					<button type="button" class="btn btn-secondary flex-fill" data-bs-dismiss="modal">Cancel</button>
-					<input
-						data-bs-dismiss="modal"
-						class="btn btn-success flex-fill"
-						type="submit"
-						form="sellStock"
-						value="Sell"
-					/>
-				</div>
-			</div>
+templ TotalInsightResultButton(insightResult models.PlayerStockPreview) {
+	if insightResult.TotalInsight > 0 {
+		<div class="btn btn-success">
+			<img class="pe-2" height="16px" src="/static/imgs/icons/stock_up_black.svg" alt="stock up arrow"/>
+			£{ fmt.Sprintf("%.2f", insightResult.TotalInsight) }
 		</div>
-	</div>
-}
-
-func playViewClass(isCurrentPlayer bool) string {
-	playViewClass := "bg-white text-black rounded-bottom p-3"
-	if !isCurrentPlayer {
-		playViewClass = playViewClass + " watching"
+	} else if insightResult.TotalInsight < 0 {
+		<div class="btn btn-danger">
+			<img class="pe-2" height="16px" src="/static/imgs/icons/stock_down_black.svg" alt="stock down arrow"/>
+			£{ fmt.Sprintf("%.2f", insightResult.TotalInsight) }
+		</div>
+	} else {
+		<div class="btn btn-secondary">
+			boring!
+		</div>
 	}
-
-	return playViewClass
 }
 
-templ Show(player_stock models.PlayerStock, isCurrentPlayer bool) {
-	
-	<div id="play-view" class={playViewClass(isCurrentPlayer)}>	
-		@PlayViewStyles()
-		<div id="stocks" class="rounded bg-secondary p-2 d-flex flex-column text-center justify-content-center">
-			<p>
-				{ strconv.Itoa(player_stock.Quantity) } Shares held
-			</p>
-			<p>
-				£{ fmt.Sprintf("%.2f", player_stock.Value()) } stock evaluation
-			</p>
-		</div>
-		<div id="investors">
-			<h4 class="text-black">Investors</h4>
-			<div class="d-flex flex-row gap-2">
-				for _, player_stock := range player_stock.GameStock.PlayerStocks {
-					<div class="d-flex flex-column align-items-center">
-						<img class="rounded" width="56px" src={ player_stock.Player.User.ProfileRoot } alt={ player_stock.Player.User.Name }/>
-						<p>
-							{ strconv.Itoa(player_stock.Quantity) }
+templ Insights(insightResults []models.InsightResult){
+	<div class="d-grid gap-1 overflow-auto" style="grid-template-columns: 1fr 1fr; max-height: 60vh;">
+		for _, insightResult := range insightResults {
+			<div class="card">
+				<div class="card-body text-center">
+					<h5 class="text-black">
+						if insightResult.Value > 0 {
+							<img class="pe-2" height="16px" src="/static/imgs/icons/stock_up.svg" alt="stock up arrow"/>
+						} else {
+							<img class="pe-2" height="16px" src="/static/imgs/icons/stock_down.svg" alt="stock down arrow"/>
+						}
+						£{ fmt.Sprintf("%.2f", insightResult.Value) }
+					</h5>
+					<p>
+						{ insightResult.Description }
+					</p>
+				</div>
+			</div>
+		}
+	</div>
+}
+
+templ StockInfo(stockInfoResult models.StockInfoResult) {
+	<div id="stock-info" class="d-flex flex-column">
+		<h4 class="text-black">Info</h4>
+		<div class="gap-3 d-flex flex-row">
+			<div class="card flex-fill">
+				<div class="card-body text-center">
+					<p class="fs-5">
+						{ strconv.FormatFloat(stockInfoResult.Variation, 'f', -1, 64) }
+					</p>
+					<p class="text-secondary">
+						Volitility
+					</p>
+				</div>
+			</div>
+			<div class="card flex-fill">
+				<div class="card-body text-center">
+					if true {
+						<p class="fs-5">
+							N/A
 						</p>
-					</div>
-				}
+					} else {
+						// todo: director name
+						director name 
+					}
+					<p class="text-secondary">
+						Director
+					</p>
+				</div>
+			</div>
+			<div class="card flex-fill">
+				<div class="card-body text-center">
+					<p class="fs-5">
+						{ strconv.Itoa(stockInfoResult.SharesAvailable) }
+					</p>
+					<p class="text-secondary">
+						Shares available
+					</p>
+				</div>
 			</div>
 		</div>
+	</div>
+}
+
+templ Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult, playerStockPreview models.PlayerStockPreview, investors []models.InvestorResult, insights []models.InsightResult, stockInfo models.StockInfoResult, isCurrentPlayer bool) {
+	<div id="play-view" class={"bg-white text-black rounded-bottom p-3", templ.KV("watching", !isCurrentPlayer)}>	
+		@PlayViewStyles()
+		@PlayerStockPlayer(playerStockPlayer)
+		@Investors(investors)
 		<div id="insights" class="d-flex flex-column gap-2">
 			<div class="d-flex justify-content-between">
 				<h4 class="text-black">Your insights</h4>
-				@TotalInsightButton(player_stock)
+				@TotalInsightResultButton(playerStockPreview)
 			</div>
-			<div class="d-grid gap-1 overflow-auto" style="grid-template-columns: 1fr 1fr; max-height: 60vh;">
-				for _, player_insights := range player_stock.PlayerInsights {
-					<div class="card">
-						<div class="card-body text-center">
-							<h5 class="text-black">
-								if player_insights.Insight.Value > 0 {
-									<img class="pe-2" height="16px" src="/static/imgs/icons/stock_up.svg" alt="stock up arrow"/>
-								} else {
-									<img class="pe-2" height="16px" src="/static/imgs/icons/stock_down.svg" alt="stock down arrow"/>
-								}
-								£{ fmt.Sprintf("%.2f", player_insights.Insight.Value) }
-							</h5>
-							<p>
-								{ player_insights.Insight.Description }
-							</p>
-						</div>
-					</div>
-				}
-			</div>
+			@Insights(insights)
 		</div>
 		<div id="price-charts">
 			<h4 class="text-black">Price charts</h4>
 		</div>
-		<div id="stock-info" class="d-flex flex-column">
-			<h4 class="text-black">Info</h4>
-			<div class="gap-3 d-flex flex-row">
-				<div class="card flex-fill">
-					<div class="card-body text-center">
-						<p class="fs-5">
-							{ strconv.FormatFloat(player_stock.GameStock.Stock.Variation, 'f', -1, 64) }
-						</p>
-						<p class="text-secondary">
-							Volitility
-						</p>
-					</div>
-				</div>
-				<div class="card flex-fill">
-					<div class="card-body text-center">
-						if player_stock.GameStock.Director == nil {
-							<p class="fs-5">
-								N/A
-							</p>
-						} else {
-							{ player_stock.GameStock.Director.User.Name }
-						}
-						<p class="text-secondary">
-							Director
-						</p>
-					</div>
-				</div>
-				<div class="card flex-fill">
-					<div class="card-body text-center">
-						<p class="fs-5">
-							{strconv.Itoa(player_stock.GameStock.SharesAvailable())}
-						</p>
-						<p class="text-secondary">
-							Shares available
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
+		@StockInfo(stockInfo)
 		if isCurrentPlayer {
 			<button id="buy-button" class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#buyModal">
 				Buy
@@ -481,6 +235,7 @@ templ Show(player_stock models.PlayerStock, isCurrentPlayer bool) {
 		}
 	</div>
 	@ModalStyles()
-	@BuyModal(player_stock)
-	@SellModal(player_stock)
+	@BuyModal(playerStockPreview, playerStockPlayer, stockInfo, playerStockID)
+	@SellModal(playerStockPreview, playerStockPlayer, stockInfo, playerStockID)
+
 }

@@ -1,0 +1,240 @@
+package player_stocks
+
+import (
+	"strconv"
+	"stockmarket/models"
+)
+
+templ ModalStyles() {
+	<style>
+        .modal .purchase-form {
+            display: grid;
+            grid-template-areas:
+                "label . value"
+                "input-stock space input-cash"
+                "stock-btns . cash-btns"
+                "transaction-body transaction-body transaction-body";
+            grid-template-columns: 1fr 1rem 1fr;
+            grid-template-rows: 1fr 1fr 2rem;
+            row-gap: 1rem;
+        }
+
+        .modal .header-amount-of-stocks {
+            grid-area: label;
+        }
+
+        .modal .header-value {
+            grid-area: value;
+        }
+
+        .modal .input-cash-group {
+            grid-area: input-cash;
+        }
+
+        .modal .input-stock-group {
+            grid-area: input-stock;
+        }
+
+        .modal .stock-btns {
+            grid-area: stock-btns;
+        }
+
+        .modal .cash-btns {
+            grid-area: cash-btns;
+        }
+
+
+        .modal .transaction-body {
+            grid-area: transaction-body;
+        }
+
+
+        .modal .equals {
+            grid-area: space;
+        }
+
+        .modal .total-insight p {
+            font-size: 1rem !important;
+        }
+
+        .modal .total-insight img {
+            height: 8px;
+        }
+        
+    </style>
+}
+
+// use bootstrap modal
+templ BuyModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer models.PlayerStockPlayerResult, stockInfo models.StockInfoResult, playerStockID uint) {
+	<div id="buyModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+                <div class="modal-header">
+				    @PlayerStockPreview(playerStockPreview)
+                </div>
+
+				<div class="modal-body d-flex flex-column row-gap-3">
+					<stock-calculator
+						class="d-flex flex-row gap-1"
+						playerStock-quantity={ strconv.Itoa(playerStockPlayer.StocksHeld) }
+						gameStock-value={ strconv.FormatFloat(playerStockPreview.StockValue, 'f', -1, 64) }
+						gameStock-sharesAvailable={ strconv.Itoa(stockInfo.SharesAvailable) }
+						player-cash={ strconv.Itoa(playerStockPlayer.Cash) }
+						mode="buy"
+					>
+						<form 
+							id="buyStock" 
+							hx-post="/player_stocks/edit"
+							hx-target="main"
+							hx-swap="innerHTML"
+						>
+							<input type="hidden" id="playerStockID" name="PlayerStockID" value={ strconv.FormatUint(uint64(playerStockID), 10) }/>
+							<input type="hidden" name="gameID" value={ playerStockPreview.GameID }/>
+							
+							<div class="purchase-form flex-fill">
+								<h6 class="mb-0 header-amount-of-stocks">
+									Amount of stocks
+								</h6>
+								<h6 class="mb-0 header-value">
+									Value
+								</h6>
+								<div class="input-stock-group input-group mb-0">
+									<input
+										type="number"
+										step="1000"
+										min="0"
+										class="form-control input-stock"
+										name="PlayerStockQuantityAdd"
+									/>
+								</div>
+								<div class="equals d-flex justify-content-center align-items-center flex-fill">
+									=
+								</div>
+								<div class="input-cash-group input-group mb-0">
+									<span class="input-group-text text-black">£</span>
+									<input
+										class="form-control input-cash"
+										type="number"
+										steps="1000"
+										min="0"
+										value="0"
+									/>
+								</div>
+								<div class="stock-btns d-flex gap-2">
+									<button type="button" class="rem-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center ">-</button>
+									<button type="button" class="add-stock btn btn-success flex-fill d-flex justify-content-center align-items-center ">+</button>
+								</div>
+								<div class="cash-btns d-flex gap-2">
+									<button type="button" class="rem-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center ">-</button>
+									<button type="button" class="add-stock btn btn-success flex-fill d-flex justify-content-center align-items-center ">+</button>
+								</div>
+								<div class="transaction-body"></div>
+							</div>
+						</form>
+					</stock-calculator>
+				</div>
+				<div class="modal-footer d-flex flex-row">
+					<button
+						type="button"
+						class="btn btn-secondary flex-fill"
+						data-bs-dismiss="modal"
+					>
+						Cancel
+					</button>
+					<input
+						data-bs-dismiss="modal"
+						class="btn btn-success flex-fill"
+						type="submit"
+						form="buyStock"
+						value="Buy"
+					/>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+templ SellModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer models.PlayerStockPlayerResult, stockInfo models.StockInfoResult, playerStockID uint) {
+	
+	<div id="sellModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header d-flex justify-content-between">
+					@PlayerStockPreview(playerStockPreview)
+				</div>
+
+				<div class="modal-body d-flex flex-column row-gap-3">
+					<stock-calculator
+						class="d-flex flex-row gap-1"
+						playerStock-quantity={ strconv.Itoa(playerStockPlayer.StocksHeld) }
+						gameStock-value={ strconv.FormatFloat(playerStockPreview.StockValue, 'f', -1, 64) }
+						gameStock-sharesAvailable={ strconv.Itoa(stockInfo.SharesAvailable) }
+						player-cash={ strconv.Itoa(playerStockPlayer.Cash) }
+						mode="sell"
+					>
+						<form 
+							id="sellStock" 
+							hx-post="/player_stocks/edit"
+							hx-target="main"
+							hx-swap="innerHTML"
+						>
+							<input type="hidden" id="playerStockID" name="PlayerStockID" value={ strconv.FormatUint(uint64(playerStockID), 10) }/>
+							<input type="hidden" name="gameID" value={ playerStockPreview.GameID }/>
+							
+							<div class="purchase-form flex-fill">
+								<h6 class="mb-0 header-amount-of-stocks">
+									Amount of stocks
+								</h6>
+								<h6 class="mb-0 header-value">
+									Value
+								</h6>
+								<div class="input-stock-group input-group mb-0">
+									<input
+										type="number"
+										step="1000"
+										min="0"
+										class="form-control input-stock"
+										name="PlayerStockQuantityAdd"
+									/>
+								</div>
+								<div class="equals d-flex justify-content-center align-items-center flex-fill">
+									=
+								</div>
+								<div class="input-cash-group input-group mb-0">
+									<span class="input-group-text text-black">£</span>
+									<input
+										class="form-control input-cash"
+										type="number"
+										steps="1000"
+										min="0"
+										value="0"
+									/>
+								</div>
+								<div class="stock-btns d-flex gap-2">
+									<button type="button" class="add-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center ">-</button>
+									<button type="button" class="rem-stock btn btn-success flex-fill d-flex justify-content-center align-items-center ">+</button>
+								</div>
+								<div class="cash-btns d-flex gap-2">
+									<button type="button" class="add-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center ">-</button>
+									<button type="button" class="rem-stock btn btn-success flex-fill d-flex justify-content-center align-items-center ">+</button>
+								</div>
+								<div class="transaction-body"></div>
+							</div>
+						</form>
+					</stock-calculator>
+				</div>
+
+				<div class="modal-footer d-flex flex-row">
+					<button type="button" class="btn btn-secondary flex-fill" data-bs-dismiss="modal">Cancel</button>
+					<input
+						data-bs-dismiss="modal"
+						class="btn btn-success flex-fill"
+						type="submit"
+						form="sellStock"
+						value="Sell"
+					/>
+				</div>
+			</div>
+		</div>
+	</div>
+}

@@ -10,45 +10,113 @@ import (
 	models "stockmarket/models"
 	gameTemplates "stockmarket/templates/games"
 	templates "stockmarket/templates/player_stocks"
+	"strconv"
 
-	"github.com/a-h/templ"
 	"github.com/gin-gonic/gin"
 )
 
 func CreatePlayerStockRoutes() {
 
 	r.GET("/player_stocks/show/:playerStockID",
-		func(c *gin.Context) { middleware.AuthIsPlaying(c) },
+		func(c *gin.Context) { middleware.AuthIsLoggedIn(c) },
 		func(c *gin.Context) {
 			db := database.GetDb()
 
-			playerStockID := c.Param("playerStockID")
-			playerStock, err := models.GetPlayerStock(playerStockID, db)
+			playerStockIDString := c.Param("playerStockID")
 
-			var pageComponent templ.Component
-			if err != nil {
-				pageComponent = templates.NoPlayerStock()
-				ctx := context.Background()
-				pageComponent.Render(ctx, c.Writer)
-				return
-
-			}
-
-			currentPlayer := playerStock.Player
-
-			game := models.Game{}
-			err = db.Where("id = ?", playerStock.GameStock.GameID).First(&game).Error
+			// convert playerStockIDString to uint
+			playerStockIDuint64, err := strconv.ParseUint(playerStockIDString, 10, 64)
 
 			if err != nil {
-				fmt.Println("error fetching game for player stock", err)
-				pageComponent = gameTemplates.Error(err)
+				fmt.Println("error converting playerStockIDString to uint", err)
+				pageComponent := gameTemplates.Error(fmt.Errorf("error converting playerStockIDString to uint"))
 				ctx := context.Background()
 				pageComponent.Render(ctx, c.Writer)
 				return
 			}
 
-			isCurrentPlayer := currentPlayer.User.ID == game.CurrentUserID
-			pageComponent = templates.Show(playerStock, isCurrentPlayer)
+			playerStockID := uint(playerStockIDuint64)
+
+			var playerStockPlayer models.PlayerStockPlayerResult
+
+			// player info
+			db.Table("player_stocks as ps").
+				Select("ps.quantity as stocks_held, (gs.value * ps.quantity) as stock_value, p.cash").
+				Joins("inner join game_stocks as gs on ps.game_stock_id = gs.id").
+				Joins("inner join players as p on p.id = ps.player_id").
+				Where("ps.id = ?", playerStockIDString).
+				Scan(&playerStockPlayer)
+
+			var playerStockPreview models.PlayerStockPreview
+
+			// total insights for player stock
+			db.Table("player_insights as pi").
+				Select("sum(i.value) as total_insight, gs.value as stock_value, gs.game_id, s.name as stock_name, s.image_path as stock_img").
+				Joins("inner join insights as i on i.id = pi.insight_id").
+				Joins("inner join player_stocks as ps on ps.id = pi.player_stock_id").
+				Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+				Joins("inner join stocks as s on s.id = gs.stock_id").
+				Where("ps.id = ?", playerStockIDString).
+				Group("gs.value, s.name, s.image_path, gs.game_id").
+				Scan(&playerStockPreview)
+
+			var investors []models.InvestorResult
+
+			// all investors
+			db.Table("player_stocks as ps").
+				Select("u.name, u.profile_root, ps.quantity").
+				Joins("inner join player_stocks as psl on ps.game_stock_id = psl.game_stock_id").
+				Joins("inner join players as p on p.id = ps.player_id").
+				Joins("inner join users as u on u.id = p.user_id").
+				Where("psl.id = ?", playerStockIDString).
+				Scan(&investors)
+
+			var insightResults []models.InsightResult
+
+			// my insights
+			db.Table("player_insights as pi").
+				Select("i.description, i.value").
+				Joins("inner join player_stocks as ps on ps.id = pi.player_stock_id").
+				Joins("inner join insights as i on pi.insight_id = i.id").
+				Where("ps.id = ?", playerStockIDString).
+				Scan(&insightResults)
+
+			var stockInfoResult models.StockInfoResult
+
+			// stock info
+			db.Table("player_stocks as ps").
+				Select("(100000 - sum(ps.quantity)) as shares_available, s.variation").
+				Joins("inner join player_stocks as psl on ps.game_stock_id = psl.game_stock_id").
+				Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+				Joins("inner join stocks as s on s.id = gs.stock_id").
+				Where("psl.id = ?", playerStockIDString).
+				Group("s.variation").
+				Scan(&stockInfoResult)
+
+			// is current player
+			var result struct {
+				IsCurrentPlayer bool
+			}
+
+			db.Table("player_stocks as ps").
+				Select("g.current_user_id = u.id as is_current_player").
+				Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+				Joins("inner join games as g on g.id = gs.game_id").
+				Joins("inner join players as p on p.id = ps.player_id").
+				Joins("inner join users as u on p.user_id = u.id").
+				Where("ps.id = ?", playerStockIDString).
+				Scan(&result)
+
+			isCurrentPlayer := result.IsCurrentPlayer
+
+			pageComponent := templates.Show(
+				playerStockID,
+				playerStockPlayer,
+				playerStockPreview,
+				investors,
+				insightResults,
+				stockInfoResult,
+				isCurrentPlayer)
 
 			ctx := context.Background()
 			pageComponent.Render(ctx, c.Writer)

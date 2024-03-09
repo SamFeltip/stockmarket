@@ -6,13 +6,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type PlayerStockPreview struct {
-	TotalInsight float64
-	StockValue   float64
-	StockName    string
-	StockImg     string
-}
-
 type PlayerStock struct {
 	gorm.Model
 	ID             uint `gorm:"primaryKey"`
@@ -22,6 +15,37 @@ type PlayerStock struct {
 	GameStock      GameStock
 	PlayerInsights []PlayerInsight `gorm:"constraint:OnDelete:CASCADE"`
 	Quantity       int
+}
+
+// sql result structs
+type PlayerStockPreview struct {
+	TotalInsight float64
+	StockValue   float64
+	StockName    string
+	StockImg     string
+	GameID       string
+}
+
+type PlayerStockPlayerResult struct {
+	StocksHeld int
+	StockValue float64
+	Cash       int
+}
+
+type InvestorResult struct {
+	Name        string
+	ProfileRoot string
+	Quantity    int
+}
+
+type InsightResult struct {
+	Description string
+	Value       float64
+}
+
+type StockInfoResult struct {
+	SharesAvailable int
+	Variation       float64
 }
 
 func GetPlayerStock(playerStockID string, db *gorm.DB) (PlayerStock, error) {
