@@ -35,7 +35,7 @@ func TestCreatePlayer(t *testing.T) {
 
 	game := models.Game{
 		ID:          "game1",
-		Difficulty:  1,
+		PeriodCount: 1,
 		Status:      string(models.Waiting),
 		CurrentUser: game_create_user,
 	}

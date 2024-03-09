@@ -38,7 +38,7 @@ func TestCreateGameStocks(t *testing.T) {
 
 	game := models.Game{
 		ID:          "game1",
-		Difficulty:  1,
+		PeriodCount: 1,
 		Status:      "waiting",
 		CurrentUser: current_user,
 	}
