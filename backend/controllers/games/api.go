@@ -124,8 +124,11 @@ func PlayAction(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 	}
 
 	if template != nil {
+		fmt.Println("market closed")
 		return template, nil
 	}
+
+	fmt.Println("market not closed")
 
 	// update current user
 	err = game.UpdateCurrentUser(db)

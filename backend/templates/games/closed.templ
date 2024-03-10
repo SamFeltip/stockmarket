@@ -2,14 +2,174 @@ package games
 
 import (
     "stockmarket/models"
+	"strconv"
+	"fmt"
 )
 
-templ Closed(game models.Game){
-    <h1>Closed</h1>
+templ Closed(gameInsights []models.GameInsight, gameStocks []models.GameStock, players []models.Player){
+	<div class="gap-3 p-4" style="height: 100vh; max-height: -webkit-fill-available; display: grid; grid-template-rows: 100px 1fr auto auto;">
+		<div class="d-flex align-items-center justify-content-center">
+			<h1>End of round</h1>
+		</div>
+		<style>
+			@keyframes popIn {
+				0% { opacity: 0; }
+			}
+			@keyframes glideIn {
+				0% {
+					opacity: 0;
+					transform: translateY(100px);
+				}
+				30% {
+					opacity: 1;
+					transform: translateY(0px);
+				}
+				70% {
+					opacity: 1;
+					transform: translateY(0px);
+				}
+				100% {
+					opacity: 0;
+					transform: translateY(-100px);
+				}
+				
+			}
+
+			@keyframes glideInMini {
+				0% {
+					opacity: 0;
+					transform: translateY(20px);
+				}
+				30% {
+					opacity: 1;
+					transform: translateY(0px);
+				}
+				70% {
+					opacity: 1;
+					transform: translateY(0px);
+				}
+				100% {
+					opacity: 0;
+					transform: translateY(-20px);
+				}
+			}
+
+			.price-modifier-display {
+				animation-name: glideInMini;
+				animation-duration: 2s;
+				animation-fill-mode: both;
+			}
+
+			.game-insight-card {
+				animation-name: glideIn;
+				animation-duration: 2s;
+				animation-fill-mode: both;
+			}
+
+
+
+		</style>
+		<div id="insight-view" class="card card-green p-4 rounded border border-white">
+			for _, gameInsight := range gameInsights {
+				<div style="display: none; grid-template-columns: 2fr 1fr;" class="game-insight gap-3 h-100" data-game-stock-id={ strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
+					<div style="background-color: #3C5F2F;" class="rounded d-flex flex-row justify-content-around align-items-center">
+						<div class="d-flex flex-column align-items-center">
+							<div>
+								<img height="120px" src={gameInsight.ImagePath} alt={gameInsight.Name}/>
+							</div>
+							<h2>
+								{ gameInsight.Name }
+							</h2>
+						</div>
+						<div class="d-flex flex-column text-center">
+							<p>
+								Sum
+							</p>
+							<h1 class={ "stock-value-display-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
+								£<span class={ "stock-value-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
+									0
+								</span>
+							</h1>
+							<div class={"price-modifier-display", templ.KV("text-danger", gameInsight.InsightValue <= 0), templ.KV("text-success", gameInsight.InsightValue > 0)}>
+								£
+								<span class="price-modifier">
+									{ fmt.Sprintf("%.2f", gameInsight.InsightValue) }
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="game-insight-card rounded bg-white text-black d-flex flex-column align-items-center justify-content-center">
+						<img height="120px" src={gameInsight.ImagePath} alt={gameInsight.Name}/>
+						<div class="d-flex flex-row gap-2 align-items-center">
+							if gameInsight.InsightValue > 0 {
+								<img height="24px" src="/static/imgs/icons/stock_up.svg" alt="stock up arrow"/>
+							} else {
+								<img height="24px" src="/static/imgs/icons/stock_down.svg" alt="stock down arrow"/>
+							}
+							<h2 class="text-black">
+								£{ fmt.Sprintf("%.2f", gameInsight.InsightValue) }
+							</h2>
+						</div>
+						<p>
+							{ gameInsight.Description }
+						</p>
+					</div>
+				</div>
+			}
+		</div>
+		<div class="card card-green p-4 rounded d-flex flex-row justify-content-between align-items-center">
+			<h2>
+				Stock Values:
+			</h2>
+			for _, gameStock := range gameStocks {
+				<div id={"game-stock-" + strconv.FormatUint(uint64(gameStock.ID), 10)} class="d-flex flex-column align-items-center">
+					<img height="80px" src={gameStock.Stock.ImagePath} alt={gameStock.Stock.Name}/>
+					<div>£{ fmt.Sprintf("%.2f", gameStock.Value) }</div>
+				</div>
+			}
+		</div>
+		<div class="card card-green p-4 rounded  d-flex flex-row justify-content-between align-items-center">
+			<h2>
+				Net Worth:
+			</h2>
+			<div class="d-flex w-100 gap-5 flex-row justify-content-center">
+			for _, player := range players {
+				<div class="d-flex flex-column align-items-center">
+					<img height="80px" width="80px" class="rounded" src={player.User.ProfileRoot} alt={player.User.Name}/>
+					<td>£{ strconv.Itoa(player.Cash) }</td>
+
+				</div>
+			}
+			</div>
+		</div>
+	</div>
+
+	<script>
+		document.querySelectorAll(".game-insight").forEach((gameInsight, index) => {
+
+			setTimeout(() => {
+				document.querySelectorAll(".game-insight").forEach(gameInsight => {
+					gameInsight.style.display = "none"
+				})
+
+				gameStockId = gameInsight.getAttribute("data-game-stock-id")
+				document.querySelectorAll(".stock-value-" + gameStockId).forEach(stockValue => {
+					let value = parseFloat(stockValue.innerText)
+					value += parseFloat(gameInsight.querySelector(".price-modifier").innerText)
+
+					stockValue.innerText = value.toFixed(2)
+				})
+
+
+				gameInsight.style.display = "grid"
+			}, index * 2000);
+
+		})
+	</script>
 }
 
-templ ClosedSocket(game models.Game){
+templ ClosedSocket(gameInsights []models.GameInsight, gameStocks []models.GameStock, players []models.Player){
 	<div hx-swap-oob="innerHTML:main">
-		@Closed(game)
+		@Closed(gameInsights, gameStocks, players)
 	</div>
 }

@@ -72,16 +72,18 @@ func BroadcastUpdatePlayBoard(game models.Game) error {
 	return nil
 }
 
-func BroadcastGameClosed(game models.Game) error {
+func BroadcastGameClosed(gameInsights []models.GameInsight, game models.Game) error {
+	fmt.Println("broadcasting market closed")
 
-	marketClosedDisplay := templates.ClosedSocket(game)
+	marketClosedDisplay := templates.ClosedSocket(gameInsights, game.GameStocks, game.Players)
 
 	buffer := &bytes.Buffer{}
 	marketClosedDisplay.Render(context.Background(), buffer)
 
 	broadcastMessage := websocketModels.BroadcastMessage{
-		Game:   game,
-		Buffer: buffer,
+		Game:    game,
+		Buffer:  buffer,
+		Message: "market closed",
 	}
 
 	hub := websockets.GetHub()
@@ -97,6 +99,7 @@ func CheckForMarketClose(game models.Game, db *gorm.DB) (templ.Component, error)
 	fmt.Println("players: " + strconv.Itoa(len(game.Players)*3))
 
 	if game.CurrentTurn() <= len(game.Players)*3 {
+		fmt.Println("market not closed")
 		return nil, nil
 	}
 
@@ -108,7 +111,14 @@ func CheckForMarketClose(game models.Game, db *gorm.DB) (templ.Component, error)
 		return templates.Error(err), err
 	}
 
-	err = BroadcastGameClosed(game)
+	gameInsights, err := models.GetGameInsights(game.ID, db)
+
+	if err != nil {
+		fmt.Println("could not get game insights", err)
+		return templates.Error(err), err
+	}
+
+	err = BroadcastGameClosed(gameInsights, game)
 
 	if err != nil {
 		fmt.Println("could not broadcast market closed", err)

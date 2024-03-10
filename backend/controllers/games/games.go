@@ -50,7 +50,27 @@ func Show(db *gorm.DB, c *gin.Context) templ.Component {
 
 	fmt.Println("player stocks" + strconv.Itoa(len(current_player.PlayerStocks)))
 
-	return templates.IngamePage(game, current_player)
+	if game.Status == string(models.Playing) {
+		pageComponent := templates.Playing(game, current_player)
+		return pageComponent
+	}
+
+	if game.Status == string(models.Closed) {
+
+		gameInsights, err := models.GetGameInsights(game.ID, db)
+
+		if err != nil {
+			fmt.Println("error getting game insights:", err)
+			return templates.Error(err)
+		}
+
+		pageComponent := templates.Closed(gameInsights, game.GameStocks, game.Players)
+		return pageComponent
+	}
+
+	pageComponent := templates.Waiting(game)
+	return pageComponent
+
 }
 
 func Create(c *gin.Context) (models.Game, error) {

@@ -86,7 +86,7 @@ func NewFeedItem(game Game, quantity int, feedItemMessage FeedItemMessage, playe
 		feed_item.ImageRoot = player.User.ProfileRoot
 	}
 
-	fmt.Println("creating new FeedItem", feed_item)
+	fmt.Println("creating new FeedItem", feed_item.Message)
 	err := db.Create(&feed_item).Error
 
 	if err != nil {

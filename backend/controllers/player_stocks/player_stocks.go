@@ -63,8 +63,11 @@ func Edit(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 	}
 
 	if template != nil {
+		fmt.Println("market closed")
 		return template, nil
 	}
+
+	fmt.Println("market not closed")
 
 	err = game.UpdateCurrentUser(db)
 
@@ -80,6 +83,8 @@ func Edit(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 
 	// get game loading template
 	loadingComponent := gameTemplates.Loading()
+
+	gameController.BroadcastUpdatePlayBoard(game)
 
 	return loadingComponent, nil
 }

@@ -4,22 +4,6 @@ import(
     "stockmarket/models"
 )
 
-func IngamePage(game models.Game, current_player models.Player) templ.Component {
-
-	if game.Status == string(models.Playing) {
-		pageComponent := Playing(game, current_player)
-		return pageComponent
-	}
-
-	if game.Status == string(models.Closed) {
-		pageComponent := Closed(game)
-		return pageComponent
-	}
-
-	pageComponent := Waiting(game)
-	return pageComponent
-}
-
 templ Index(games []models.Game){
     <main class="d-flex flex-column justify-content-center p-2">
         <div class="container rounded">

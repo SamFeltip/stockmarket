@@ -3,7 +3,6 @@ package router
 import (
 	"context"
 	"fmt"
-	gamecontrollers "stockmarket/controllers/games"
 	controllers "stockmarket/controllers/player_stocks"
 	"stockmarket/database"
 	"stockmarket/middleware"
@@ -175,11 +174,6 @@ func CreatePlayerStockRoutes() {
 				fmt.Println("error editing player stock, don't broadcast", err)
 				return
 			}
-
-			cg, _ := c.Get("game")
-			game := cg.(models.Game)
-
-			gamecontrollers.BroadcastUpdatePlayBoard(game)
 
 		})
 }
