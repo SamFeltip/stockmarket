@@ -49,15 +49,23 @@ func CreatePlayerStockRoutes() {
 			var playerStockPreview models.PlayerStockPreview
 
 			// total insights for player stock
-			db.Table("player_insights as pi").
+			err = db.Table("player_stocks as ps").
 				Select("sum(i.value) as total_insight, gs.value as stock_value, gs.game_id, s.name as stock_name, s.image_path as stock_img").
+				Joins("left join player_insights as pi on pi.player_stock_id = ps.id").
 				Joins("left join insights as i on i.id = pi.insight_id").
-				Joins("left join player_stocks as ps on ps.id = pi.player_stock_id").
 				Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 				Joins("inner join stocks as s on s.id = gs.stock_id").
-				Where("ps.id = ?", playerStockIDString).
+				Where("ps.id = ?", 682).
 				Group("gs.value, s.name, s.image_path, gs.game_id").
-				Scan(&playerStockPreview)
+				Scan(&playerStockPreview).Error
+
+			if err != nil {
+				fmt.Println("error fetching player stock preview", err)
+				pageComponent := gameTemplates.Error(err)
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
 
 			var investors []models.InvestorResult
 

@@ -70,7 +70,6 @@ func Show(db *gorm.DB, c *gin.Context) templ.Component {
 
 	pageComponent := templates.Waiting(game)
 	return pageComponent
-
 }
 
 func Create(c *gin.Context) (models.Game, error) {

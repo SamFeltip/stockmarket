@@ -160,6 +160,53 @@ func CreateGameRoutes() {
 			pageComponent.Render(ctx, c.Writer)
 		})
 
+	r.POST("/api/games/next",
+		func(c *gin.Context) { middleware.AuthIsPlaying(c) },
+		func(c *gin.Context) {
+			db := database.GetDb()
+			gameID := c.PostForm("gameID")
+
+			if gameID == "" {
+				fmt.Println("no gameID in post request")
+				pageComponent := templates.Error(fmt.Errorf("no gameID in post request"))
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
+
+			cg, exists := c.Get("game")
+
+			if !exists {
+				fmt.Println("game doesn't exist in context")
+				pageComponent := templates.Error(fmt.Errorf("game doesn't exist in context"))
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
+
+			game := cg.(models.Game)
+
+			if game.ID != gameID {
+				fmt.Println("game doesn't match gameID in context")
+				pageComponent := templates.Error(fmt.Errorf("game doesn't match gameID in context"))
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
+
+			fmt.Println("form data gathered", "gameID:", gameID)
+
+			pageComponent, err := controllers.NextPeriod(c, db)
+
+			if err != nil {
+				fmt.Println("error editing player stock", err)
+				return
+			}
+
+			ctx := context.Background()
+			pageComponent.Render(ctx, c.Writer)
+		})
+
 	r.GET("/games",
 		func(c *gin.Context) { middleware.AuthIsLoggedIn(c) },
 		func(c *gin.Context) {

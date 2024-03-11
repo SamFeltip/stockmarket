@@ -26,6 +26,7 @@ func DoesUserExist(db *gorm.DB, username string) (User, error) {
 	return user, err
 }
 
+// get the given user's active player
 func (user *User) ActiveGamePlayer(db *gorm.DB) (uint, error) {
 	var player Player
 	err := db.

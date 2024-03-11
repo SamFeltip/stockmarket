@@ -147,3 +147,35 @@ func PlayAction(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 
 	return templates.Loading(), nil
 }
+
+func NextPeriod(c *gin.Context, db *gorm.DB) (templ.Component, error) {
+	cg, exists := c.Get("game")
+
+	if !exists {
+		fmt.Println("game doesn't exist in context")
+		return templates.Error(fmt.Errorf("game doesn't exist in context")), fmt.Errorf("game doesn't exist in context")
+	}
+
+	game := cg.(models.Game)
+
+	if game.Status != string(models.Closed) {
+		fmt.Println("game not closed")
+		return templates.Error(fmt.Errorf("game not closed")), fmt.Errorf("game not closed")
+	}
+
+	err := game.UpdatePeriod(db)
+
+	if err != nil {
+		fmt.Println("could not update period", err)
+		return templates.Error(err), err
+	}
+
+	err = BroadcastUpdatePlayBoard(game)
+
+	if err != nil {
+		fmt.Println("could not broadcast period update", err)
+		return templates.Error(err), err
+	}
+
+	return templates.Loading(), nil
+}

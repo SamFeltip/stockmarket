@@ -97,11 +97,6 @@ func (game Game) GetPlayer(user *User) (*Player, error) {
 	return nil, errors.New("Player not found")
 }
 
-func (game Game) UpdateStatus(status GameStatus, db *gorm.DB) error {
-	err := db.Model(&game).Where("id = lower(?)", game.ID).Update("status", status).Error
-	return err
-}
-
 func GamePeriodCountDisplay(periodCount int) string {
 	switch periodCount {
 	case 0:
@@ -302,5 +297,81 @@ func (game *Game) CurrentTurn() int {
 	}
 
 	return len(currentPeriodPlays)
+}
 
+func (game *Game) UpdatePeriod(db *gorm.DB) error {
+
+	type GameStockChange struct {
+		TotalChange float64
+		GameStockID uint
+		Value       float64
+	}
+
+	var gameStockChanges []GameStockChange
+
+	err := db.Table("player_stocks as ps").
+		Select("sum(i.value) as total_change, gs.id as game_stock_id, gs.value").
+		Joins("left join player_insights as pi on pi.player_stock_id = ps.id").
+		Joins("left join insights as i on i.id = pi.insight_id").
+		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+		Joins("inner join stocks as s on s.id = gs.stock_id").
+		Where("gs.game_id = ?", "some").
+		Group("gs.id, gs.value").
+		Scan(&gameStockChanges).Error
+
+	if err != nil {
+		fmt.Println("could not get game stock changes", err)
+		return err
+	}
+
+	// loop through gameStockChanges and update gameStocks
+	for _, gameStockChange := range gameStockChanges {
+		gameStock := GameStock{}
+		err = db.
+			Model(&gameStock).
+			Where("id = ?", gameStockChange.GameStockID).
+			Update("value", gameStockChange.Value+gameStockChange.TotalChange).Error
+
+		if err != nil {
+			fmt.Println("could not update game stock", err)
+			return err
+		}
+	}
+
+	err = game.GeneratePlayerInsights(db)
+
+	if err != nil {
+		fmt.Println("could not generate player insights", err)
+		return err
+	}
+
+	game.CurrentPeriod++
+	game.Status = string(Playing)
+
+	err = db.Save(&game).Error
+
+	if err != nil {
+		fmt.Println("could not update game", err)
+		return err
+	}
+
+	// create feed item for new period
+	feedItem := FeedItem{
+		GameID: game.ID,
+		Period: game.CurrentPeriod,
+
+		Message:   "Players get another turn",
+		Title:     "Period " + strconv.Itoa(game.CurrentPeriod+1),
+		ImageRoot: "/static/imgs/icons/Stock.svg",
+		Colour:    "grey",
+	}
+
+	err = db.Create(&feedItem).Error
+
+	if err != nil {
+		fmt.Println("could not create feed item", err)
+		return err
+	}
+
+	return nil
 }

@@ -18,11 +18,11 @@ templ Closed(gameInsights []models.GameInsight, gameStocks []models.GameStock, p
 			@keyframes glideIn {
 				0% {
 					opacity: 0;
-					transform: translateY(100px);
+					/* transform: translateY(100px); */
 				}
 				30% {
 					opacity: 1;
-					transform: translateY(0px);
+					/*transform: translateY(0px);*/
 				}
 				70% {
 					opacity: 1;
@@ -38,11 +38,11 @@ templ Closed(gameInsights []models.GameInsight, gameStocks []models.GameStock, p
 			@keyframes glideInMini {
 				0% {
 					opacity: 0;
-					transform: translateY(20px);
+					/*transform: translateY(20px);*/
 				}
 				30% {
 					opacity: 1;
-					transform: translateY(0px);
+					/*transform: translateY(0px);*/
 				}
 				70% {
 					opacity: 1;
@@ -66,14 +66,20 @@ templ Closed(gameInsights []models.GameInsight, gameStocks []models.GameStock, p
 				animation-fill-mode: both;
 			}
 
+			div.game-stock-view.first {
+				animation-name: popIn;
+				animation-duration: 1s;
+				animation-fill-mode: both;
+			}
+
 
 
 		</style>
 		<div id="insight-view" class="card card-green p-4 rounded border border-white">
 			for _, gameInsight := range gameInsights {
-				<div style="display: none; grid-template-columns: 2fr 1fr;" class="game-insight gap-3 h-100" data-game-stock-id={ strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
+				<div style="display: none; grid-template-columns: 2fr 1fr;" class={ "game-insight", "game-stock-insight-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10), "gap-3 h-100" } data-game-stock-id={ strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
 					<div style="background-color: #3C5F2F;" class="rounded d-flex flex-row justify-content-around align-items-center">
-						<div class="d-flex flex-column align-items-center">
+						<div id={ "game-stock-view-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) } class="game-stock-view d-flex flex-column align-items-center">
 							<div>
 								<img height="120px" src={gameInsight.ImagePath} alt={gameInsight.Name}/>
 							</div>
@@ -85,8 +91,8 @@ templ Closed(gameInsights []models.GameInsight, gameStocks []models.GameStock, p
 							<p>
 								Sum
 							</p>
-							<h1 class={ "stock-value-display-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
-								£<span class={ "stock-value-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
+							<h1 class={ "stock-total-insight-value-display-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
+								£<span class={ "stock-total-insight-value", "stock-total-insight-value-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
 									0
 								</span>
 							</h1>
@@ -122,9 +128,15 @@ templ Closed(gameInsights []models.GameInsight, gameStocks []models.GameStock, p
 				Stock Values:
 			</h2>
 			for _, gameStock := range gameStocks {
-				<div id={"game-stock-" + strconv.FormatUint(uint64(gameStock.ID), 10)} class="d-flex flex-column align-items-center">
+				<div id={ "game-stock-" + strconv.FormatUint(uint64(gameStock.ID), 10) } class="game-stock d-flex flex-column align-items-center" data-game-stock-id={ strconv.FormatUint(uint64(gameStock.ID), 10) }>
 					<img height="80px" src={gameStock.Stock.ImagePath} alt={gameStock.Stock.Name}/>
-					<div>£{ fmt.Sprintf("%.2f", gameStock.Value) }</div>
+					<!-- used for changing value display-->
+					<span class="d-none stock-total-insight-value">
+						0
+					</span>
+					<div>
+						£<span class="stock-value">{ fmt.Sprintf("%.2f", gameStock.Value) }</span>
+					</div>
 				</div>
 			}
 		</div>
@@ -143,29 +155,36 @@ templ Closed(gameInsights []models.GameInsight, gameStocks []models.GameStock, p
 			</div>
 		</div>
 	</div>
+	<style>
 
-	<script>
-		document.querySelectorAll(".game-insight").forEach((gameInsight, index) => {
+		@keyframes slideInFromRight {
+			0% { right: -200px; }
+			100% { right: 0; }
+		}
 
-			setTimeout(() => {
-				document.querySelectorAll(".game-insight").forEach(gameInsight => {
-					gameInsight.style.display = "none"
-				})
+		#next-step-wrapper {
+			animation-name: slideInFromRight;
+			animation-duration: 1s;
+			animation-fill-mode: both;
+			animation-delay: 2s;
+		}
 
-				gameStockId = gameInsight.getAttribute("data-game-stock-id")
-				document.querySelectorAll(".stock-value-" + gameStockId).forEach(stockValue => {
-					let value = parseFloat(stockValue.innerText)
-					value += parseFloat(gameInsight.querySelector(".price-modifier").innerText)
+	</style>
+	<div id="next-step-wrapper" class="position-absolute bottom-0 p-3" style="right: 0;">
+		<form hx-post="/api/games/next">
+			<input type="hidden" value={ gameStocks[0].GameID } name="gameID"/>
 
-					stockValue.innerText = value.toFixed(2)
-				})
+			<button
+				class="btn btn-primary d-flex flex-row gap-2 align-items-center"
+			>
+				Next Stock
+				<svg height="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg>
+			</button>
+		</form>
+		
+	</div>
 
-
-				gameInsight.style.display = "grid"
-			}, index * 2000);
-
-		})
-	</script>
+	<script src="/static/js/marketClosed/animate.js"></script>
 }
 
 templ ClosedSocket(gameInsights []models.GameInsight, gameStocks []models.GameStock, players []models.Player){
