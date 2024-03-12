@@ -214,8 +214,8 @@ func AuthCurrentPlayer(c *gin.Context) {
 
 	c.Set("game", game)
 
-	if game.CurrentUser.ID != user.ID {
-		fmt.Println("user is not current player")
+	if game.CurrentUserID != user.ID {
+		fmt.Println("user is not current player", game.CurrentUserID, user.ID)
 		pageComponent := templates.Error(fmt.Errorf("user is not current player"))
 		ctx := context.Background()
 		pageComponent.Render(ctx, c.Writer)

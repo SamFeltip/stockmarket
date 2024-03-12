@@ -59,7 +59,7 @@ func Login() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<main class=\"d-flex flex-column justify-content-center p-2\"><div class=\"container rounded d-flex justify-content-center\"><div class=\"card card-green w-100\" style=\"max-width: 40rem\"><div class=\"card-header text-center\"><h1>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<main class=\"d-flex flex-column justify-content-center p-2\"><div class=\"container rounded d-flex justify-content-center card card-green w-100\" style=\"max-width: 40rem\"><div class=\"card-header text-center\"><h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -68,7 +68,7 @@ func Login() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h1></div><div class=\"card-body\"><form id=\"login\"><input id=\"name\" class=\"form-control mb-2\" type=\"text\" name=\"name\" placeholder=\"Username\"> <input id=\"password\" class=\"form-control mb-4\" type=\"password\" name=\"password\" placeholder=\"Password\"><div style=\"display: grid;\n                        grid-template-columns: 1fr 1fr;\n                        gap: 1rem;\"><a href=\"/signup\" class=\"btn btn-secondary\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h1></div><div class=\"card-body\"><form id=\"login\"><input id=\"name\" class=\"form-control mb-2\" type=\"text\" name=\"name\" placeholder=\"Username\"> <input id=\"password\" class=\"form-control mb-4\" type=\"password\" name=\"password\" placeholder=\"Password\"><div style=\"display: grid;\n                    grid-template-columns: 1fr 1fr;\n                    gap: 1rem;\"><a href=\"/signup\" class=\"btn btn-secondary\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -86,7 +86,7 @@ func Login() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</button></div></form></div></div></div></main>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</button></div></form></div></div></main>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

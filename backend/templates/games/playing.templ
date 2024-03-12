@@ -152,8 +152,8 @@ templ Playing(game models.Game, player models.Player) {
 					hx-swap="innerHTML"
 					hx-trigger="submit"
 				>
-					<input type="hidden" name="gameID" value={game.ID}/>
-					<input type="hidden" name="game_action" value={string(models.PlayerPass)}/>
+					<input type="hidden" name="gameID" value={ game.ID }/>
+					<input type="hidden" name="game_action" value={ string(models.PlayerPass) }/>
 
 					<button
 						type="submit"

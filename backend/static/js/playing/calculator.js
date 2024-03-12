@@ -54,7 +54,9 @@ export class StockCalculator extends HTMLElement {
             throw new Error("input-stock element is required")
         }
 
-        input_stock_count.value = rounded_stock_count.toString()
+        let multiplier = this.mode == "buy" ? 1 : -1
+
+        input_stock_count.value = (rounded_stock_count * multiplier).toString()
 
         /** @type {HTMLInputElement?} */
         let input_total_cost = this.querySelector('input.input-cash')
@@ -63,24 +65,12 @@ export class StockCalculator extends HTMLElement {
             throw new Error("input-cash element is required")
         }
 
-        input_total_cost.value = (rounded_stock_count * this.gameStockValue).toString()
+        input_total_cost.value = (rounded_stock_count * this.gameStockValue * multiplier).toString()
 
         this.setAttribute('playerStock-quantity-add', rounded_stock_count.toString())
 
-        console.log("***")
-        console.log(`gameStockSharesAvailable: ${this.gameStockSharesAvailable}`)
-        console.log(`playerCash: ${this.playerCash}`)
-        console.log(`gameStockValue: ${this.gameStockValue}`)
-        console.log(`rounded_stock_count: ${rounded_stock_count}`)
-        console.log(`addPlayerStockQuantity: ${this.addPlayerStockQuantity}`)
-        console.log("***")
-
         this.gameStockSharesAvailable = this.gameStockSharesAvailable + (this.addPlayerStockQuantity - rounded_stock_count)
         this.playerCash = this.playerCash - (this.addPlayerStockQuantity - rounded_stock_count) * this.gameStockValue
-
-        console.log(`set gameStockSharesAvailable: ${this.gameStockSharesAvailable}`)
-        console.log(`set playerCash: ${this.playerCash}`)
-        console.log("^^^")
         
         /** @type {HTMLDivElement?} */
         let transaction_body_elem = this.querySelector('.transaction-body')
@@ -190,7 +180,6 @@ export class StockCalculator extends HTMLElement {
     }
 
     get transaction_body() {
-        console.log("rerendering transaction body");
         return html`
             <div class="transaction-body" style="display: flex; flex-direction: row;">
                 <div style="flex: 1;">

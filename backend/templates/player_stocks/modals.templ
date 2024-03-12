@@ -90,7 +90,8 @@ templ BuyModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer m
 						>
 							<input type="hidden" id="playerStockID" name="PlayerStockID" value={ strconv.FormatUint(uint64(playerStockID), 10) }/>
 							<input type="hidden" name="gameID" value={ playerStockPreview.GameID }/>
-							
+							<input type="hidden" name="mode" value="1"/>
+
 							<div class="purchase-form flex-fill">
 								<h6 class="mb-0 header-amount-of-stocks">
 									Amount of stocks
@@ -105,19 +106,23 @@ templ BuyModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer m
 										min="0"
 										class="form-control input-stock"
 										name="PlayerStockQuantityAdd"
+										readonly
 									/>
 								</div>
 								<div class="equals d-flex justify-content-center align-items-center flex-fill">
 									=
 								</div>
 								<div class="input-cash-group input-group mb-0">
-									<span class="input-group-text text-black">£</span>
+									<span class="input-group-text text-black bg-white pe-1 border-end-0" >
+										£
+									</span>
 									<input
-										class="form-control input-cash"
+										class="form-control input-cash ps-0 border-start-0"
 										type="number"
 										steps="1000"
 										min="0"
 										value="0"
+										readonly
 									/>
 								</div>
 								<div class="stock-btns d-flex gap-2">
@@ -180,7 +185,8 @@ templ SellModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer 
 						>
 							<input type="hidden" id="playerStockID" name="PlayerStockID" value={ strconv.FormatUint(uint64(playerStockID), 10) }/>
 							<input type="hidden" name="gameID" value={ playerStockPreview.GameID }/>
-							
+							<input type="hidden" name="mode" value="-1"/>
+
 							<div class="purchase-form flex-fill">
 								<h6 class="mb-0 header-amount-of-stocks">
 									Amount of stocks
@@ -195,19 +201,23 @@ templ SellModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer 
 										min="0"
 										class="form-control input-stock"
 										name="PlayerStockQuantityAdd"
+										readonly
 									/>
 								</div>
 								<div class="equals d-flex justify-content-center align-items-center flex-fill">
 									=
 								</div>
 								<div class="input-cash-group input-group mb-0">
-									<span class="input-group-text text-black">£</span>
+									<span class="input-group-text text-black bg-white pe-1 border-end-0">
+										£
+									</span>
 									<input
-										class="form-control input-cash"
+										class="form-control input-cash border-start-0 ps-0"
 										type="number"
 										steps="1000"
 										min="0"
 										value="0"
+										readonly
 									/>
 								</div>
 								<div class="stock-btns d-flex gap-2">

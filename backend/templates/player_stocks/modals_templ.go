@@ -173,7 +173,7 @@ func BuyModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer mo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div class=\"purchase-form flex-fill\"><h6 class=\"mb-0 header-amount-of-stocks\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"> <input type=\"hidden\" name=\"mode\" value=\"1\"><div class=\"purchase-form flex-fill\"><h6 class=\"mb-0 header-amount-of-stocks\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -191,7 +191,7 @@ func BuyModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer mo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h6><div class=\"input-stock-group input-group mb-0\"><input type=\"number\" step=\"1000\" min=\"0\" class=\"form-control input-stock\" name=\"PlayerStockQuantityAdd\"></div><div class=\"equals d-flex justify-content-center align-items-center flex-fill\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h6><div class=\"input-stock-group input-group mb-0\"><input type=\"number\" step=\"1000\" min=\"0\" class=\"form-control input-stock\" name=\"PlayerStockQuantityAdd\" readonly></div><div class=\"equals d-flex justify-content-center align-items-center flex-fill\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -200,7 +200,7 @@ func BuyModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer mo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"input-cash-group input-group mb-0\"><span class=\"input-group-text text-black\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"input-cash-group input-group mb-0\"><span class=\"input-group-text text-black bg-white pe-1 border-end-0\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -209,7 +209,7 @@ func BuyModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer mo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <input class=\"form-control input-cash\" type=\"number\" steps=\"1000\" min=\"0\" value=\"0\"></div><div class=\"stock-btns d-flex gap-2\"><button type=\"button\" class=\"rem-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center \">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <input class=\"form-control input-cash ps-0 border-start-0\" type=\"number\" steps=\"1000\" min=\"0\" value=\"0\" readonly></div><div class=\"stock-btns d-flex gap-2\"><button type=\"button\" class=\"rem-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center \">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -334,7 +334,7 @@ func SellModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer m
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div class=\"purchase-form flex-fill\"><h6 class=\"mb-0 header-amount-of-stocks\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"> <input type=\"hidden\" name=\"mode\" value=\"-1\"><div class=\"purchase-form flex-fill\"><h6 class=\"mb-0 header-amount-of-stocks\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -352,7 +352,7 @@ func SellModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer m
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h6><div class=\"input-stock-group input-group mb-0\"><input type=\"number\" step=\"1000\" min=\"0\" class=\"form-control input-stock\" name=\"PlayerStockQuantityAdd\"></div><div class=\"equals d-flex justify-content-center align-items-center flex-fill\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h6><div class=\"input-stock-group input-group mb-0\"><input type=\"number\" step=\"1000\" min=\"0\" class=\"form-control input-stock\" name=\"PlayerStockQuantityAdd\" readonly></div><div class=\"equals d-flex justify-content-center align-items-center flex-fill\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -361,7 +361,7 @@ func SellModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer m
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"input-cash-group input-group mb-0\"><span class=\"input-group-text text-black\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"input-cash-group input-group mb-0\"><span class=\"input-group-text text-black bg-white pe-1 border-end-0\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -370,7 +370,7 @@ func SellModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer m
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <input class=\"form-control input-cash\" type=\"number\" steps=\"1000\" min=\"0\" value=\"0\"></div><div class=\"stock-btns d-flex gap-2\"><button type=\"button\" class=\"add-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center \">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <input class=\"form-control input-cash border-start-0 ps-0\" type=\"number\" steps=\"1000\" min=\"0\" value=\"0\" readonly></div><div class=\"stock-btns d-flex gap-2\"><button type=\"button\" class=\"add-stock btn btn-danger flex-fill d-flex justify-content-center align-items-center \">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

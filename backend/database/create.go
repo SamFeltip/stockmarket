@@ -30,7 +30,7 @@ func SetupTestDb(log_mode logger.LogLevel) *gorm.DB {
 
 func SetupDevDb() *gorm.DB {
 	dsn := "host=localhost user=me password=def78-brglger-45y$u3g dbname=postgres port=5433 sslmode=disable"
-	return SetupDb(dsn, logger.Silent)
+	return SetupDb(dsn, logger.Info)
 }
 
 func SetupDb(dsn string, log_mode logger.LogLevel) *gorm.DB {

@@ -44,6 +44,8 @@ gameStocks.forEach((gameStock, index) => {
                 }, index * 2000);
             })
         })
+
+
                 
         Promise.all(revealInsightPromises).then(() => {
             // allow for the final animation to finish running

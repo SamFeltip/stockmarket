@@ -17,7 +17,6 @@ func Edit(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 	playerStockQuantityAdd := c.PostForm("PlayerStockQuantityAdd")
 
 	playerStock, err := models.GetPlayerStock(playerStockID, db)
-
 	if err != nil {
 		fmt.Println("could not find player stock", err)
 		return gameTemplates.Error(err), err
@@ -30,12 +29,19 @@ func Edit(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 		return gameTemplates.Error(err), err
 	}
 
-	playerStock.Quantity += quantityAdd
+	mode := c.PostForm("mode")
+
+	multiplier, err := strconv.Atoi(mode)
+	if err != nil {
+		fmt.Println("could not parse mode to int", err)
+		return gameTemplates.Error(err), err
+	}
+
+	playerStock.Quantity += quantityAdd * multiplier
 
 	db.Save(&playerStock)
 
 	cg, exists := c.Get("game")
-
 	if !exists {
 		fmt.Println("could not get game from context", err)
 		return gameTemplates.Error(err), err
@@ -44,7 +50,6 @@ func Edit(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 	game := cg.(models.Game)
 
 	feedItem, err := models.NewFeedItem(game, quantityAdd, models.PlayerPlay, playerStock.Player, playerStock.GameStock, db)
-
 	if err != nil {
 		fmt.Println("could not create new feed item", err)
 		return gameTemplates.Error(err), err
@@ -56,7 +61,6 @@ func Edit(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 	db.Save(&playerStock.Player)
 
 	template, err := gameController.CheckForMarketClose(game, db)
-
 	if err != nil {
 		fmt.Println("could not check for market close", err)
 		return gameTemplates.Error(err), err
@@ -70,7 +74,6 @@ func Edit(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 	fmt.Println("market not closed")
 
 	err = game.UpdateCurrentUser(db)
-
 	if err != nil {
 		fmt.Println("could not update current player", err)
 

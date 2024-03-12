@@ -33,24 +33,21 @@ script loginForm() {
 
 templ Login() {
     <main class="d-flex flex-column justify-content-center p-2">
-        <div class="container rounded d-flex justify-content-center">
-            <div class="card card-green w-100" style="max-width: 40rem">
-
-                <div class="card-header text-center">
-                    <h1>Stockmarket!</h1>
-                </div>
-                <div class="card-body">
-                    <form id="login">
-                        <input id="name" class="form-control mb-2" type="text" name="name" placeholder="Username"/>
-                        <input id="password" class="form-control mb-4" type="password" name="password" placeholder="Password"/>
-                        <div style="display: grid;
-                        grid-template-columns: 1fr 1fr;
-                        gap: 1rem;">
-                            <a href="/signup" class="btn btn-secondary">Create account</a>
-                            <button class="btn btn-primary" type="submit">Login</button>
-                        </div>
-                    </form>
-                </div>
+        <div class="container rounded d-flex justify-content-center card card-green w-100" style="max-width: 40rem">
+            <div class="card-header text-center">
+                <h1>Stockmarket!</h1>
+            </div>
+            <div class="card-body">
+                <form id="login">
+                    <input id="name" class="form-control mb-2" type="text" name="name" placeholder="Username"/>
+                    <input id="password" class="form-control mb-4" type="password" name="password" placeholder="Password"/>
+                    <div style="display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 1rem;">
+                        <a href="/signup" class="btn btn-secondary">Create account</a>
+                        <button class="btn btn-primary" type="submit">Login</button>
+                    </div>
+                </form>
             </div>
         </div>
     </main>

@@ -38,6 +38,7 @@ func CreatePlayerStockRoutes() {
 
 			var playerStockPlayer models.PlayerStockPlayerResult
 
+			fmt.Println("getting player info from player stock:", playerStockID)
 			// player info
 			db.Table("player_stocks as ps").
 				Select("ps.quantity as stocks_held, (gs.value * ps.quantity) as stock_value, p.cash").
@@ -48,6 +49,7 @@ func CreatePlayerStockRoutes() {
 
 			var playerStockPreview models.PlayerStockPreview
 
+			fmt.Println("getting total insights for player stock")
 			// total insights for player stock
 			err = db.Table("player_stocks as ps").
 				Select("sum(i.value) as total_insight, gs.value as stock_value, gs.game_id, s.name as stock_name, s.image_path as stock_img").
@@ -55,7 +57,7 @@ func CreatePlayerStockRoutes() {
 				Joins("left join insights as i on i.id = pi.insight_id").
 				Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 				Joins("inner join stocks as s on s.id = gs.stock_id").
-				Where("ps.id = ?", 682).
+				Where("ps.id = ?", playerStockIDString).
 				Group("gs.value, s.name, s.image_path, gs.game_id").
 				Scan(&playerStockPreview).Error
 
