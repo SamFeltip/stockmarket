@@ -30,20 +30,15 @@ func ServeWs(c *gin.Context) (int, gin.H) {
 	}
 
 	cp, player_exists := c.Get("player")
-	cg, game_exists := c.Get("game")
+
+	gameID := c.Param("gameID")
 
 	if !player_exists {
 		log.Println("websocket: no user found")
 		return http.StatusBadRequest, gin.H{"error": "no user found in request context"}
 	}
 
-	if !game_exists {
-		log.Println("no game found")
-		return http.StatusBadRequest, gin.H{"error": "no game found in request context"}
-	}
-
 	player := cp.(models.Player)
-	game := cg.(models.Game)
 
 	hub := websockets.GetHub()
 
@@ -51,9 +46,9 @@ func ServeWs(c *gin.Context) (int, gin.H) {
 		fmt.Println("error setting active game:", err)
 	}
 
-	client := websocketModels.NewClient(hub, conn, player, game)
+	client := websocketModels.NewClient(hub, conn, player.ID, gameID)
 
-	fmt.Println("registering new client", player.User.Name, game.ID)
+	fmt.Println("registering new client", player.User.Name, gameID)
 	hub.Register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in

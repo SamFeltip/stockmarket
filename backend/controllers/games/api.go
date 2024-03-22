@@ -81,7 +81,7 @@ func StartGame(gameID string) (templ.Component, error) {
 }
 
 func PlayAction(c *gin.Context, db *gorm.DB) (templ.Component, error) {
-	gameAction, _ := c.GetPostForm("game_action")
+	// gameAction, _ := c.GetPostForm("game_action")
 
 	gameIDcontext, exists := c.Get("gameID")
 
@@ -107,21 +107,14 @@ func PlayAction(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 
 	current_user := cu.(models.User)
 
-	player, err := current_user.GetPlayer(gameID, db)
-
-	_, err = models.NewFeedItem(game, 0, models.PlayerPass, current_user, player.ID, models.GameStock{}, db)
+	_, err = models.NewFeedItemMessage(game.ID, game.CurrentPeriod, models.PlayerPass, current_user, db)
 
 	if err != nil {
 		fmt.Println("could not create new feed item", err)
 		return templates.Error(err), err
 	}
 
-	if err != nil {
-		fmt.Println("could not create new feed item", err)
-		return templates.Error(err), err
-	}
-
-	template, err := CheckForMarketClose(game, db)
+	template, err := CheckForMarketClose(game.ID, db)
 
 	if err != nil {
 		fmt.Println("could not check for market close", err)
@@ -136,7 +129,7 @@ func PlayAction(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 	fmt.Println("market not closed")
 
 	// update current user
-	err = game.UpdateCurrentUser(db)
+	_, err = models.UpdateCurrentUser(game.ID, db)
 
 	if err != nil {
 		fmt.Println("could not update current player", err)
@@ -154,21 +147,16 @@ func PlayAction(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 }
 
 func NextPeriod(c *gin.Context, db *gorm.DB) (templ.Component, error) {
-	cg, exists := c.Get("game")
+	gameID, exists := c.GetPostForm("gameID")
 
 	if !exists {
 		fmt.Println("game doesn't exist in context")
 		return templates.Error(fmt.Errorf("game doesn't exist in context")), fmt.Errorf("game doesn't exist in context")
 	}
 
-	game := cg.(models.Game)
+	game, err := models.FindGame(gameID, db)
 
-	if game.Status != string(models.Closed) {
-		fmt.Println("game not closed")
-		return templates.Error(fmt.Errorf("game not closed")), fmt.Errorf("game not closed")
-	}
-
-	err := game.UpdatePeriod(db)
+	err = game.UpdatePeriod(db)
 
 	if err != nil {
 		fmt.Println("could not update period", err)

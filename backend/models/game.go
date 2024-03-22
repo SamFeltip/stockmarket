@@ -237,57 +237,62 @@ func (game *Game) GeneratePlayerInsights(db *gorm.DB) error {
 
 /*
 update the current user to the next user in the game
-
-requires game.Players.User is preloaded
 */
-func (game *Game) UpdateCurrentUser(db *gorm.DB) error {
+func UpdateCurrentUser(gameID string, db *gorm.DB) (uint, error) {
+
+	var game Game
+
+	err := db.
+		InnerJoins("Players").
+		Where("games.id = ? AND players.active = ?", gameID, true).
+		First(&game).Error
+
+	if err != nil {
+		fmt.Println("could not find game", err)
+		return 0, err
+	}
 
 	if len(game.Players) == 0 {
 		fmt.Println("no players in game")
-		return errors.New("no players in game")
+		return 0, errors.New("no players in game")
 	}
 
-	current_user := game.CurrentUser
-	// players := game.Players
+	current_user_id := game.CurrentUserID
 
 	fmt.Println("sorting players by id")
-	// sort players by id
+	sorted_players := SortPlayers(game.Players)
 
-	players := SortPlayers(game.Players)
+	fmt.Println("finding the next user of ", strconv.Itoa(len(sorted_players)), " old user:", current_user_id)
+	var next_user_id uint
 
-	fmt.Println("finding the next user of ", strconv.Itoa(len(players)), " old user:", current_user.Name)
-	next_user := User{}
 	// find the next player in the list (based on current player)
-	for i, player := range players {
+	for i, player := range sorted_players {
 
 		if player.User.Name == "" {
 			fmt.Println("player user must be preloaded")
-			return errors.New("player user must be preloaded")
+			return 0, errors.New("player user must be preloaded")
 		}
 
-		if player.User.ID == current_user.ID {
-			if i == len(players)-1 {
-				next_user = players[0].User
+		if player.UserID == current_user_id {
+			if i == len(sorted_players)-1 {
+				next_user_id = sorted_players[0].UserID
 			} else {
-				next_user = players[i+1].User
+				next_user_id = sorted_players[i+1].UserID
 			}
 			break
 		}
 	}
 
-	fmt.Println("setting next user:", next_user.Name)
+	game.CurrentUserID = next_user_id
 
-	game.CurrentUser = next_user
-
-	err := db.Save(&game).Error
-	// err := db.Model(&game).Update("current_user_id", next_user.ID).Error
+	err = db.Save(&game).Error
 
 	if err != nil {
 		fmt.Println("could not update current player", err)
-		return err
+		return 0, err
 	}
 
-	return nil
+	return next_user_id, nil
 }
 
 func (game *Game) UpdatePeriod(db *gorm.DB) error {
@@ -306,7 +311,7 @@ func (game *Game) UpdatePeriod(db *gorm.DB) error {
 		Joins("left join insights as i on i.id = pi.insight_id").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
-		Where("gs.game_id = ?", "some").
+		Where("gs.game_id = ?", game.ID).
 		Group("gs.id, gs.value").
 		Scan(&gameStockChanges).Error
 

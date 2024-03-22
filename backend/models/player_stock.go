@@ -48,7 +48,7 @@ type StockInfoResult struct {
 	Variation       float64
 }
 
-func GetPlayerStock(playerStockID string, db *gorm.DB) (PlayerStock, error) {
+func GetPlayerStock(playerStockIDstring string, db *gorm.DB) (PlayerStock, error) {
 	var playerStock PlayerStock
 
 	// player_stock.GameStock.Stock.Name
@@ -63,7 +63,7 @@ func GetPlayerStock(playerStockID string, db *gorm.DB) (PlayerStock, error) {
 		Preload("Player.User").
 		Preload("PlayerInsights").
 		Preload("PlayerInsights.Insight").
-		Where("id = ?", playerStockID).First(&playerStock).Error
+		Where("id = ?", playerStockIDstring).First(&playerStock).Error
 
 	return playerStock, err
 }

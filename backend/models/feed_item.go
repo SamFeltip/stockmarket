@@ -15,11 +15,8 @@ type FeedItem struct {
 	ImageRoot string
 	Colour    string
 
-	GameStock   GameStock
-	GameStockID uint `gorm:"default:null"`
-
-	Player   Player
-	PlayerID uint `gorm:"default:null"`
+	playerStock   PlayerStock
+	PlayerStockID uint `gorm:"default:null"`
 
 	Game   Game
 	GameID string
@@ -33,7 +30,6 @@ func LoadFeedItems(game_id string, db *gorm.DB) ([]FeedItem, error) {
 
 	err := db.
 		Preload("Player.User").
-		Preload("GameStock").
 		Preload("Player").
 		Where("game_id = ?", game_id).
 		Order("created_at desc").
@@ -54,27 +50,15 @@ var PlayerPlay FeedItemMessage = "playerPlay"
 var PlayerPass FeedItemMessage = "playerPass"
 var PeriodNew FeedItemMessage = "periodNew"
 
-func NewFeedItem(game GameDisplay, quantity int, feedItemMessage FeedItemMessage, user User, playerID uint, game_stock GameStock, db *gorm.DB) (FeedItem, error) {
+func NewFeedItemMessage(gameID string, currentPeriod int, feedItemMessage FeedItemMessage, user User, db *gorm.DB) (FeedItem, error) {
 
 	feed_item := FeedItem{
-		GameStock: game_stock,
-		PlayerID:  playerID,
-		GameID:    game.ID,
-		Period:    game.CurrentPeriod,
-	}
-
-	if quantity > 0 {
-		feed_item.Message = fmt.Sprintf("bought %d shares in %s", quantity, game_stock.Stock.Name)
-		feed_item.Title = user.Name
-		feed_item.ImageRoot = user.ProfileRoot
-	} else if quantity < 0 {
-		feed_item.Message = fmt.Sprintf("sold %d shares in %s", quantity*-1, game_stock.Stock.Name)
-		feed_item.Title = user.Name
-		feed_item.ImageRoot = user.ProfileRoot
+		GameID: gameID,
+		Period: currentPeriod,
 	}
 
 	if feedItemMessage == StartGame {
-		feed_item.Message = "good luck!"
+		feed_item.Message = "game started"
 		feed_item.Title = "game started"
 		feed_item.ImageRoot = "/static/imgs/icons/Handshake.svg"
 		feed_item.Colour = "grey"
@@ -88,6 +72,57 @@ func NewFeedItem(game GameDisplay, quantity int, feedItemMessage FeedItemMessage
 
 	fmt.Println("creating new FeedItem", feed_item.Message)
 	err := db.Create(&feed_item).Error
+
+	if err != nil {
+		return FeedItem{}, err
+	}
+
+	return feed_item, nil
+}
+
+func NewFeedItem(quantity int, playerStockID uint, db *gorm.DB) (FeedItem, error) {
+
+	type FeedItemData struct {
+		UserName        string
+		UserProfileRoot string
+		StockName       string
+		GameID          string
+		CurrentPeriod   int
+	}
+
+	var feed_item_data FeedItemData
+
+	err := db.Table("player_stocks as ps").
+		Select("u.name as user_name, u.profile_root as user_profile_root, s.Name as stock_name, gs.game_id, g.current_period").
+		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+		Joins("inner join games as g on g.id = gs.game_id").
+		Joins("inner join stocks as s on s.id = gs.stock_id").
+		Joins("inner join players as p on p.id = ps.player_id").
+		Joins("inner join users as u on u.id = p.user_id").
+		Where("ps.ID = ?", playerStockID).
+		First(&feed_item_data).Error
+
+	if err != nil {
+		fmt.Println("error loading feed item data:", err)
+		return FeedItem{}, err
+	}
+
+	feed_item := FeedItem{
+		PlayerStockID: playerStockID,
+		Period:        feed_item_data.CurrentPeriod,
+
+		Title:     feed_item_data.UserName,
+		ImageRoot: feed_item_data.UserProfileRoot,
+	}
+
+	if quantity > 0 {
+		feed_item.Message = fmt.Sprintf("bought %d shares in %s", quantity, feed_item_data.StockName)
+	} else if quantity < 0 {
+		feed_item.Message = fmt.Sprintf("sold %d shares in %s", quantity*-1, feed_item_data.StockName)
+	}
+
+	fmt.Println("creating new FeedItem", feed_item.Message)
+	err = db.Create(&feed_item).Error
 
 	if err != nil {
 		return FeedItem{}, err
