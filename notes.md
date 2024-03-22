@@ -1,29 +1,20 @@
-# game
+# gameInsights
 
-game.CurrentUser.ID == player.User.ID
-game.CurrentUser.Name
-game.CurrentTurn()
-len(game.Players) * 3
-game.PeriodCount + 1
-game.CurrentPeriod + 1
-game.ID
-game.CurrentUser.ID == player.User.ID
-game.ID
+- gameInsight.GameStockID
+- gameInsight.Name
+- gameInsight.ImagePath
+- gameInsight.InsightValue
+- gameInsight.Description
 
-# player
+# gameStocks
 
-player.User.Name
-player.User.ProfileRoot
-player.Cash
-player.TotalValue()
-player.PlayerStocks.ID
-player.PlayerStocks[0].ID
-game.CurrentUser.ID == player.User.ID
+- gameStock.ID
+- gameStock.Stock.Name
+- gameStock.Stock.ImagePath
+- gameStock.Value
 
+# players
 
-// player name
-// player image
-// player cash
-// total stocks value
-// []player stock ids
-// player.User.ID
+- player.User.ProfileRoot
+- player.User.Name
+- player.Cash

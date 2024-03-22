@@ -63,10 +63,24 @@ func BroadcastUpdatePlayBoard(gameID string) error {
 	return nil
 }
 
-func BroadcastGameClosed(gameInsights []models.GameInsight, gameID string) error {
+func BroadcastGameClosed(gameInsights []models.GameInsight, gameID string, db *gorm.DB) error {
 	fmt.Println("broadcasting market closed")
 
-	marketClosedDisplay := templates.ClosedSocket(gameInsights, game.GameStocks, game.Players)
+	displayGameStocks, err := models.LoadGameStockDisplays(gameID, db)
+
+	if err != nil {
+		fmt.Println("could not load game stock displays", err)
+		return err
+	}
+
+	displayPlayerDisplays, err := models.LoadPlayerDisplays(gameID, db)
+
+	if err != nil {
+		fmt.Println("could not load player displays", err)
+		return err
+	}
+
+	marketClosedDisplay := templates.ClosedSocket(gameID, gameInsights, displayGameStocks, displayPlayerDisplays)
 
 	buffer := &bytes.Buffer{}
 	marketClosedDisplay.Render(context.Background(), buffer)
@@ -111,7 +125,7 @@ func CheckForMarketClose(gameID string, db *gorm.DB) (templ.Component, error) {
 		return templates.Error(err), err
 	}
 
-	err = BroadcastGameClosed(gameInsights, gameID)
+	err = BroadcastGameClosed(gameInsights, gameID, db)
 
 	if err != nil {
 		fmt.Println("could not broadcast market closed", err)

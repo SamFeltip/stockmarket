@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-templ Closed(gameInsights []models.GameInsight, gameStocks []models.GameStock, players []models.Player){
+templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []models.GameStockDisplay, players []models.PlayerDisplay){
 	<div class="gap-3 p-4" style="height: 100vh; max-height: -webkit-fill-available; display: grid; grid-template-rows: 100px 1fr auto auto;">
 		<div class="d-flex align-items-center justify-content-center">
 			<h1>End of round</h1>
@@ -129,13 +129,13 @@ templ Closed(gameInsights []models.GameInsight, gameStocks []models.GameStock, p
 			</h2>
 			for _, gameStock := range gameStocks {
 				<div id={ "game-stock-" + strconv.FormatUint(uint64(gameStock.ID), 10) } class="game-stock d-flex flex-column align-items-center" data-game-stock-id={ strconv.FormatUint(uint64(gameStock.ID), 10) }>
-					<img height="80px" src={gameStock.Stock.ImagePath} alt={gameStock.Stock.Name}/>
+					<img height="80px" src={gameStock.ImagePath} alt={gameStock.Name}/>
 					<!-- used for changing value display-->
 					<span class="d-none stock-total-insight-value">
 						0
 					</span>
 					<div>
-						£<span class="stock-value">{ fmt.Sprintf("%.2f", gameStock.Value) }</span>
+						£<span class="stock-value">{ fmt.Sprintf("%.2f", gameStock.Value ) }</span>
 					</div>
 				</div>
 			}
@@ -147,7 +147,7 @@ templ Closed(gameInsights []models.GameInsight, gameStocks []models.GameStock, p
 			<div class="d-flex w-100 gap-5 flex-row justify-content-center">
 			for _, player := range players {
 				<div class="d-flex flex-column align-items-center">
-					<img height="80px" width="80px" class="rounded" src={player.User.ProfileRoot} alt={player.User.Name}/>
+					<img height="80px" width="80px" class="rounded" src={player.ProfileRoot} alt={player.Name}/>
 					<td>£{ strconv.Itoa(player.Cash) }</td>
 
 				</div>
@@ -172,7 +172,7 @@ templ Closed(gameInsights []models.GameInsight, gameStocks []models.GameStock, p
 	</style>
 	<div id="next-step-wrapper" class="position-absolute bottom-0 p-3" style="right: 0;">
 		<form hx-post="/api/games/next">
-			<input type="hidden" value={ gameStocks[0].GameID } name="gameID"/>
+			<input type="hidden" value={ gameID } name="gameID"/>
 
 			<button
 				class="btn btn-primary d-flex flex-row gap-2 align-items-center"
@@ -187,8 +187,8 @@ templ Closed(gameInsights []models.GameInsight, gameStocks []models.GameStock, p
 	<script src="/static/js/marketClosed/animate.js"></script>
 }
 
-templ ClosedSocket(gameInsights []models.GameInsight, gameStocks []models.GameStock, players []models.Player){
+templ ClosedSocket(gameID string, gameInsights []models.GameInsight, gameStocks []models.GameStockDisplay, players []models.PlayerDisplay){
 	<div hx-swap-oob="innerHTML:main">
-		@Closed(gameInsights, gameStocks, players)
+		@Closed(gameID, gameInsights, gameStocks, players)
 	</div>
 }

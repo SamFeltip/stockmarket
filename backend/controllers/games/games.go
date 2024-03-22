@@ -84,7 +84,21 @@ func Show(db *gorm.DB, c *gin.Context) templ.Component {
 			return templates.Error(err)
 		}
 
-		pageComponent := templates.Closed(gameInsights, game.GameStocks, game.Players)
+		gameStockDisplays, err := models.LoadGameStockDisplays(gameID, db)
+
+		if err != nil {
+			fmt.Println("error loading game stock displays:", err)
+			return templates.Error(err)
+		}
+
+		playerDisplays, err := models.LoadPlayerDisplays(gameID, db)
+
+		if err != nil {
+			fmt.Println("error loading player displays:", err)
+			return templates.Error(err)
+		}
+
+		pageComponent := templates.Closed(gameID, gameInsights, gameStockDisplays, playerDisplays)
 		return pageComponent
 	}
 

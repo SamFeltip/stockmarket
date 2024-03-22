@@ -84,6 +84,7 @@ func Edit(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 	}
 
 	template, err := gameController.CheckForMarketClose(gameID, db)
+
 	if err != nil {
 		fmt.Println("could not check for market close", err)
 		return gameTemplates.Error(err), err

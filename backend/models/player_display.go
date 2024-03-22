@@ -16,6 +16,19 @@ type PlayerStockDisplay struct {
 	Value float64 //sum of game stock value and player stock quantity
 }
 
+func LoadPlayerDisplays(gameID string, db *gorm.DB) ([]PlayerDisplay, error) {
+
+	var players []PlayerDisplay
+	err := db.Table("players").
+		Select("u.name as user_name, u.profile_root as user_profile_root, p.cash").
+		Joins("inner join users as u on u.id = players.user_id").
+		Where("game_id = ?", gameID).
+		Scan(&players).
+		Error
+
+	return players, err
+}
+
 func LoadCurrentPlayerDisplay(playerID uint, db *gorm.DB) (PlayerDisplay, error) {
 
 	var playerDisplay PlayerDisplay
