@@ -70,6 +70,14 @@ func CreateGame(code string, periodCount int, current_user User, db *gorm.DB) (G
 	return game, nil // passed into templates
 }
 
+func FindGame(gameID string, db *gorm.DB) (Game, error) {
+
+	var game Game
+	err := db.Where("lower(id) = lower(?)", gameID).First(&game).Error
+
+	return game, err
+}
+
 func LoadGame(gameID string, db *gorm.DB) (Game, error) {
 
 	var game Game
@@ -115,14 +123,14 @@ func GamePeriodCountDisplay(periodCount int) string {
 
 - if needed, create a player and associate it with the game
 */
-func (game *Game) SetActiveGame(current_user *User, db *gorm.DB) (Player, error) {
+func (current_user *User) SetActiveGame(gameID string, db *gorm.DB) (Player, error) {
 
-	player, err := game.GetPlayer(current_user)
+	player, err := current_user.GetPlayer(gameID, db)
 
 	// if gorm no record error
 	if err != nil {
 		fmt.Println("player does not exist, creating")
-		player, err = current_user.CreatePlayer(game, db)
+		player, err = current_user.CreatePlayer(gameID, db)
 
 		if err != nil {
 			fmt.Println("error creating player:", err)
@@ -130,23 +138,21 @@ func (game *Game) SetActiveGame(current_user *User, db *gorm.DB) (Player, error)
 		}
 	}
 
-	current_player, err := LoadCurrentPlayer(player.ID, db)
-
 	if !player.Active {
-		fmt.Println("setting active game for:", current_user.ID, game.ID)
+		fmt.Println("setting active game for:", current_user.ID, gameID)
 
 		err = db.Model(&player).Where("id = ?", player.ID).Update("active", true).Error
 	}
 
 	if err != nil {
-		fmt.Println("error setting active game for:", current_user.ID, game.ID, err)
+		fmt.Println("error setting active game for:", current_user.ID, gameID, err)
 		return Player{}, err
 	}
 
-	current_player.Active = true
+	player.Active = true
 
-	fmt.Println("unsetting active game for other games", current_user.ID, game.ID)
-	err = db.Model(&Player{}).Where("user_id = ? AND game_id != ?", current_user.ID, game.ID).Update("active", false).Error
+	fmt.Println("unsetting active game for other games", current_user.ID, gameID)
+	err = db.Model(&Player{}).Where("user_id = ? AND game_id != ?", current_user.ID, gameID).Update("active", false).Error
 
 	if err != nil {
 		fmt.Println("error unsetting active game for other games:", err)
@@ -155,7 +161,7 @@ func (game *Game) SetActiveGame(current_user *User, db *gorm.DB) (Player, error)
 
 	fmt.Println("set successfully")
 
-	return current_player, nil
+	return player, nil
 }
 
 func (game *Game) GeneratePlayerInsights(db *gorm.DB) error {
@@ -284,21 +290,6 @@ func (game *Game) UpdateCurrentUser(db *gorm.DB) error {
 	return nil
 }
 
-/*
-requires game.Plays is preloaded
-*/
-func (game *Game) CurrentTurn() int {
-
-	var currentPeriodPlays []FeedItem
-	for _, feedItem := range game.Plays {
-		if feedItem.Period == game.CurrentPeriod {
-			currentPeriodPlays = append(currentPeriodPlays, feedItem)
-		}
-	}
-
-	return len(currentPeriodPlays)
-}
-
 func (game *Game) UpdatePeriod(db *gorm.DB) error {
 
 	type GameStockChange struct {
@@ -374,4 +365,12 @@ func (game *Game) UpdatePeriod(db *gorm.DB) error {
 	}
 
 	return nil
+}
+
+func GetPlayers(gameID string, db *gorm.DB) ([]Player, error) {
+
+	var players []Player
+	err := db.Where("game_id = ? AND active = ?", gameID, true).Find(&players).Error
+
+	return players, err
 }

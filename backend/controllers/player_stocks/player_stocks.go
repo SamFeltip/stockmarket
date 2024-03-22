@@ -87,7 +87,7 @@ func Edit(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 	// get game loading template
 	loadingComponent := gameTemplates.Loading()
 
-	gameController.BroadcastUpdatePlayBoard(game)
+	gameController.BroadcastUpdatePlayBoard(game.ID)
 
 	return loadingComponent, nil
 }

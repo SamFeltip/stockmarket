@@ -54,23 +54,23 @@ var PlayerPlay FeedItemMessage = "playerPlay"
 var PlayerPass FeedItemMessage = "playerPass"
 var PeriodNew FeedItemMessage = "periodNew"
 
-func NewFeedItem(game Game, quantity int, feedItemMessage FeedItemMessage, player Player, game_stock GameStock, db *gorm.DB) (FeedItem, error) {
+func NewFeedItem(game GameDisplay, quantity int, feedItemMessage FeedItemMessage, user User, playerID uint, game_stock GameStock, db *gorm.DB) (FeedItem, error) {
 
 	feed_item := FeedItem{
 		GameStock: game_stock,
-		Player:    player,
-		Game:      game,
+		PlayerID:  playerID,
+		GameID:    game.ID,
 		Period:    game.CurrentPeriod,
 	}
 
 	if quantity > 0 {
 		feed_item.Message = fmt.Sprintf("bought %d shares in %s", quantity, game_stock.Stock.Name)
-		feed_item.Title = player.User.Name
-		feed_item.ImageRoot = player.User.ProfileRoot
+		feed_item.Title = user.Name
+		feed_item.ImageRoot = user.ProfileRoot
 	} else if quantity < 0 {
 		feed_item.Message = fmt.Sprintf("sold %d shares in %s", quantity*-1, game_stock.Stock.Name)
-		feed_item.Title = player.User.Name
-		feed_item.ImageRoot = player.User.ProfileRoot
+		feed_item.Title = user.Name
+		feed_item.ImageRoot = user.ProfileRoot
 	}
 
 	if feedItemMessage == StartGame {
@@ -82,8 +82,8 @@ func NewFeedItem(game Game, quantity int, feedItemMessage FeedItemMessage, playe
 
 	if feedItemMessage == PlayerPass {
 		feed_item.Message = "passed their go"
-		feed_item.Title = player.User.Name
-		feed_item.ImageRoot = player.User.ProfileRoot
+		feed_item.Title = user.Name
+		feed_item.ImageRoot = user.ProfileRoot
 	}
 
 	fmt.Println("creating new FeedItem", feed_item.Message)

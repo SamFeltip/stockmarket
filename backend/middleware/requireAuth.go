@@ -87,7 +87,7 @@ func AuthIsPlaying(c *gin.Context) {
 		return
 	}
 
-	player, err := models.LoadCurrentPlayer(playerID, db)
+	player, err := models.FindPlayer(playerID, db)
 
 	if err != nil {
 		fmt.Println("error fetching player:", err)
@@ -96,7 +96,7 @@ func AuthIsPlaying(c *gin.Context) {
 
 	c.Set("player", player)
 
-	game, err := models.LoadGame(player.Game.ID, db)
+	game, err := models.FindGame(player.GameID, db)
 
 	if err != nil {
 		fmt.Println("error fetching game:", err)
@@ -104,7 +104,7 @@ func AuthIsPlaying(c *gin.Context) {
 	}
 
 	fmt.Println("active game:", game.ID)
-	c.Set("game", game)
+	c.Set("gameID", game.ID)
 
 	c.Next()
 }
@@ -145,7 +145,7 @@ func RequireAuthWebsocket(c *gin.Context) {
 		return
 	}
 
-	player, err := game.SetActiveGame(&user, db)
+	player, err := user.SetActiveGame(gameID, db)
 
 	if err != nil {
 		fmt.Println("could not set active game for user: ", err)
@@ -212,37 +212,15 @@ func AuthCurrentPlayer(c *gin.Context) {
 		return
 	}
 
-	c.Set("game", game)
+	c.Set("gameID", game.ID)
 
-	if game.CurrentUserID != user.ID {
+	if game.CurrentUser.ID != user.ID {
 		fmt.Println("user is not current player", game.CurrentUserID, user.ID)
 		pageComponent := templates.Error(fmt.Errorf("user is not current player"))
 		ctx := context.Background()
 		pageComponent.Render(ctx, c.Writer)
 		return
 	}
-
-	player_ref, err := game.GetPlayer(&user)
-
-	if err != nil {
-		fmt.Println("error fetching player:", err)
-		pageComponent := templates.Error(err)
-		ctx := context.Background()
-		pageComponent.Render(ctx, c.Writer)
-		return
-	}
-
-	player, err := models.LoadCurrentPlayer(player_ref.ID, db)
-
-	if err != nil {
-		fmt.Println("error fetching player:", err)
-		pageComponent := templates.Error(err)
-		ctx := context.Background()
-		pageComponent.Render(ctx, c.Writer)
-		return
-	}
-
-	c.Set("player", player)
 
 	c.Next()
 }

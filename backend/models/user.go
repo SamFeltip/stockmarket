@@ -38,15 +38,25 @@ func (user *User) ActiveGamePlayer(db *gorm.DB) (uint, error) {
 	return player.ID, err
 }
 
+func (user *User) GetPlayer(gameID string, db *gorm.DB) (Player, error) {
+	var player Player
+	err := db.
+		Where("user_id = ? AND game_id = ?", user.ID, gameID).
+		First(&player).
+		Error
+
+	return player, err
+}
+
 /*
 - create a new player object and connected player stocks
 
 - adds player object to game object
 */
-func (user *User) CreatePlayer(game *Game, db *gorm.DB) (*Player, error) {
+func (user *User) CreatePlayer(gameID string, db *gorm.DB) (Player, error) {
 
 	player := Player{
-		Game:   *game,
+		GameID: gameID,
 		User:   *user,
 		Active: true,
 		Cash:   100000,
@@ -55,16 +65,16 @@ func (user *User) CreatePlayer(game *Game, db *gorm.DB) (*Player, error) {
 
 	if err != nil {
 		fmt.Println("error creating player:", err)
-		return nil, err
+		return Player{}, err
 	}
 
 	game_stocks := []GameStock{}
 
-	err = db.Where("game_id = ?", game.ID).Find(&game_stocks).Error
+	err = db.Where("game_id = ?", gameID).Find(&game_stocks).Error
 
 	if err != nil {
 		fmt.Println("error fetching game stocks:", err)
-		return nil, err
+		return Player{}, err
 	}
 
 	for _, game_stock := range game_stocks {
@@ -78,20 +88,16 @@ func (user *User) CreatePlayer(game *Game, db *gorm.DB) (*Player, error) {
 
 		if err != nil {
 			fmt.Println("error creating player stock:", err)
-			return nil, err
+			return Player{}, err
 		}
 	}
 
-	player, err = LoadCurrentPlayer(player.ID, db)
-
 	if err != nil {
 		fmt.Println("error loading player:", err)
-		return nil, err
+		return Player{}, err
 	}
 
-	game.Players = append(game.Players, player)
-
-	return &game.Players[len(game.Players)-1], err
+	return player, err
 }
 
 func GenerateSessionToken(user User) (string, error) {

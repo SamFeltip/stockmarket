@@ -68,7 +68,7 @@ func StartGame(gameID string) (templ.Component, error) {
 	game.GeneratePlayerInsights(db)
 
 	fmt.Println("player insights made:", game.ID)
-	err = BroadcastUpdatePlayBoard(game)
+	err = BroadcastUpdatePlayBoard(game.ID)
 
 	if err != nil {
 		fmt.Println("could not broadcast start play")
@@ -83,32 +83,37 @@ func StartGame(gameID string) (templ.Component, error) {
 func PlayAction(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 	gameAction, _ := c.GetPostForm("game_action")
 
-	cg, exists := c.Get("game")
+	gameIDcontext, exists := c.Get("gameID")
 
 	if !exists {
 		fmt.Println("game doesn't exist in context")
 		return templates.Error(fmt.Errorf("game doesn't exist in context")), fmt.Errorf("game doesn't exist in context")
 	}
 
-	game := cg.(models.Game)
+	gameID := gameIDcontext.(string)
+	game, err := models.LoadGameDisplay(gameID, db)
 
-	cp, exists := c.Get("player")
-
-	if !exists {
-		fmt.Println("player doesn't exist in context")
-		return templates.Error(fmt.Errorf("player doesn't exist in context")), fmt.Errorf("player doesn't exist in context")
+	if err != nil {
+		fmt.Println("error fetching game:", err)
+		return templates.NoGame(), err
 	}
 
-	player := cp.(models.Player)
+	cu, exists := c.Get("user")
 
-	var err = error(nil)
+	if !exists {
+		fmt.Println("no user found")
+		return templates.Error(fmt.Errorf("no user found")), fmt.Errorf("no user found")
+	}
 
-	// switch case
-	switch gameAction {
-	case string(models.PlayerPass):
-		feedItem, feed_err := models.NewFeedItem(game, 0, models.PlayerPass, player, models.GameStock{}, db)
-		err = feed_err
-		game.Plays = append(game.Plays, feedItem)
+	current_user := cu.(models.User)
+
+	player, err := current_user.GetPlayer(gameID, db)
+
+	_, err = models.NewFeedItem(game, 0, models.PlayerPass, current_user, player.ID, models.GameStock{}, db)
+
+	if err != nil {
+		fmt.Println("could not create new feed item", err)
+		return templates.Error(err), err
 	}
 
 	if err != nil {
@@ -138,7 +143,7 @@ func PlayAction(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 		return templates.Error(err), err
 	}
 
-	err = BroadcastUpdatePlayBoard(game)
+	err = BroadcastUpdatePlayBoard(game.ID)
 
 	if err != nil {
 		fmt.Println("could not broadcast update board", err)
@@ -170,7 +175,7 @@ func NextPeriod(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 		return templates.Error(err), err
 	}
 
-	err = BroadcastUpdatePlayBoard(game)
+	err = BroadcastUpdatePlayBoard(game.ID)
 
 	if err != nil {
 		fmt.Println("could not broadcast period update", err)

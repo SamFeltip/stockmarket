@@ -76,14 +76,14 @@ func TestCreatePlayer(t *testing.T) {
 	db.Create(&new_user)
 
 	// Call CreatePlayer to create a player
-	new_player, err := new_user.CreatePlayer(&game, db)
+	new_player, err := new_user.CreatePlayer(game.ID, db)
 
 	if err != nil {
 		t.Fatalf("CreatePlayer failed: %v", err)
 	}
 
 	// Check that the player was created correctly
-	if new_player == nil {
+	if new_player.ID == 0 {
 		t.Fatalf("CreatePlayer failed: %v", game_create_user_player)
 	}
 
@@ -103,5 +103,85 @@ func TestCreatePlayer(t *testing.T) {
 	db.Where("player_id = ?", new_player.ID).Find(&playerStocks)
 
 	assert.Equal(t, 2, len(playerStocks))
+
+}
+
+// test LoadCurrentPlayerDisplay
+
+func TestLoadCurrentPlayerDisplay(t *testing.T) {
+	db := database.SetupTestDb(logger.Info)
+
+	defer database.UndoMigrations(db)
+
+	stock1 := models.Stock{
+		Name:          "stock1",
+		StartingValue: 100,
+		ImagePath:     "image1",
+		Variation:     0.5,
+	}
+
+	stock2 := models.Stock{
+		Name:          "stock2",
+		StartingValue: 200,
+		ImagePath:     "image2",
+		Variation:     0.5,
+	}
+
+	game_create_user := models.User{
+		Name:     "user1",
+		Password: "password",
+	}
+
+	db.Create(&game_create_user)
+
+	game := models.Game{
+		ID:          "game1",
+		PeriodCount: 1,
+		Status:      string(models.Waiting),
+		CurrentUser: game_create_user,
+	}
+
+	db.Create(&game)
+
+	db.Create(&stock1)
+	db.Create(&stock2)
+
+	gameStock1 := models.GameStock{
+		Game:  game,
+		Stock: stock1,
+		Value: stock1.StartingValue,
+	}
+
+	gameStock2 := models.GameStock{
+		Game:  game,
+		Stock: stock2,
+		Value: stock2.StartingValue,
+	}
+
+	db.Create(&gameStock1)
+	db.Create(&gameStock2)
+
+	game_create_user_player := models.Player{
+		User:   game_create_user,
+		Game:   game,
+		Active: true,
+		Cash:   100000,
+	}
+
+	db.Create(&game_create_user_player)
+
+	playerDisplay, err := models.LoadCurrentPlayerDisplay(game_create_user_player.ID, db)
+
+	if err != nil {
+		t.Fatalf("LoadCurrentPlayerDisplay failed: %v", err)
+	}
+
+	if playerDisplay.PlayerID != game_create_user_player.ID {
+		t.Fatalf("LoadCurrentPlayerDisplay failed: %v", playerDisplay.PlayerID)
+	}
+
+	if len(playerDisplay.PlayerStocks) != 2 {
+		t.Fatalf("LoadCurrentPlayerDisplay failed: %v", playerDisplay.PlayerStocks)
+	}
 
 }

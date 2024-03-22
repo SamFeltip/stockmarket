@@ -5,6 +5,7 @@ import (
 	"stockmarket/database"
 	"stockmarket/models"
 	templates "stockmarket/templates/games"
+	userTemplates "stockmarket/templates/users"
 	"strconv"
 	"strings"
 
@@ -15,33 +16,39 @@ import (
 
 func Show(db *gorm.DB, c *gin.Context) templ.Component {
 
-	cg, exists := c.Get("game")
-	game := cg.(models.Game)
+	gameIDcontext, exists := c.Get("gameID")
 
 	if !exists {
 		fmt.Println("no game found")
 		return templates.NoGame()
 	}
 
-	cu, _ := c.Get("user")
+	gameID := gameIDcontext.(string)
+
+	cu, exists := c.Get("user")
+
+	if !exists {
+		fmt.Println("no user found")
+		return templates.Error(fmt.Errorf("no user found"))
+	}
+
 	current_user := cu.(models.User)
 
 	fmt.Println("run setActiveGame", current_user.Name)
-	current_player, err := game.SetActiveGame(&current_user, db)
+	current_player, err := current_user.SetActiveGame(gameID, db)
 
 	if err != nil {
 		fmt.Println("error setting active game:", err)
 		return templates.Error(err)
 	}
 
-	c.Set("player", current_player)
-
 	fmt.Println("player fetched:", current_player.User.Name, current_player.Game.ID)
 	fmt.Println("player active:", current_player.Active)
 
-	// game.Players = append(game.Players, player)
+	players, err := models.GetPlayers(gameID, db)
+	userCardList := userTemplates.CardListSocket(players)
 
-	err = BroadcastUpdatePlayersList(&game)
+	err = BroadcastUpdatePlayersList(gameID, userCardList)
 
 	if err != nil {
 		fmt.Println("error broadcasting new player:", err)
@@ -50,8 +57,21 @@ func Show(db *gorm.DB, c *gin.Context) templ.Component {
 
 	fmt.Println("player stocks" + strconv.Itoa(len(current_player.PlayerStocks)))
 
+	game, err := models.FindGame(gameID, db)
+
 	if game.Status == string(models.Playing) {
-		pageComponent := templates.Playing(game, current_player)
+
+		gameDisplay, err := models.LoadGameDisplay(gameID, db)
+
+		if err != nil {
+			fmt.Println("error fetching game:", err)
+			gameWrapper := templates.NoGame()
+			return gameWrapper
+		}
+
+		currentPlayerDisplay, err := models.LoadCurrentPlayerDisplay(current_player.ID, db)
+
+		pageComponent := templates.Playing(gameDisplay, currentPlayerDisplay)
 		return pageComponent
 	}
 

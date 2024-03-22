@@ -19,18 +19,10 @@ type Player struct {
 	Active       bool
 }
 
-func LoadCurrentPlayer(playerID uint, db *gorm.DB) (Player, error) {
+func FindPlayer(playerID uint, db *gorm.DB) (Player, error) {
 
 	var player Player
-	err := db.
-		Preload("User").
-		Preload("PlayerStocks").
-		Preload("Game").
-		Preload("PlayerStocks.GameStock.Stock").
-		Where("players.id = ?", playerID).
-		First(&player).Error
-
-	player.SortPlayerStocks()
+	err := db.First(&player, "id = ?", playerID).Error
 
 	return player, err
 }
@@ -65,15 +57,6 @@ func SortPlayers(players []Player) []Player {
 	}
 
 	return players
-}
-
-func (player *Player) TotalValue() float64 {
-
-	var total float64
-	for _, ps := range player.PlayerStocks {
-		total += float64(ps.Quantity) * ps.GameStock.Value
-	}
-	return total + float64(player.Cash)
 }
 
 // sort array of playerstocks by gamestock.stock.variation bubble sort

@@ -24,19 +24,10 @@ func CreateGameRoutes() {
 
 			gameID := c.Param("id")
 
-			game, err := models.LoadGame(gameID, db)
-
-			if err != nil {
-				fmt.Println("error fetching game:", err)
-				gameWrapper := templates.NoGame()
-				RenderWithTemplate(gameWrapper, "Game - id", c)
-				return
-			}
-
-			c.Set("game", game)
+			c.Set("gameID", gameID)
 
 			pageComponent := controllers.Show(db, c)
-			gameWrapper := templates.Base(pageComponent, game)
+			gameWrapper := templates.Base(pageComponent, gameID)
 
 			RenderWithTemplate(gameWrapper, "Game - id", c)
 

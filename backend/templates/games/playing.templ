@@ -65,29 +65,28 @@ script SetTabListeners() {
             event.target.classList.add("active");
         });
     });
-
 }
 
-templ Playing(game models.Game, player models.Player) {
+templ Playing(game models.GameDisplay, playerDisplay models.PlayerDisplay) {
 	@GameGridStyle()
 	<div id="game-grid" class="p-3">
 		<div id="profile" class="card card-green d-flex flex-row align-items-center p-2 gap-2" style="background-color: var(--bs-card-bg);">
 			// <div class="rounded" style="z-index: 990; position: relative; transform: translate(-10px, -10px); height: 60px; width: 60px; background-color: #ff0;"></div>
-			<img class="rounded" style="z-index: 999; " height="60px" width="60px" src={ player.User.ProfileRoot } alt={ player.User.Name }/>
+			<img class="rounded" style="z-index: 999; " height="60px" width="60px" src={ playerDisplay.ProfileRoot } alt={ playerDisplay.Name }/>
 			<div>
 				<h2 class="text-capitalize mb-0" style="font-size: 1.5rem;">
-					{ player.User.Name }
+					{ playerDisplay.Name }
 				</h2>
 				<p>
-					Cash £{ strconv.Itoa(player.Cash) }
+					Cash £{ strconv.Itoa(playerDisplay.Cash) }
 				</p>
 				<p>
-					Net £{ strconv.FormatFloat(player.TotalValue(), 'f', -1, 64) }
+					Net £{ strconv.FormatFloat(playerDisplay.TotalValue(), 'f', -1, 64) }
 				</p>
 			</div>
 		</div>
 		<div id="now-playing" class="card card-green p-2 rounded d-flex flex-column align-items-center justify-content-center" style="background-color: var(--bs-card-bg);">
-			if game.CurrentUser.ID == player.User.ID {
+			if game.CurrentUserID == playerDisplay.UserID {
 				<h3 class="primary">
 					It's your turn
 				</h3>
@@ -96,7 +95,7 @@ templ Playing(game models.Game, player models.Player) {
 				</p>
 			} else {
 				<h3>
-					It's { game.CurrentUser.Name }'s turn!
+					It's { game.CurrentUserName }'s turn!
 				</h3>
 			}
 		</div>
@@ -104,7 +103,7 @@ templ Playing(game models.Game, player models.Player) {
 			<h1>Stockmarket!</h1>
 			<div class="d-flex justify-content-between">
 				<div>
-					Turn { strconv.Itoa(game.CurrentTurn()) }/{ strconv.Itoa(len(game.Players) * 3) }
+					Turn { strconv.Itoa(game.CurrentTurn()) }/{ strconv.Itoa(game.PlayerCount * 3) }
 				</div>
 				<div>
 					Period { strconv.Itoa(game.CurrentPeriod + 1) }/{ strconv.Itoa(game.PeriodCount + 1) }
@@ -113,15 +112,17 @@ templ Playing(game models.Game, player models.Player) {
 		</header>
 		<div id="content" class="">
 			<ol id="tabs" class="nav nav-tabs d-flex justify-content-between">
-				for _, ps := range player.PlayerStocks {
+				for _, ps := range playerDisplay.PlayerStocks {
 					<li class="nav-item d-flex flex-fill">
 						<a
+							id={ fmt.Sprintf("player-stock-tab-%s", strconv.FormatUint(uint64(ps.ID), 10)) }
 							class="flex-fill player-stock nav-link d-flex flex-row align-items-center justify-content-between gap-1"
 							hx-swap="outerHTML"
 							hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(ps.ID), 10)) }
 							hx-trigger="click"
 							hx-target="#play-view"
-							id={ "player-stock-tab-" + strconv.FormatUint(uint64(ps.ID), 10) }
+
+
 						>
 							<span
 								hx-trigger="load"
@@ -134,7 +135,7 @@ templ Playing(game models.Game, player models.Player) {
 				}
 			</ol>
 			@SetTabListeners()
-			<div id="play-view" class="bg-white text-black rounded-bottom p-3" hx-swap="outerHTML" hx-trigger="load" hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(player.PlayerStocks[0].ID), 10)) }></div>
+			<div id="play-view" class="bg-white text-black rounded-bottom p-3" hx-swap="outerHTML" hx-trigger="load" hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(playerDisplay.PlayerStocks[0].ID), 10)) }></div>
 		</div>
 		<aside class="rounded bg-white text-black p-3">
 			<div class="d-grid" style="grid-template-rows: auto 1fr;">
@@ -145,7 +146,7 @@ templ Playing(game models.Game, player models.Player) {
 					<div id="feed-body" hx-get={ fmt.Sprintf("/feed_items/show/%s", game.ID) } hx-swap="outerHTML" hx-trigger="load"></div>
 				</div>
 			</div>
-			if game.CurrentUser.ID == player.User.ID {
+			if game.CurrentUserID == playerDisplay.UserID {
 				<form
 					hx-post="/api/games/action"
 					hx-target="main"
@@ -168,8 +169,8 @@ templ Playing(game models.Game, player models.Player) {
 	</div>
 }
 
-templ PlayingSocket(game models.Game, player models.Player) {
+templ PlayingSocket(game models.GameDisplay, playerDisplay models.PlayerDisplay) {
 	<div hx-swap-oob="innerHTML:main">
-		@Playing(game, player)
+		@Playing(game, playerDisplay)
 	</div>
 }

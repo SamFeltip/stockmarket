@@ -98,7 +98,7 @@ templ Waiting(game models.Game) {
                 </a>
                 if templates.IsCurrentUserTurn(ctx) {
                     <form style="max-width: 14rem;" class="w-100" hx-post="/api/games/start" hx-trigger="submit" hx-swap="innerHTML" hx-target="#game-actions">
-                        <input type="hidden" name="gameID" value={game.ID}/>
+                        <input type="hidden" name="gameID" value={ game.ID }/>
                         <button type="submit" class="btn btn-primary w-100">
                             Launch Game
                         </button>
