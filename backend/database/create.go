@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"log"
+	"os"
 	"stockmarket/models"
 
 	"gorm.io/driver/postgres"
@@ -29,8 +30,24 @@ func SetupTestDb(log_mode logger.LogLevel) *gorm.DB {
 }
 
 func SetupDevDb() *gorm.DB {
-	dsn := "host=localhost user=me password=def78-brglger-45y$u3g dbname=postgres port=5433 sslmode=disable"
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_PORT"))
 	return SetupDb(dsn, logger.Info)
+}
+
+func SetupProdDb() *gorm.DB {
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_PORT"))
+
+	return SetupDb(dsn, logger.Error)
 }
 
 func SetupDb(dsn string, log_mode logger.LogLevel) *gorm.DB {
