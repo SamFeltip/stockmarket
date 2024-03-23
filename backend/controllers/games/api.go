@@ -48,7 +48,14 @@ func StartGame(gameID string) (templ.Component, error) {
 
 	db := database.GetDb()
 
-	err := db.Model(models.Game{}).Where("lower(id) = lower(?)", gameID).Update("status", string(models.Playing)).Error
+	game, err := models.FindGame(gameID, db)
+
+	if err != nil {
+		fmt.Println("could not find game", err)
+		return nil, err
+	}
+
+	err = db.Model(models.Game{}).Where("lower(id) = lower(?)", gameID).Update("status", string(models.Playing)).Error
 
 	if err != nil {
 		fmt.Println("could not update game status")
@@ -57,14 +64,14 @@ func StartGame(gameID string) (templ.Component, error) {
 
 	fmt.Println("game status updated:", gameID)
 
-	game, err := models.LoadGame(gameID, db)
+	players, err := models.GetPlayers(gameID, db)
+
+	err = game.GeneratePlayerInsights(players, db)
 
 	if err != nil {
-		fmt.Println("could not find game", err)
+		fmt.Println("could not generate player insights", err)
 		return nil, err
 	}
-
-	game.GeneratePlayerInsights(db)
 
 	fmt.Println("player insights made:", game.ID)
 	err = BroadcastUpdatePlayBoard(game.ID)

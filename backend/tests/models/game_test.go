@@ -250,3 +250,167 @@ func TestUpdatePeriod(t *testing.T) {
 	}
 
 }
+
+func TestGeneratePlayerInsights(t *testing.T) {
+	db := database.SetupTestDb(logger.Warn)
+	defer database.UndoMigrations(db)
+
+	// Create a create_game_user and save it to the database
+	create_game_user := models.User{
+		Name:     "user1",
+		Password: "password",
+	}
+
+	another_user := models.User{
+		Name:     "user2",
+		Password: "password",
+	}
+
+	db.Create(&create_game_user)
+	db.Create(&another_user)
+
+	stock1 := models.Stock{
+		Name:          "stock1",
+		StartingValue: 100,
+		ImagePath:     "image1",
+		Variation:     0.5,
+	}
+
+	stock2 := models.Stock{
+		Name:          "stock2",
+		StartingValue: 200,
+		ImagePath:     "image2",
+		Variation:     0.5,
+	}
+
+	db.Create(&stock1)
+	db.Create(&stock2)
+
+	insights := []models.Insight{
+		{StockID: stock1.ID, Description: "insight1", Value: 1},
+		{StockID: stock1.ID, Description: "insight2", Value: 2},
+		{StockID: stock2.ID, Description: "insight3", Value: 1.5},
+		{StockID: stock2.ID, Description: "insight4", Value: 2.5},
+		{StockID: stock1.ID, Description: "insight5", Value: 0.5},
+		{StockID: stock2.ID, Description: "insight6", Value: 2},
+		{StockID: stock1.ID, Description: "insight7", Value: -1.5},
+		{StockID: stock2.ID, Description: "insight8", Value: 1},
+		{StockID: stock1.ID, Description: "insight9", Value: -2.5},
+		{StockID: stock2.ID, Description: "insight10", Value: 3},
+		{StockID: stock1.ID, Description: "insight11", Value: 1.5},
+		{StockID: stock2.ID, Description: "insight12", Value: 0.5},
+		{StockID: stock1.ID, Description: "insight13", Value: 2.5},
+		{StockID: stock2.ID, Description: "insight14", Value: -1},
+		{StockID: stock1.ID, Description: "insight15", Value: -0.5},
+		{StockID: stock2.ID, Description: "insight16", Value: -2},
+		{StockID: stock1.ID, Description: "insight17", Value: -1.5},
+		{StockID: stock2.ID, Description: "insight18", Value: -0.5},
+		{StockID: stock1.ID, Description: "insight19", Value: 1.5},
+		{StockID: stock2.ID, Description: "insight20", Value: 0.5},
+		{StockID: stock1.ID, Description: "insight21", Value: 2.5},
+		{StockID: stock2.ID, Description: "insight22", Value: -1},
+		{StockID: stock1.ID, Description: "insight23", Value: -0.5},
+		{StockID: stock2.ID, Description: "insight24", Value: -2},
+		{StockID: stock1.ID, Description: "insight25", Value: -1.5},
+		{StockID: stock2.ID, Description: "insight26", Value: -0.5},
+		{StockID: stock1.ID, Description: "insight27", Value: 1.5},
+		{StockID: stock2.ID, Description: "insight28", Value: 0.5},
+		{StockID: stock1.ID, Description: "insight29", Value: 2.5},
+		{StockID: stock2.ID, Description: "insight30", Value: -1},
+	}
+
+	db.Create(&insights)
+
+	game := models.Game{
+		ID:            "gameTest",
+		PeriodCount:   1,
+		CurrentUserID: create_game_user.ID,
+		Status:        "playing",
+	}
+
+	db.Create(&game)
+
+	player1 := models.Player{
+		UserID: create_game_user.ID,
+		GameID: game.ID,
+		Active: true,
+		Cash:   100000,
+	}
+
+	player2 := models.Player{
+		UserID: another_user.ID,
+		GameID: game.ID,
+		Active: true,
+		Cash:   100000,
+	}
+
+	db.Create(&player1)
+	db.Create(&player2)
+
+	gameStock1 := models.GameStock{
+		GameID:  game.ID,
+		StockID: stock1.ID,
+		Value:   100,
+	}
+
+	gameStock2 := models.GameStock{
+		GameID:  game.ID,
+		StockID: stock2.ID,
+		Value:   200,
+	}
+
+	db.Create(&gameStock1)
+	db.Create(&gameStock2)
+
+	playerStock1 := models.PlayerStock{
+		PlayerID:    player1.ID,
+		GameStockID: gameStock1.ID,
+		Quantity:    10,
+	}
+
+	playerStock2 := models.PlayerStock{
+		PlayerID:    player1.ID,
+		GameStockID: gameStock2.ID,
+		Quantity:    1,
+	}
+
+	playerStock3 := models.PlayerStock{
+		PlayerID:    player2.ID,
+		GameStockID: gameStock1.ID,
+		Quantity:    10,
+	}
+
+	playerStock4 := models.PlayerStock{
+		PlayerID:    player2.ID,
+		GameStockID: gameStock2.ID,
+		Quantity:    1,
+	}
+
+	db.Create(&playerStock1)
+	db.Create(&playerStock2)
+	db.Create(&playerStock3)
+	db.Create(&playerStock4)
+
+	err := game.GeneratePlayerInsights(
+		[]models.Player{player1, player2}, db)
+
+	if err != nil {
+		t.Fatalf("GeneratePlayerInsights failed: %v", err)
+	}
+
+	// Retrieve the player insights from the database
+	// retrieve pi where pi.game_stock_id = game_stock_id where game_stock.game_id = game.id
+	var playerInsights []models.PlayerInsight
+	err = db.Table("player_insights").
+		Joins("inner join player_stocks on player_insights.player_stock_id = player_stocks.id").
+		Joins("inner join game_stocks on player_stocks.game_stock_id = game_stocks.id").
+		Where("game_stocks.game_id = ?", game.ID).
+		Find(&playerInsights).Error
+
+	if err != nil {
+		t.Fatalf("could not retrieve player insights: %v", err)
+	}
+
+	// Check that the player insights were generated correctly
+	assert.Equal(t, 20, len(playerInsights))
+}

@@ -21,7 +21,17 @@ func Edit(playerStockID uint, gameID string, quantityAdd int, multiplier int, db
 		return gameTemplates.Error(err), err
 	}
 
-	err = db.Model(models.PlayerStock{}).Where("id = ?", playerStockID).Update("quantity", quantityChange).Error
+	playerStock := models.PlayerStock{}
+	err = db.Where("id = ?", playerStockID).First(&playerStock).Error
+
+	if err != nil {
+		fmt.Println("could not get player stock", err)
+		return gameTemplates.Error(err), err
+	}
+
+	newStockQuantity := playerStock.Quantity + quantityChange
+
+	err = db.Model(models.PlayerStock{}).Where("id = ?", playerStockID).Update("quantity", newStockQuantity).Error
 
 	if err != nil {
 		fmt.Println("could not update player stock quantity", err)

@@ -155,14 +155,26 @@ func (current_user *User) SetActiveGame(gameID string, db *gorm.DB) (Player, err
 	return player, nil
 }
 
-func (game *Game) GeneratePlayerInsights(db *gorm.DB) error {
+func (game *Game) GeneratePlayerInsights(players []Player, db *gorm.DB) error {
 
 	fmt.Println("generating insights, game.ID:", game.ID)
 
-	player_insights := []PlayerInsight{}
-	err := db.Joins("INNER JOIN player_stocks on player_stocks.id = player_insights.player_stock_id").
+	var playerInsightsIDs []int
+
+	err := db.Table("player_insights").
+		Select("player_insights.id").
+		Joins("INNER JOIN player_stocks on player_stocks.id = player_insights.player_stock_id").
 		Joins("INNER JOIN game_stocks on game_stocks.id = player_stocks.game_stock_id").
-		Where("game_stocks.game_id = ?", game.ID).Delete(&player_insights).Error
+		Where("game_stocks.game_id = ?", game.ID).
+		Model(&playerInsightsIDs).Error
+
+	if err != nil {
+		fmt.Println("could not get player insights", err)
+		return err
+	}
+
+	player_insights := []PlayerInsight{}
+	err = db.Where("id IN (?)", playerInsightsIDs).Delete(&player_insights).Error
 
 	if err != nil {
 		fmt.Println("could not find player insights to delete", err)
@@ -181,8 +193,6 @@ func (game *Game) GeneratePlayerInsights(db *gorm.DB) error {
 
 	fmt.Println("insights.len:", len(insights))
 
-	player_length := len(game.Players)
-
 	// shuffle insights
 	rand.Shuffle(len(insights), func(i, j int) {
 		insights[i], insights[j] = insights[j], insights[i]
@@ -190,13 +200,20 @@ func (game *Game) GeneratePlayerInsights(db *gorm.DB) error {
 
 	fmt.Println("shuffled insights")
 
-	top_insights := insights[:player_length*10]
+	insights_per_player := 10
 
-	// give 10 playerInsights to each player for each insight
+	if len(insights)/len(players) < insights_per_player {
+		fmt.Println("not enough insights for all players")
+		return errors.New("not enough insights for all players")
+	}
+
+	top_insights := insights[:len(players)*insights_per_player]
+
+	// give insights_per_player playerInsights to each player for each insight
 	starting_point := 0
-	for _, player := range game.Players {
+	for _, player := range players {
 
-		for i := starting_point; i < starting_point+10; i++ {
+		for i := starting_point; i < starting_point+insights_per_player; i++ {
 			// get player_stock for player of top_insights[i].Stock
 			player_stock := PlayerStock{}
 			err = db.Joins("INNER JOIN game_stocks on player_stocks.game_stock_id = game_stocks.id").
@@ -220,7 +237,7 @@ func (game *Game) GeneratePlayerInsights(db *gorm.DB) error {
 			}
 		}
 
-		starting_point += 10
+		starting_point += insights_per_player
 	}
 
 	return nil
@@ -231,44 +248,49 @@ update the current user to the next user in the game
 */
 func UpdateCurrentUser(gameID string, db *gorm.DB) (uint, error) {
 
-	var game Game
-
-	err := db.
-		InnerJoins("Players").
-		Where("games.id = ? AND players.active = ?", gameID, true).
-		First(&game).Error
+	game, err := FindGame(gameID, db)
 
 	if err != nil {
 		fmt.Println("could not find game", err)
 		return 0, err
 	}
 
-	if len(game.Players) == 0 {
+	var players = []struct {
+		PlayerID uint
+		UserID   uint
+	}{}
+
+	err = db.
+		Table("players").
+		Select("players.id as player_id, users.id as user_id").
+		Joins("inner join users on players.user_id = users.id").
+		Where("game_id = ? AND active = ?", gameID, true).
+		Order("players.id").
+		Find(&players).Error
+
+	if err != nil {
+		fmt.Println("could not get players", err)
+		return 0, err
+	}
+
+	if len(players) == 0 {
 		fmt.Println("no players in game")
 		return 0, errors.New("no players in game")
 	}
 
 	current_user_id := game.CurrentUserID
 
-	fmt.Println("sorting players by id")
-	sorted_players := SortPlayers(game.Players)
-
-	fmt.Println("finding the next user of ", strconv.Itoa(len(sorted_players)), " old user:", current_user_id)
+	fmt.Println("finding the next user of ", strconv.Itoa(len(players)), " old user:", current_user_id)
 	var next_user_id uint
 
 	// find the next player in the list (based on current player)
-	for i, player := range sorted_players {
-
-		if player.User.Name == "" {
-			fmt.Println("player user must be preloaded")
-			return 0, errors.New("player user must be preloaded")
-		}
+	for i, player := range players {
 
 		if player.UserID == current_user_id {
-			if i == len(sorted_players)-1 {
-				next_user_id = sorted_players[0].UserID
+			if i == len(players)-1 {
+				next_user_id = players[0].UserID
 			} else {
-				next_user_id = sorted_players[i+1].UserID
+				next_user_id = players[i+1].UserID
 			}
 			break
 		}
@@ -325,7 +347,14 @@ func (game *Game) UpdatePeriod(db *gorm.DB) error {
 		}
 	}
 
-	err = game.GeneratePlayerInsights(db)
+	players, err := GetPlayers(game.ID, db)
+
+	if err != nil {
+		fmt.Println("could not get players", err)
+		return err
+	}
+
+	err = game.GeneratePlayerInsights(players, db)
 
 	if err != nil {
 		fmt.Println("could not generate player insights", err)

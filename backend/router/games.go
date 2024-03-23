@@ -23,7 +23,7 @@ func CreateGameRoutes() {
 
 			db := database.GetDb()
 
-			gameID := c.Param("id")
+			gameID := strings.ToLower(c.Param("id"))
 
 			cu, exists := c.Get("user")
 

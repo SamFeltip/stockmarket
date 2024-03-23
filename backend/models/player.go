@@ -39,39 +39,3 @@ func PlayerLeft(playerID uint, db *gorm.DB) error {
 
 	return err
 }
-
-// sort array of players by ID bubble sort
-func SortPlayers(players []Player) []Player {
-
-	fmt.Println("sorting players", len(players))
-
-	for i := 0; i < len(players); i++ {
-		fmt.Println("active?", players[i].User.Name, players[i].Active)
-
-		for j := 0; j < len(players)-i-1; j++ {
-			if players[j].ID > players[j+1].ID {
-
-				players[j], players[j+1] = players[j+1], players[j]
-			}
-		}
-	}
-
-	return players
-}
-
-// sort array of playerstocks by gamestock.stock.variation bubble sort
-func (player *Player) SortPlayerStocks() []PlayerStock {
-
-	player_stocks := player.PlayerStocks
-	for i := 0; i < len(player_stocks); i++ {
-		for j := 0; j < len(player_stocks)-i-1; j++ {
-			if player_stocks[j].GameStock.Stock.Variation > player_stocks[j+1].GameStock.Stock.Variation {
-				player_stocks[j], player_stocks[j+1] = player_stocks[j+1], player_stocks[j]
-			}
-		}
-	}
-
-	player.PlayerStocks = player_stocks
-
-	return player_stocks
-}

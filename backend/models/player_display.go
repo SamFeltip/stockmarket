@@ -50,7 +50,9 @@ func LoadCurrentPlayerDisplay(playerID uint, db *gorm.DB) (CurrentPlayerDisplay,
 	err := db.Table("player_stocks as ps").
 		Select("ps.id, (ps.quantity * gs.value) as value").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+		Joins("inner join stocks as s on s.id = gs.stock_id").
 		Where("ps.player_id = ?", playerID).
+		Order("s.variation").
 		Scan(&playerStocksResult).Error
 
 	if err != nil {

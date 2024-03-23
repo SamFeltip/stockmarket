@@ -29,8 +29,6 @@ func LoadFeedItems(game_id string, db *gorm.DB) ([]FeedItem, error) {
 	var feed_items []FeedItem
 
 	err := db.
-		Preload("Player.User").
-		Preload("Player").
 		Where("game_id = ?", game_id).
 		Order("created_at desc").
 		Find(&feed_items).Error
@@ -82,25 +80,24 @@ func NewFeedItemMessage(gameID string, currentPeriod int, feedItemMessage FeedIt
 
 func NewFeedItem(quantity int, playerStockID uint, db *gorm.DB) (FeedItem, error) {
 
-	type FeedItemData struct {
-		UserName        string
+	var feed_item_response = struct {
+		ID              uint
+		UserName        string `gorm:"table:users; column:name"`
 		UserProfileRoot string
 		StockName       string
 		GameID          string
 		CurrentPeriod   int
-	}
-
-	var feed_item_data FeedItemData
+	}{}
 
 	err := db.Table("player_stocks as ps").
-		Select("u.name as user_name, u.profile_root as user_profile_root, s.Name as stock_name, gs.game_id, g.current_period").
+		Select("ps.ID, u.name as user_name, u.profile_root as user_profile_root, s.Name as stock_name, gs.game_id, g.current_period").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 		Joins("inner join games as g on g.id = gs.game_id").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
 		Joins("inner join players as p on p.id = ps.player_id").
 		Joins("inner join users as u on u.id = p.user_id").
 		Where("ps.ID = ?", playerStockID).
-		First(&feed_item_data).Error
+		First(&feed_item_response).Error
 
 	if err != nil {
 		fmt.Println("error loading feed item data:", err)
@@ -109,16 +106,18 @@ func NewFeedItem(quantity int, playerStockID uint, db *gorm.DB) (FeedItem, error
 
 	feed_item := FeedItem{
 		PlayerStockID: playerStockID,
-		Period:        feed_item_data.CurrentPeriod,
+		Period:        feed_item_response.CurrentPeriod,
 
-		Title:     feed_item_data.UserName,
-		ImageRoot: feed_item_data.UserProfileRoot,
+		Title:     feed_item_response.UserName,
+		ImageRoot: feed_item_response.UserProfileRoot,
+
+		GameID: feed_item_response.GameID,
 	}
 
 	if quantity > 0 {
-		feed_item.Message = fmt.Sprintf("bought %d shares in %s", quantity, feed_item_data.StockName)
+		feed_item.Message = fmt.Sprintf("bought %d shares in %s", quantity, feed_item_response.StockName)
 	} else if quantity < 0 {
-		feed_item.Message = fmt.Sprintf("sold %d shares in %s", quantity*-1, feed_item_data.StockName)
+		feed_item.Message = fmt.Sprintf("sold %d shares in %s", quantity*-1, feed_item_response.StockName)
 	}
 
 	fmt.Println("creating new FeedItem", feed_item.Message)

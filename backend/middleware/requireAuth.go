@@ -21,6 +21,7 @@ func TestAuth(c *gin.Context) (models.User, error) {
 
 	if err != nil {
 		fmt.Println("unauthorised: ", err)
+		c.Header("HX-Reconnect", "/login")
 		c.Redirect(http.StatusFound, "/login")
 	}
 
@@ -48,6 +49,7 @@ func TestAuth(c *gin.Context) (models.User, error) {
 
 	if float64(time.Now().Unix()) > claims["exp"].(float64) {
 		fmt.Println("expired cookie: ")
+		c.Header("HX-Reconnect", "/login")
 		c.Redirect(http.StatusFound, "/login")
 		return models.User{}, fmt.Errorf("expired cookie")
 	}
@@ -58,6 +60,7 @@ func TestAuth(c *gin.Context) (models.User, error) {
 
 	if err != nil {
 		fmt.Println("could not find user: ", err)
+		c.Header("HX-Reconnect", "/login")
 		c.Redirect(http.StatusFound, "/login")
 	}
 
@@ -70,6 +73,7 @@ func AuthIsPlaying(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println("could not find user: ", err)
+		c.Header("HX-Reconnect", "/login")
 		c.Redirect(http.StatusFound, "/login")
 		return
 	}
@@ -81,6 +85,7 @@ func AuthIsPlaying(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println("user is not participating in a game (RequireAuth)", err)
+		c.Header("HX-Reconnect", "/")
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
@@ -89,6 +94,7 @@ func AuthIsPlaying(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println("error fetching player:", err)
+		c.Header("HX-Reconnect", "/")
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
@@ -99,6 +105,7 @@ func AuthIsPlaying(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println("error fetching game:", err)
+		c.Header("HX-Reconnect", "/")
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
@@ -115,6 +122,7 @@ func AuthIsLoggedIn(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println("could not find user: ", err)
+		c.Header("HX-Reconnect", "/login")
 		c.Redirect(http.StatusFound, "/login")
 		return
 	}
@@ -182,6 +190,7 @@ func AuthCurrentPlayer(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println("invalid credentials", err)
+		c.Header("HX-Reconnect", "/login")
 		c.Redirect(http.StatusFound, "/login")
 		return
 	}
@@ -192,6 +201,7 @@ func AuthCurrentPlayer(c *gin.Context) {
 
 	if gameID == "" {
 		fmt.Println("no gameID given in form which requires auth current player")
+		c.Header("HX-Reconnect", "/login")
 		c.Redirect(http.StatusFound, "/login")
 		return
 	}
