@@ -163,10 +163,10 @@ func CreatePlayerStockRoutes() {
 		func(c *gin.Context) { middleware.AuthCurrentPlayer(c) },
 		func(c *gin.Context) {
 			db := database.GetDb()
-			playerStockID := c.PostForm("PlayerStockID")
+			playerStockIDString := c.PostForm("PlayerStockID")
 			playerStockQuantityAdd := c.PostForm("PlayerStockQuantityAdd")
 
-			if playerStockID == "" || playerStockQuantityAdd == "" {
+			if playerStockIDString == "" || playerStockQuantityAdd == "" {
 				fmt.Println("no playerStockID or playerStockQuantityAdd in form")
 				pageComponent := gameTemplates.Error(fmt.Errorf("no playerStockID or playerStockQuantityAdd"))
 				ctx := context.Background()
@@ -174,9 +174,43 @@ func CreatePlayerStockRoutes() {
 				return
 			}
 
-			fmt.Println("form data gathered: playerStockID:", playerStockID, "playerStockQuantityAdd:", playerStockQuantityAdd)
+			fmt.Println("form data gathered: playerStockID:", playerStockIDString, "playerStockQuantityAdd:", playerStockQuantityAdd)
 
-			pageComponent, err := controllers.Edit(c, db)
+			gameID := c.PostForm("gameID")
+			mode := c.PostForm("mode")
+
+			playerStockID64, err := strconv.ParseUint(playerStockIDString, 10, 32)
+
+			if err != nil {
+				fmt.Println("could not parse id", err)
+				pageComponent := gameTemplates.Error(err)
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
+
+			playerStockID := uint(playerStockID64)
+
+			// parse QuantityAdd to int and add to player stock . quantity
+			quantityAdd, err := strconv.Atoi(playerStockQuantityAdd)
+			if err != nil {
+				fmt.Println("could not parse new quantity to int", err)
+				pageComponent := gameTemplates.Error(err)
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
+
+			multiplier, err := strconv.Atoi(mode)
+			if err != nil {
+				fmt.Println("could not parse mode to int", err)
+				pageComponent := gameTemplates.Error(err)
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
+
+			pageComponent, err := controllers.Edit(playerStockID, gameID, quantityAdd, multiplier, db)
 			ctx := context.Background()
 			pageComponent.Render(ctx, c.Writer)
 

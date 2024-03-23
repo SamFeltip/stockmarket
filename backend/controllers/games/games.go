@@ -14,25 +14,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Show(db *gorm.DB, c *gin.Context) templ.Component {
-
-	gameIDcontext, exists := c.Get("gameID")
-
-	if !exists {
-		fmt.Println("no game found")
-		return templates.NoGame()
-	}
-
-	gameID := gameIDcontext.(string)
-
-	cu, exists := c.Get("user")
-
-	if !exists {
-		fmt.Println("no user found")
-		return templates.Error(fmt.Errorf("no user found"))
-	}
-
-	current_user := cu.(models.User)
+func Show(gameID string, current_user models.User, db *gorm.DB) templ.Component {
 
 	fmt.Println("run setActiveGame", current_user.Name)
 	current_player, err := current_user.SetActiveGame(gameID, db)
@@ -46,6 +28,12 @@ func Show(db *gorm.DB, c *gin.Context) templ.Component {
 	fmt.Println("player active:", current_player.Active)
 
 	players, err := models.GetPlayers(gameID, db)
+
+	if err != nil {
+		fmt.Println("error getting players:", err)
+		return templates.Error(err)
+	}
+
 	userCardList := userTemplates.CardListSocket(players)
 
 	err = BroadcastUpdatePlayersList(gameID, userCardList)
@@ -59,6 +47,11 @@ func Show(db *gorm.DB, c *gin.Context) templ.Component {
 
 	game, err := models.FindGame(gameID, db)
 
+	if err != nil {
+		fmt.Println("error finding game:", err)
+		return templates.Error(err)
+	}
+
 	if game.Status == string(models.Playing) {
 
 		gameDisplay, err := models.LoadGameDisplay(gameID, db)
@@ -70,6 +63,12 @@ func Show(db *gorm.DB, c *gin.Context) templ.Component {
 		}
 
 		currentPlayerDisplay, err := models.LoadCurrentPlayerDisplay(current_player.ID, db)
+
+		if err != nil {
+			fmt.Println("error fetching current player:", err)
+			gameWrapper := templates.NoGame()
+			return gameWrapper
+		}
 
 		pageComponent := templates.Playing(gameDisplay, currentPlayerDisplay)
 		return pageComponent

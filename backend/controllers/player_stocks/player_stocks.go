@@ -5,57 +5,22 @@ import (
 	gameController "stockmarket/controllers/games"
 	"stockmarket/models"
 	gameTemplates "stockmarket/templates/games"
-	"strconv"
 
 	"github.com/a-h/templ"
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func Edit(c *gin.Context, db *gorm.DB) (templ.Component, error) {
-	playerStockIDString := c.PostForm("PlayerStockID")
-	playerStockQuantityAdd := c.PostForm("PlayerStockQuantityAdd")
-	gameID := c.PostForm("gameID")
-
-	playerStockID64, err := strconv.ParseUint(playerStockIDString, 10, 32)
-
-	if err != nil {
-		fmt.Println("could not parse id", err)
-		return gameTemplates.Error(err), err
-	}
-
-	playerStockID := uint(playerStockID64)
-
-	// parse QuantityAdd to int and add to player stock . quantity
-	quantityAdd, err := strconv.Atoi(playerStockQuantityAdd)
-	if err != nil {
-		fmt.Println("could not parse new quantity to int", err)
-		return gameTemplates.Error(err), err
-	}
-
-	mode := c.PostForm("mode")
-
-	multiplier, err := strconv.Atoi(mode)
-	if err != nil {
-		fmt.Println("could not parse mode to int", err)
-		return gameTemplates.Error(err), err
-	}
-
-	// completed form validation
+func Edit(playerStockID uint, gameID string, quantityAdd int, multiplier int, db *gorm.DB) (templ.Component, error) {
 
 	quantityChange := quantityAdd * multiplier
 
-	_, err = models.NewFeedItem(quantityChange, playerStockID, db)
+	_, err := models.NewFeedItem(quantityChange, playerStockID, db)
 
 	if err != nil {
 		fmt.Println("could not create new feed item", err)
 		return gameTemplates.Error(err), err
 	}
 
-	// update playerstock with playerstockid to quantiy of given
-	// update player cash with quantity of given
-
-	// Assuming playerStockID and quantityChange are defined
 	err = db.Model(models.PlayerStock{}).Where("id = ?", playerStockID).Update("quantity", quantityChange).Error
 
 	if err != nil {
@@ -73,6 +38,11 @@ func Edit(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 		Select("p.id as player_id, p.cash as player_cash, gs.value as game_stock_value").
 		Joins("inner join players as p on p.id = ps.player_id").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").Error
+
+	if err != nil {
+		fmt.Println("could not get playerChangeResult", err)
+		return gameTemplates.Error(err), err
+	}
 
 	newPlayerCash := playerChangeResult.PlayerCash - quantityAdd*int(playerChangeResult.GameStockValue)
 

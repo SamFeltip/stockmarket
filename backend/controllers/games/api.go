@@ -7,7 +7,6 @@ import (
 	templates "stockmarket/templates/games"
 
 	"github.com/a-h/templ"
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
@@ -80,32 +79,14 @@ func StartGame(gameID string) (templ.Component, error) {
 	return baseComponent, nil
 }
 
-func PlayAction(c *gin.Context, db *gorm.DB) (templ.Component, error) {
-	// gameAction, _ := c.GetPostForm("game_action")
+func PlayAction(gameID string, current_user models.User, db *gorm.DB) (templ.Component, error) {
 
-	gameIDcontext, exists := c.Get("gameID")
-
-	if !exists {
-		fmt.Println("game doesn't exist in context")
-		return templates.Error(fmt.Errorf("game doesn't exist in context")), fmt.Errorf("game doesn't exist in context")
-	}
-
-	gameID := gameIDcontext.(string)
-	game, err := models.LoadGameDisplay(gameID, db)
+	game, err := models.FindGame(gameID, db)
 
 	if err != nil {
-		fmt.Println("error fetching game:", err)
-		return templates.NoGame(), err
+		fmt.Println("could not find game", err)
+		return templates.Error(err), err
 	}
-
-	cu, exists := c.Get("user")
-
-	if !exists {
-		fmt.Println("no user found")
-		return templates.Error(fmt.Errorf("no user found")), fmt.Errorf("no user found")
-	}
-
-	current_user := cu.(models.User)
 
 	_, err = models.NewFeedItemMessage(game.ID, game.CurrentPeriod, models.PlayerPass, current_user, db)
 
@@ -146,15 +127,14 @@ func PlayAction(c *gin.Context, db *gorm.DB) (templ.Component, error) {
 	return templates.Loading(), nil
 }
 
-func NextPeriod(c *gin.Context, db *gorm.DB) (templ.Component, error) {
-	gameID, exists := c.GetPostForm("gameID")
-
-	if !exists {
-		fmt.Println("game doesn't exist in context")
-		return templates.Error(fmt.Errorf("game doesn't exist in context")), fmt.Errorf("game doesn't exist in context")
-	}
+func NextPeriod(gameID string, db *gorm.DB) (templ.Component, error) {
 
 	game, err := models.FindGame(gameID, db)
+
+	if err != nil {
+		fmt.Println("could not find game", err)
+		return templates.Error(err), err
+	}
 
 	err = game.UpdatePeriod(db)
 

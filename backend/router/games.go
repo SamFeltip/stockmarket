@@ -7,7 +7,7 @@ import (
 	controllers "stockmarket/controllers/games"
 	"stockmarket/database"
 	"stockmarket/middleware"
-	models "stockmarket/models"
+	"stockmarket/models"
 	templates "stockmarket/templates/games"
 	"strconv"
 
@@ -24,9 +24,18 @@ func CreateGameRoutes() {
 
 			gameID := c.Param("id")
 
-			c.Set("gameID", gameID)
+			cu, exists := c.Get("user")
 
-			pageComponent := controllers.Show(db, c)
+			if !exists {
+				fmt.Println("no user found")
+				pageComponent := templates.Error(fmt.Errorf("no user found in request context"))
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+			}
+
+			current_user := cu.(models.User)
+
+			pageComponent := controllers.Show(gameID, current_user, db)
 			gameWrapper := templates.Base(pageComponent, gameID)
 
 			RenderWithTemplate(gameWrapper, "Game - id", c)
@@ -140,7 +149,20 @@ func CreateGameRoutes() {
 
 			fmt.Println("form data gathered", "gameAction:", gameAction)
 
-			pageComponent, err := controllers.PlayAction(c, db)
+			gameID := c.PostForm("gameID")
+
+			cu, exists := c.Get("user")
+
+			if !exists {
+				fmt.Println("no user found")
+				pageComponent := templates.Error(fmt.Errorf("no user found in request context"))
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+			}
+
+			current_user := cu.(models.User)
+
+			pageComponent, err := controllers.PlayAction(gameID, current_user, db)
 
 			if err != nil {
 				fmt.Println("error editing player stock", err)
@@ -165,29 +187,9 @@ func CreateGameRoutes() {
 				return
 			}
 
-			cg, exists := c.Get("game")
-
-			if !exists {
-				fmt.Println("game doesn't exist in context")
-				pageComponent := templates.Error(fmt.Errorf("game doesn't exist in context"))
-				ctx := context.Background()
-				pageComponent.Render(ctx, c.Writer)
-				return
-			}
-
-			game := cg.(models.Game)
-
-			if game.ID != gameID {
-				fmt.Println("game doesn't match gameID in context")
-				pageComponent := templates.Error(fmt.Errorf("game doesn't match gameID in context"))
-				ctx := context.Background()
-				pageComponent.Render(ctx, c.Writer)
-				return
-			}
-
 			fmt.Println("form data gathered", "gameID:", gameID)
 
-			pageComponent, err := controllers.NextPeriod(c, db)
+			pageComponent, err := controllers.NextPeriod(gameID, db)
 
 			if err != nil {
 				fmt.Println("error editing player stock", err)
