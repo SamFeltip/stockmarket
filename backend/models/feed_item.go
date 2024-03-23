@@ -15,11 +15,11 @@ type FeedItem struct {
 	ImageRoot string
 	Colour    string
 
-	playerStock   PlayerStock
+	PlayerStock   PlayerStock
 	PlayerStockID uint `gorm:"default:null"`
 
 	Game   Game
-	GameID string
+	GameID string `gorm:"foreignKey:ID"`
 
 	Period int
 }

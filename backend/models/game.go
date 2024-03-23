@@ -20,7 +20,7 @@ type Game struct {
 	GameStocks    []GameStock `gorm:"constraint:OnDelete:CASCADE"`
 	CurrentUser   User
 	CurrentUserID uint
-	Plays         []FeedItem `gorm:"constraint:OnDelete:CASCADE"`
+	FeedItems     []FeedItem `gorm:"constraint:OnDelete:CASCADE"`
 }
 
 type GameStatus string
@@ -94,17 +94,6 @@ func LoadGame(gameID string, db *gorm.DB) (Game, error) {
 	// 	First(&game).Error
 
 	// return game, err
-}
-
-func (game Game) GetPlayer(user *User) (*Player, error) {
-
-	for p, _ := range game.Players {
-		if game.Players[p].UserID == user.ID {
-			return &game.Players[p], nil
-		}
-	}
-
-	return nil, errors.New("Player not found")
 }
 
 func GamePeriodCountDisplay(periodCount int) string {

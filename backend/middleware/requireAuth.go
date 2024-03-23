@@ -1,15 +1,12 @@
 package middleware
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"os"
 	"stockmarket/database"
 	"stockmarket/models"
 	"time"
-
-	templates "stockmarket/templates/games"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -24,7 +21,7 @@ func TestAuth(c *gin.Context) (models.User, error) {
 
 	if err != nil {
 		fmt.Println("unauthorised: ", err)
-		return models.User{}, err
+		c.Redirect(http.StatusFound, "/login")
 	}
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -61,7 +58,7 @@ func TestAuth(c *gin.Context) (models.User, error) {
 
 	if err != nil {
 		fmt.Println("could not find user: ", err)
-		return models.User{}, err
+		c.Redirect(http.StatusFound, "/login")
 	}
 
 	return user, nil
@@ -84,6 +81,7 @@ func AuthIsPlaying(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println("user is not participating in a game (RequireAuth)", err)
+		c.Redirect(http.StatusFound, "/")
 		return
 	}
 
@@ -91,6 +89,7 @@ func AuthIsPlaying(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println("error fetching player:", err)
+		c.Redirect(http.StatusFound, "/")
 		return
 	}
 
@@ -100,6 +99,7 @@ func AuthIsPlaying(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println("error fetching game:", err)
+		c.Redirect(http.StatusFound, "/")
 		return
 	}
 
@@ -182,10 +182,7 @@ func AuthCurrentPlayer(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println("invalid credentials", err)
-
-		pageComponent := templates.Error(err)
-		ctx := context.Background()
-		pageComponent.Render(ctx, c.Writer)
+		c.Redirect(http.StatusFound, "/login")
 		return
 	}
 
@@ -195,9 +192,7 @@ func AuthCurrentPlayer(c *gin.Context) {
 
 	if gameID == "" {
 		fmt.Println("no gameID given in form which requires auth current player")
-		pageComponent := templates.Error(fmt.Errorf("no gameID"))
-		ctx := context.Background()
-		pageComponent.Render(ctx, c.Writer)
+		c.Redirect(http.StatusFound, "/login")
 		return
 	}
 
@@ -205,10 +200,6 @@ func AuthCurrentPlayer(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println("error fetching game:", err)
-
-		pageComponent := templates.NoGame()
-		ctx := context.Background()
-		pageComponent.Render(ctx, c.Writer)
 		return
 	}
 
@@ -216,9 +207,6 @@ func AuthCurrentPlayer(c *gin.Context) {
 
 	if game.CurrentUser.ID != user.ID {
 		fmt.Println("user is not current player", game.CurrentUserID, user.ID)
-		pageComponent := templates.Error(fmt.Errorf("user is not current player"))
-		ctx := context.Background()
-		pageComponent.Render(ctx, c.Writer)
 		return
 	}
 

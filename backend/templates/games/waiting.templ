@@ -61,7 +61,7 @@ templ WaitingLoading(){
     </button>
 }
 
-templ Waiting(game models.Game, players []models.Player, currentUserID uint) {
+templ Waiting(game models.Game, players []models.PlayerDisplay, currentUserID uint) {
 	<div class="container-fluid rounded text-center d-flex flex-column justify-content-center" style="width: 95vw; height: 95vh;">
         <p>Lobby code:</p>
 		<h2 class="primary">{ game.ID }</h2>

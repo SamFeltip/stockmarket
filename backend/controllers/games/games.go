@@ -26,7 +26,7 @@ func Show(gameID string, current_user models.User, db *gorm.DB) templ.Component 
 	fmt.Println("player fetched:", current_player.ID)
 	fmt.Println("player active:", current_player.Active)
 
-	players, err := models.GetPlayers(gameID, db)
+	players, err := models.LoadPlayerDisplays(gameID, db)
 
 	if err != nil {
 		fmt.Println("error getting players:", err)
@@ -42,7 +42,7 @@ func Show(gameID string, current_user models.User, db *gorm.DB) templ.Component 
 		return templates.Error(err)
 	}
 
-	fmt.Println("player stocks" + strconv.Itoa(len(current_player.PlayerStocks)))
+	fmt.Println("player stocks", strconv.Itoa(len(current_player.PlayerStocks)))
 
 	game, err := models.FindGame(gameID, db)
 
@@ -51,8 +51,8 @@ func Show(gameID string, current_user models.User, db *gorm.DB) templ.Component 
 		return templates.Error(err)
 	}
 
-	if game.Status == string(models.Playing) {
-
+	switch game.Status {
+	case string(models.Playing):
 		gameDisplay, err := models.LoadGameDisplay(gameID, db)
 
 		if err != nil {
@@ -71,10 +71,7 @@ func Show(gameID string, current_user models.User, db *gorm.DB) templ.Component 
 
 		pageComponent := templates.Playing(gameDisplay, currentPlayerDisplay)
 		return pageComponent
-	}
-
-	if game.Status == string(models.Closed) {
-
+	case string(models.Closed):
 		gameInsights, err := models.GetGameInsights(game.ID, db)
 
 		if err != nil {
@@ -98,10 +95,11 @@ func Show(gameID string, current_user models.User, db *gorm.DB) templ.Component 
 
 		pageComponent := templates.Closed(gameID, gameInsights, gameStockDisplays, playerDisplays)
 		return pageComponent
+	default:
+		fmt.Println("players length", len(players))
+		pageComponent := templates.Waiting(game, players, current_user.ID)
+		return pageComponent
 	}
-
-	pageComponent := templates.Waiting(game, players, current_user.ID)
-	return pageComponent
 }
 
 func Create(code string, periodCount int, current_user models.User, db *gorm.DB) (models.Game, error) {

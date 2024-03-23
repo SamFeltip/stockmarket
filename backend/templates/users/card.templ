@@ -4,7 +4,7 @@ import (
     "stockmarket/models"
 )
 
-templ CardList(players []models.Player) {
+templ CardList(players []models.PlayerDisplay) {
 	<style>
 		.darker {
 			opacity: 0.5;
@@ -13,20 +13,20 @@ templ CardList(players []models.Player) {
 	for _, player := range players {
 		<div class="card card-green">
 			<img 
-				class={ "rounded card-img-top", templ.KV("darker", player.Active) }
+				class={ "rounded card-img-top", templ.KV("darker", !player.Active) }
 				style="object-fit: cover; max-width: 7.5em; max-height: 7.5em; height: auto; width: auto;" 
-				src={ player.User.ProfileRoot } 
-				alt={ player.User.Name }
+				src={ player.UserProfileRoot } 
+				alt={ player.UserName }
 			/>
 
 			<div class="card-body">
-				<h3>{ player.User.Name }</h3>
+				<h3>{ player.UserName }</h3>
 			</div>
 		</div>
 	}
 }
 
-templ CardListSocket(players []models.Player){
+templ CardListSocket(players []models.PlayerDisplay){
 
 	<div hx-swap-oob="innerHTML:#player-list">
 		@CardList(players)

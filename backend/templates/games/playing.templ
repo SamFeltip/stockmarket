@@ -67,26 +67,26 @@ script SetTabListeners() {
     });
 }
 
-templ Playing(game models.GameDisplay, playerDisplay models.PlayerDisplay) {
+templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay) {
 	@GameGridStyle()
 	<div id="game-grid" class="p-3">
 		<div id="profile" class="card card-green d-flex flex-row align-items-center p-2 gap-2" style="background-color: var(--bs-card-bg);">
 			// <div class="rounded" style="z-index: 990; position: relative; transform: translate(-10px, -10px); height: 60px; width: 60px; background-color: #ff0;"></div>
-			<img class="rounded" style="z-index: 999; " height="60px" width="60px" src={ playerDisplay.ProfileRoot } alt={ playerDisplay.Name }/>
+			<img class="rounded" style="z-index: 999; " height="60px" width="60px" src={ currentPlayerDisplay.UserProfileRoot } alt={ currentPlayerDisplay.UserName }/>
 			<div>
 				<h2 class="text-capitalize mb-0" style="font-size: 1.5rem;">
-					{ playerDisplay.Name }
+					{ currentPlayerDisplay.UserName }
 				</h2>
 				<p>
-					Cash £{ strconv.Itoa(playerDisplay.Cash) }
+					Cash £{ strconv.Itoa(currentPlayerDisplay.Cash) }
 				</p>
 				<p>
-					Net £{ strconv.FormatFloat(playerDisplay.TotalValue(), 'f', -1, 64) }
+					Net £{ strconv.FormatFloat(currentPlayerDisplay.TotalValue(), 'f', -1, 64) }
 				</p>
 			</div>
 		</div>
 		<div id="now-playing" class="card card-green p-2 rounded d-flex flex-column align-items-center justify-content-center" style="background-color: var(--bs-card-bg);">
-			if game.CurrentUserID == playerDisplay.UserID {
+			if game.CurrentUserID == currentPlayerDisplay.UserID {
 				<h3 class="primary">
 					It's your turn
 				</h3>
@@ -103,7 +103,7 @@ templ Playing(game models.GameDisplay, playerDisplay models.PlayerDisplay) {
 			<h1>Stockmarket!</h1>
 			<div class="d-flex justify-content-between">
 				<div>
-					Turn { strconv.Itoa(game.CurrentTurn()) }/{ strconv.Itoa(game.PlayerCount * 3) }
+					Turn { strconv.Itoa(game.CurrentTurn) }/{ strconv.Itoa(game.PlayerCount * 3) }
 				</div>
 				<div>
 					Period { strconv.Itoa(game.CurrentPeriod + 1) }/{ strconv.Itoa(game.PeriodCount + 1) }
@@ -112,7 +112,7 @@ templ Playing(game models.GameDisplay, playerDisplay models.PlayerDisplay) {
 		</header>
 		<div id="content" class="">
 			<ol id="tabs" class="nav nav-tabs d-flex justify-content-between">
-				for _, ps := range playerDisplay.PlayerStocks {
+				for _, ps := range currentPlayerDisplay.PlayerStocks {
 					<li class="nav-item d-flex flex-fill">
 						<a
 							id={ fmt.Sprintf("player-stock-tab-%s", strconv.FormatUint(uint64(ps.ID), 10)) }
@@ -135,7 +135,7 @@ templ Playing(game models.GameDisplay, playerDisplay models.PlayerDisplay) {
 				}
 			</ol>
 			@SetTabListeners()
-			<div id="play-view" class="bg-white text-black rounded-bottom p-3" hx-swap="outerHTML" hx-trigger="load" hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(playerDisplay.PlayerStocks[0].ID), 10)) }></div>
+			<div id="play-view" class="bg-white text-black rounded-bottom p-3" hx-swap="outerHTML" hx-trigger="load" hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(currentPlayerDisplay.PlayerStocks[0].ID), 10)) }></div>
 		</div>
 		<aside class="rounded bg-white text-black p-3">
 			<div class="d-grid" style="grid-template-rows: auto 1fr;">
@@ -146,7 +146,7 @@ templ Playing(game models.GameDisplay, playerDisplay models.PlayerDisplay) {
 					<div id="feed-body" hx-get={ fmt.Sprintf("/feed_items/show/%s", game.ID) } hx-swap="outerHTML" hx-trigger="load"></div>
 				</div>
 			</div>
-			if game.CurrentUserID == playerDisplay.UserID {
+			if game.CurrentUserID == currentPlayerDisplay.UserID {
 				<form
 					hx-post="/api/games/action"
 					hx-target="main"
@@ -169,8 +169,8 @@ templ Playing(game models.GameDisplay, playerDisplay models.PlayerDisplay) {
 	</div>
 }
 
-templ PlayingSocket(game models.GameDisplay, playerDisplay models.PlayerDisplay) {
+templ PlayingSocket(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay) {
 	<div hx-swap-oob="innerHTML:main">
-		@Playing(game, playerDisplay)
+		@Playing(game, currentPlayerDisplay)
 	</div>
 }

@@ -81,7 +81,7 @@ templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []mode
 					<div style="background-color: #3C5F2F;" class="rounded d-flex flex-row justify-content-around align-items-center">
 						<div id={ "game-stock-view-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) } class="game-stock-view d-flex flex-column align-items-center">
 							<div>
-								<img height="120px" src={gameInsight.ImagePath} alt={gameInsight.Name}/>
+								<img height="120px" src={ gameInsight.ImagePath } alt={ gameInsight.Name }/>
 							</div>
 							<h2>
 								{ gameInsight.Name }
@@ -105,7 +105,7 @@ templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []mode
 						</div>
 					</div>
 					<div class="game-insight-card rounded bg-white text-black d-flex flex-column align-items-center justify-content-center">
-						<img height="120px" src={gameInsight.ImagePath} alt={gameInsight.Name}/>
+						<img height="120px" src={ gameInsight.ImagePath } alt={ gameInsight.Name }/>
 						<div class="d-flex flex-row gap-2 align-items-center">
 							if gameInsight.InsightValue > 0 {
 								<img height="24px" src="/static/imgs/icons/stock_up.svg" alt="stock up arrow"/>
@@ -129,7 +129,7 @@ templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []mode
 			</h2>
 			for _, gameStock := range gameStocks {
 				<div id={ "game-stock-" + strconv.FormatUint(uint64(gameStock.ID), 10) } class="game-stock d-flex flex-column align-items-center" data-game-stock-id={ strconv.FormatUint(uint64(gameStock.ID), 10) }>
-					<img height="80px" src={gameStock.ImagePath} alt={gameStock.Name}/>
+					<img height="80px" src={ gameStock.ImagePath } alt={ gameStock.Name }/>
 					<!-- used for changing value display-->
 					<span class="d-none stock-total-insight-value">
 						0
@@ -147,7 +147,7 @@ templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []mode
 			<div class="d-flex w-100 gap-5 flex-row justify-content-center">
 			for _, player := range players {
 				<div class="d-flex flex-column align-items-center">
-					<img height="80px" width="80px" class="rounded" src={player.ProfileRoot} alt={player.Name}/>
+					<img height="80px" width="80px" class="rounded" src={ player.UserProfileRoot } alt={ player.UserName }/>
 					<td>£{ strconv.Itoa(player.Cash) }</td>
 
 				</div>

@@ -73,14 +73,14 @@ func BroadcastGameClosed(gameInsights []models.GameInsight, gameID string, db *g
 		return err
 	}
 
-	displayPlayerDisplays, err := models.LoadPlayerDisplays(gameID, db)
+	playerDisplays, err := models.LoadPlayerDisplays(gameID, db)
 
 	if err != nil {
 		fmt.Println("could not load player displays", err)
 		return err
 	}
 
-	marketClosedDisplay := templates.ClosedSocket(gameID, gameInsights, displayGameStocks, displayPlayerDisplays)
+	marketClosedDisplay := templates.ClosedSocket(gameID, gameInsights, displayGameStocks, playerDisplays)
 
 	buffer := &bytes.Buffer{}
 	marketClosedDisplay.Render(context.Background(), buffer)
@@ -106,7 +106,7 @@ func CheckForMarketClose(gameID string, db *gorm.DB) (templ.Component, error) {
 		return nil, err
 	}
 
-	if game.CurrentTurn() <= game.PlayerCount*3 {
+	if game.CurrentTurn <= game.PlayerCount*3 {
 		fmt.Println("market not closed")
 		return nil, nil
 	}
