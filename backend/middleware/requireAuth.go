@@ -145,7 +145,7 @@ func RequireAuthWebsocket(c *gin.Context) {
 		return
 	}
 
-	game, err := models.LoadGame(gameID, db)
+	game, err := models.FindGame(gameID, db)
 
 	if err != nil {
 		fmt.Println("error fetching game:", err)
@@ -206,7 +206,7 @@ func AuthCurrentPlayer(c *gin.Context) {
 		return
 	}
 
-	game, err := models.LoadGame(gameID, db)
+	game, err := models.FindGame(gameID, db)
 
 	if err != nil {
 		fmt.Println("error fetching game:", err)

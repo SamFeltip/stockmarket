@@ -78,24 +78,6 @@ func FindGame(gameID string, db *gorm.DB) (Game, error) {
 	return game, err
 }
 
-func LoadGame(gameID string, db *gorm.DB) (Game, error) {
-
-	return FindGame(gameID, db)
-
-	// var game Game
-	// err := db.Model(&game).
-	// 	Preload("GameStocks").
-	// 	Preload("GameStocks.Stock").
-	// 	Preload("CurrentUser").
-	// 	Preload("Players").
-	// 	Preload("Players.User").
-	// 	Preload("Plays").
-	// 	Where("lower(games.id) = lower(?)", gameID).
-	// 	First(&game).Error
-
-	// return game, err
-}
-
 func GamePeriodCountDisplay(periodCount int) string {
 	switch periodCount {
 	case 0:
