@@ -3,14 +3,6 @@ package users
 import (
     "stockmarket/models"
 )
-// templ Card(user models.User) {
-// 	<div class="card" width="6rem">
-// 		<img src={user.ProfileRoot} class="card-img-top" alt={user.Name + " profile"}/>
-// 		<div class="card-body">
-// 			<h5 class="text-center card-title">{user.Name}</h5>
-// 		</div>
-// 	</div>
-// }
 
 templ CardList(players []models.Player) {
 	<style>
@@ -18,14 +10,10 @@ templ CardList(players []models.Player) {
 			opacity: 0.5;
 		}
 	</style>
-	for _, player := range models.SortPlayers(players) {
+	for _, player := range players {
 		<div class="card card-green">
 			<img 
-				if player.Active {
-					class="rounded card-img-top"
-				} else {
-					class="rounded card-img-top darker"
-				}
+				class={ "rounded card-img-top", templ.KV("darker", player.Active) }
 				style="object-fit: cover; max-width: 7.5em; max-height: 7.5em; height: auto; width: auto;" 
 				src={ player.User.ProfileRoot } 
 				alt={ player.User.Name }

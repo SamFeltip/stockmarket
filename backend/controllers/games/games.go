@@ -7,7 +7,6 @@ import (
 	templates "stockmarket/templates/games"
 	userTemplates "stockmarket/templates/users"
 	"strconv"
-	"strings"
 
 	"github.com/a-h/templ"
 	"github.com/gin-gonic/gin"
@@ -24,7 +23,7 @@ func Show(gameID string, current_user models.User, db *gorm.DB) templ.Component 
 		return templates.Error(err)
 	}
 
-	fmt.Println("player fetched:", current_player.User.Name, current_player.Game.ID)
+	fmt.Println("player fetched:", current_player.ID)
 	fmt.Println("player active:", current_player.Active)
 
 	players, err := models.GetPlayers(gameID, db)
@@ -101,57 +100,32 @@ func Show(gameID string, current_user models.User, db *gorm.DB) templ.Component 
 		return pageComponent
 	}
 
-	pageComponent := templates.Waiting(game)
+	pageComponent := templates.Waiting(game, players, current_user.ID)
 	return pageComponent
 }
 
-func Create(c *gin.Context) (models.Game, error) {
-	db := database.GetDb()
-
-	code := strings.ToLower(c.PostForm("code"))
-	periodCountStr := c.PostForm("difficulty")
-
-	if code == "" || periodCountStr == "" {
-		fmt.Println("no code or periodCount in form")
-		return models.Game{}, fmt.Errorf("no code or periodCount in form")
-	}
-
-	periodCount, err := strconv.Atoi(periodCountStr)
-	if err != nil {
-		// handle error, e.g. return an error response
-		fmt.Println("couldnt convert to int")
-		return models.Game{}, err
-	}
-
-	cu, _ := c.Get("user")
-	current_user := cu.(models.User)
-
-	if err != nil {
-		fmt.Println("error creating game stocks, creating empty set:", err)
-		return models.Game{}, err
-	}
+func Create(code string, periodCount int, current_user models.User, db *gorm.DB) (models.Game, error) {
 
 	fmt.Println("create game:", code, periodCount)
 
 	game := models.Game{
-		ID:          code,
-		PeriodCount: periodCount,
-		Status:      string(models.Waiting),
-		CurrentUser: current_user,
+		ID:            code,
+		PeriodCount:   periodCount,
+		Status:        string(models.Waiting),
+		CurrentUserID: current_user.ID,
 	}
 
 	db.Create(&game)
 
 	// get all stocks
 	fmt.Println("create game stocks: ", code)
-	game_stocks, err := models.CreateGameStocks(code, db)
+	_, err := models.CreateGameStocks(code, db)
 
 	if err != nil {
 		fmt.Println("error creating game stocks:", err)
 		return models.Game{}, err
 	}
 
-	game.GameStocks = game_stocks
 	db.Save(&game)
 
 	if err != nil {

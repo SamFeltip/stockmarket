@@ -31,21 +31,20 @@ func CreateGameStocks(gameID string, db *gorm.DB) ([]GameStock, error) {
 
 	for _, stock := range stocks {
 		fmt.Println("stock iteration:", stock.ID, ":", gameID)
-		game_stock := GameStock{
+
+		game_stocks = append(game_stocks, GameStock{
 			GameID:   gameID,
 			StockID:  stock.ID,
 			Value:    stock.StartingValue,
 			Director: nil,
-		}
+		})
+	}
 
-		err := db.Create(&game_stock).Error
+	err := db.Create(&game_stocks).Error
 
-		if err != nil {
-			fmt.Println("failed to create game stock", err)
-			return nil, err
-		}
-
-		game_stocks = append(game_stocks, game_stock)
+	if err != nil {
+		fmt.Println("failed to create game stock", err)
+		return nil, err
 	}
 
 	return game_stocks, nil

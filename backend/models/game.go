@@ -80,18 +80,20 @@ func FindGame(gameID string, db *gorm.DB) (Game, error) {
 
 func LoadGame(gameID string, db *gorm.DB) (Game, error) {
 
-	var game Game
-	err := db.Model(&game).
-		Preload("GameStocks").
-		Preload("GameStocks.Stock").
-		Preload("CurrentUser").
-		Preload("Players").
-		Preload("Players.User").
-		Preload("Plays").
-		Where("lower(games.id) = lower(?)", gameID).
-		First(&game).Error
+	return FindGame(gameID, db)
 
-	return game, err
+	// var game Game
+	// err := db.Model(&game).
+	// 	Preload("GameStocks").
+	// 	Preload("GameStocks.Stock").
+	// 	Preload("CurrentUser").
+	// 	Preload("Players").
+	// 	Preload("Players.User").
+	// 	Preload("Plays").
+	// 	Where("lower(games.id) = lower(?)", gameID).
+	// 	First(&game).Error
+
+	// return game, err
 }
 
 func (game Game) GetPlayer(user *User) (*Player, error) {

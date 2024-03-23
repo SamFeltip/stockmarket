@@ -12,7 +12,6 @@ import "bytes"
 
 import (
 	"stockmarket/models"
-	"stockmarket/templates"
 	userTemplates "stockmarket/templates/users"
 	"strconv"
 )
@@ -97,7 +96,7 @@ func PeriodCountOptions(game models.Game, errMsg string) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(models.GamePeriodCountDisplay(0))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 27, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 26, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -120,7 +119,7 @@ func PeriodCountOptions(game models.Game, errMsg string) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(models.GamePeriodCountDisplay(1))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 32, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 31, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -143,7 +142,7 @@ func PeriodCountOptions(game models.Game, errMsg string) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(models.GamePeriodCountDisplay(2))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 37, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 36, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -161,7 +160,7 @@ func PeriodCountOptions(game models.Game, errMsg string) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(errMsg)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 42, Col: 23}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 41, Col: 23}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -199,7 +198,7 @@ func PeriodCountOptionsSocket(game models.Game) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(models.GamePeriodCountDisplay(game.PeriodCount))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 51, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 50, Col: 50}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -258,7 +257,7 @@ func WaitingLoading() templ.Component {
 	})
 }
 
-func Waiting(game models.Game) templ.Component {
+func Waiting(game models.Game, players []models.Player, currentUserID uint) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -287,7 +286,7 @@ func Waiting(game models.Game) templ.Component {
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(game.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 67, Col: 31}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 66, Col: 31}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -303,9 +302,9 @@ func Waiting(game models.Game) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var17 string
-		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(len(game.Players)))
+		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(len(players)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 68, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 67, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {
@@ -324,7 +323,7 @@ func Waiting(game models.Game) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = userTemplates.CardList(game.Players).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = userTemplates.CardList(players).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -341,7 +340,7 @@ func Waiting(game models.Game) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if templates.IsCurrentUserTurn(ctx) {
+		if game.CurrentUserID == currentUserID {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form hx-post=\"/api/games/difficulty\" hx-trigger=\"change\" hx-swap=\"innerHTML\" hx-target=\"#difficulty-options-setter\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -370,7 +369,7 @@ func Waiting(game models.Game) templ.Component {
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(models.GamePeriodCountDisplay(game.PeriodCount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 86, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/waiting.templ`, Line: 90, Col: 69}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -403,7 +402,7 @@ func Waiting(game models.Game) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if templates.IsCurrentUserTurn(ctx) {
+		if game.CurrentUserID == currentUserID {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form style=\"max-width: 14rem;\" class=\"w-100\" hx-post=\"/api/games/start\" hx-trigger=\"submit\" hx-swap=\"innerHTML\" hx-target=\"#game-actions\"><input type=\"hidden\" name=\"gameID\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

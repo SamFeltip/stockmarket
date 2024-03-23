@@ -57,7 +57,7 @@ func (user *User) CreatePlayer(gameID string, db *gorm.DB) (Player, error) {
 
 	player := Player{
 		GameID: gameID,
-		User:   *user,
+		UserID: user.ID,
 		Active: true,
 		Cash:   100000,
 	}
@@ -77,19 +77,22 @@ func (user *User) CreatePlayer(gameID string, db *gorm.DB) (Player, error) {
 		return Player{}, err
 	}
 
+	playerStocks := []PlayerStock{}
+
 	for _, game_stock := range game_stocks {
-		player_stock := PlayerStock{
-			Player:    player,
-			GameStock: game_stock,
-			Quantity:  0,
-		}
 
-		err = db.Create(&player_stock).Error
+		playerStocks = append(playerStocks, PlayerStock{
+			PlayerID:    player.ID,
+			GameStockID: game_stock.ID,
+			Quantity:    0,
+		})
+	}
 
-		if err != nil {
-			fmt.Println("error creating player stock:", err)
-			return Player{}, err
-		}
+	err = db.Create(&playerStocks).Error
+
+	if err != nil {
+		fmt.Println("error creating player stock:", err)
+		return Player{}, err
 	}
 
 	if err != nil {

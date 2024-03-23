@@ -10,6 +10,7 @@ import (
 	"stockmarket/models"
 	templates "stockmarket/templates/games"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -55,9 +56,38 @@ func CreateGameRoutes() {
 		func(c *gin.Context) { middleware.AuthIsLoggedIn(c) },
 		func(c *gin.Context) {
 
-			game, err := controllers.Create(c)
+			code := strings.ToLower(c.PostForm("code"))
+			periodCountStr := c.PostForm("difficulty")
 
-			c.Set("game", game)
+			if code == "" || periodCountStr == "" {
+				fmt.Println("no code or periodCount in form")
+				pageComponent := templates.Create("no code or periodCount in form")
+				RenderWithTemplate(pageComponent, "Create new game", c)
+				return
+			}
+
+			periodCount, err := strconv.Atoi(periodCountStr)
+			if err != nil {
+				// handle error, e.g. return an error response
+				fmt.Println("couldnt convert to int")
+				pageComponent := templates.Create("couldnt convert to int")
+				RenderWithTemplate(pageComponent, "Create new game", c)
+				return
+			}
+
+			cu, _ := c.Get("user")
+			current_user := cu.(models.User)
+
+			if err != nil {
+				fmt.Println("error creating game stocks, creating empty set:", err)
+				pageComponent := templates.Create("error creating game stocks, creating empty set")
+				RenderWithTemplate(pageComponent, "Create new game", c)
+				return
+
+			}
+
+			db := database.GetDb()
+			game, err := controllers.Create(code, periodCount, current_user, db)
 
 			if err != nil {
 				fmt.Println("error creating game:", err)

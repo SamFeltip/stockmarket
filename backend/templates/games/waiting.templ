@@ -3,7 +3,6 @@ package games
 import (
 	"stockmarket/models"
     userTemplates "stockmarket/templates/users"
-    "stockmarket/templates"
 	"strconv"
 )
 
@@ -62,21 +61,26 @@ templ WaitingLoading(){
     </button>
 }
 
-templ Waiting(game models.Game) {
+templ Waiting(game models.Game, players []models.Player, currentUserID uint) {
 	<div class="container-fluid rounded text-center d-flex flex-column justify-content-center" style="width: 95vw; height: 95vh;">
         <p>Lobby code:</p>
 		<h2 class="primary">{ game.ID }</h2>
-		<p>Waiting for players to join ({ strconv.Itoa(len(game.Players)) } / 6)</p>
+		<p>Waiting for players to join ({ strconv.Itoa(len(players)) } / 6)</p>
 
         <div style="min-height: 11em;" id="player-list" class="d-flex flex-row justify-content-center gap-3 p-2 ">
-            @userTemplates.CardList(game.Players)
+            @userTemplates.CardList(players)
         </div>
         
 		<div class="py-3">
 			<p class="pb-2">Game length</p>
             
-            if templates.IsCurrentUserTurn(ctx) {
-                <form hx-post="/api/games/difficulty" hx-trigger="change" hx-swap="innerHTML" hx-target="#difficulty-options-setter">
+            if game.CurrentUserID == currentUserID {
+                <form 
+                    hx-post="/api/games/difficulty" 
+                    hx-trigger="change" 
+                    hx-swap="innerHTML" 
+                    hx-target="#difficulty-options-setter"
+                >
                     @PeriodCountOptionStyles()
                     <div class="radio-row" id="difficulty-options-setter">
                         @PeriodCountOptions(game, "")
@@ -84,7 +88,7 @@ templ Waiting(game models.Game) {
                 </form>
             } else {
                 <div class="btn bg-dark" id="game-difficulty">
-                    {models.GamePeriodCountDisplay(game.PeriodCount)}
+                    { models.GamePeriodCountDisplay(game.PeriodCount) }
                 </div>
             }
 
@@ -96,8 +100,15 @@ templ Waiting(game models.Game) {
                 <a href="/" class="btn btn-secondary w-100" style="max-width: 14rem;">
                     Back
                 </a>
-                if templates.IsCurrentUserTurn(ctx) {
-                    <form style="max-width: 14rem;" class="w-100" hx-post="/api/games/start" hx-trigger="submit" hx-swap="innerHTML" hx-target="#game-actions">
+                if game.CurrentUserID == currentUserID {
+                    <form 
+                        style="max-width: 14rem;" 
+                        class="w-100" 
+                        hx-post="/api/games/start"
+                        hx-trigger="submit" 
+                        hx-swap="innerHTML"
+                        hx-target="#game-actions"
+                    >
                         <input type="hidden" name="gameID" value={ game.ID }/>
                         <button type="submit" class="btn btn-primary w-100">
                             Launch Game

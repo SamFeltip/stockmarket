@@ -1,20 +1,19 @@
-# gameInsights
+# Game
+game.ID
+game.PeriodCount
+game.CurrentUserId
 
-- gameInsight.GameStockID
-- gameInsight.Name
-- gameInsight.ImagePath
-- gameInsight.InsightValue
-- gameInsight.Description
+# currentUserId
 
-# gameStocks
+# Players
+_Sorted_
 
-- gameStock.ID
-- gameStock.Stock.Name
-- gameStock.Stock.ImagePath
-- gameStock.Value
+Players len
+player.User.ProfileRoot
+player.User.Name
 
-# players
 
-- player.User.ProfileRoot
-- player.User.Name
-- player.Cash
+--- CardList
+
+templates.IsCurrentUserTurn(ctx)
+
