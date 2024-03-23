@@ -101,10 +101,13 @@ func TestUpdateCurrentUser(t *testing.T) {
 	game.Players = append(game.Players, player2)
 
 	// Call UpdateCurrentUser to update the user
-	err := game.UpdateCurrentUser(db)
+	current_user_id, err := models.UpdateCurrentUser(game.ID, db)
 	if err != nil {
 		t.Fatalf("UpdateCurrentUser failed: %v", err)
 	}
+
+	// Check that the current user was updated correctly
+	assert.Equal(t, user2.ID, current_user_id)
 
 	// Retrieve the game from the database
 	var retrievedGame models.Game
@@ -114,10 +117,13 @@ func TestUpdateCurrentUser(t *testing.T) {
 	assert.Equal(t, user2.ID, retrievedGame.CurrentUserID)
 
 	// Call UpdateCurrentUser again to cycle the current user
-	err = game.UpdateCurrentUser(db)
+	current_user_id, err = models.UpdateCurrentUser(game.ID, db)
 	if err != nil {
 		t.Fatalf("UpdateCurrentUser failed: %v", err)
 	}
+
+	// Check that the current user was cycled correctly
+	assert.Equal(t, user1.ID, current_user_id)
 
 	// Retrieve the game from the database again
 	db.First(&retrievedGame, "id = ?", game.ID)

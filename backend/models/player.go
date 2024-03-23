@@ -27,10 +27,10 @@ func FindPlayer(playerID uint, db *gorm.DB) (Player, error) {
 	return player, err
 }
 
-func PlayerLeft(player Player, db *gorm.DB) error {
+func PlayerLeft(playerID uint, db *gorm.DB) error {
 
-	player.Active = false
-	err := db.Save(&player).Error
+	var player Player
+	err := db.First(&player, "id = ?", playerID).Update("active", false).Error
 
 	if err != nil {
 		fmt.Println("could not update player to inactive")
