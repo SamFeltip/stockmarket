@@ -104,7 +104,7 @@ func ModalStyles() templ.Component {
 }
 
 // use bootstrap modal
-func BuyModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer models.PlayerStockPlayerResult, stockInfo models.StockInfoResult, playerStockID uint) templ.Component {
+func BuyModal(playerStockDisplay models.PlayerStockDisplay, playerStockPlayer models.PlayerStockPlayerResult, stockInfo models.StockInfoResult, playerStockID uint) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -121,7 +121,7 @@ func BuyModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer mo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = PlayerStockPreview(playerStockPreview).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PlayerStockPreview(playerStockDisplay).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -137,7 +137,7 @@ func BuyModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer mo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(strconv.FormatFloat(playerStockPreview.StockValue, 'f', -1, 64)))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(strconv.FormatFloat(playerStockDisplay.GameStockValue, 'f', -1, 64)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -169,7 +169,7 @@ func BuyModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer mo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(playerStockPreview.GameID))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(playerStockDisplay.GameID))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -265,7 +265,7 @@ func BuyModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer mo
 	})
 }
 
-func SellModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer models.PlayerStockPlayerResult, stockInfo models.StockInfoResult, playerStockID uint) templ.Component {
+func SellModal(playerStockDisplay models.PlayerStockDisplay, playerStockPlayer models.PlayerStockPlayerResult, stockInfo models.StockInfoResult, playerStockID uint) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -282,7 +282,7 @@ func SellModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer m
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = PlayerStockPreview(playerStockPreview).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PlayerStockPreview(playerStockDisplay).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -298,7 +298,7 @@ func SellModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer m
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(strconv.FormatFloat(playerStockPreview.StockValue, 'f', -1, 64)))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(strconv.FormatFloat(playerStockDisplay.GameStockValue, 'f', -1, 64)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -330,7 +330,7 @@ func SellModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer m
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(playerStockPreview.GameID))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(playerStockDisplay.GameID))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

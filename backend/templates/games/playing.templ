@@ -4,6 +4,7 @@ import (
 	"stockmarket/models"
 	"strconv"
 	"fmt"
+	playerStockTempl "stockmarket/templates/player_stocks"
 )
 
 templ GameGridStyle() {
@@ -81,7 +82,7 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 					Cash £{ strconv.Itoa(currentPlayerDisplay.Cash) }
 				</p>
 				<p>
-					Net £{ strconv.FormatFloat(currentPlayerDisplay.TotalValue(), 'f', -1, 64) }
+					Net £{ strconv.FormatFloat(currentPlayerDisplay.TotalValue, 'f', -1, 64) }
 				</p>
 			</div>
 		</div>
@@ -121,15 +122,8 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 							hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(ps.ID), 10)) }
 							hx-trigger="click"
 							hx-target="#play-view"
-
-
 						>
-							<span
-								hx-trigger="load"
-								hx-get={ fmt.Sprintf("/player_stocks/preview/%s", strconv.FormatUint(uint64(ps.ID), 10)) }
-								hx-target={ fmt.Sprintf("#player-stock-tab-%s", strconv.FormatUint(uint64(ps.ID), 10)) }
-								hx-swap="innerHTML"
-							></span>
+							@playerStockTempl.PlayerStockPreview(ps)
 						</a>
 					</li>
 				}

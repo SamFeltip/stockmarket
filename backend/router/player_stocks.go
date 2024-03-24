@@ -47,19 +47,19 @@ func CreatePlayerStockRoutes() {
 				Where("ps.id = ?", playerStockIDString).
 				Scan(&playerStockPlayer)
 
-			var playerStockPreview models.PlayerStockPreview
+			var playerStockDisplay models.PlayerStockDisplay
 
 			fmt.Println("getting total insights for player stock")
 			// total insights for player stock
 			err = db.Table("player_stocks as ps").
-				Select("sum(i.value) as total_insight, gs.value as stock_value, gs.game_id, s.name as stock_name, s.image_path as stock_img").
+				Select("ps.ID, gs.game_id, sum(i.value) as total_insight, gs.value as game_stock_value, gs.game_id, s.name as stock_name, s.image_path as stock_image_path").
 				Joins("left join player_insights as pi on pi.player_stock_id = ps.id").
 				Joins("left join insights as i on i.id = pi.insight_id").
 				Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 				Joins("inner join stocks as s on s.id = gs.stock_id").
 				Where("ps.id = ?", playerStockIDString).
-				Group("gs.value, s.name, s.image_path, gs.game_id").
-				Scan(&playerStockPreview).Error
+				Group("ps.id, gs.value, s.name, s.image_path, gs.game_id").
+				Scan(&playerStockDisplay).Error
 
 			if err != nil {
 				fmt.Println("error fetching player stock preview", err)
@@ -121,38 +121,11 @@ func CreatePlayerStockRoutes() {
 			pageComponent := templates.Show(
 				playerStockID,
 				playerStockPlayer,
-				playerStockPreview,
+				playerStockDisplay,
 				investors,
 				insightResults,
 				stockInfoResult,
 				isCurrentPlayer)
-
-			ctx := context.Background()
-			pageComponent.Render(ctx, c.Writer)
-
-		})
-
-	r.GET("/player_stocks/preview/:playerStockID",
-		func(c *gin.Context) { middleware.AuthIsLoggedIn(c) },
-		func(c *gin.Context) {
-			db := database.GetDb()
-
-			// get a player stock for the game stock and player
-			player_stock_id := c.Param("playerStockID")
-
-			var playerStockPreview models.PlayerStockPreview
-
-			db.Table("player_stocks as ps").
-				Select("sum(i.value) as total_insight, gs.value as stock_value, s.name as stock_name, s.image_path as stock_img").
-				Joins("left join player_insights as pi on pi.player_stock_id = ps.id").
-				Joins("left join insights as i on i.id = pi.insight_id").
-				Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
-				Joins("inner join stocks as s on s.id = gs.stock_id").
-				Where("ps.id = ?", player_stock_id).
-				Group("stock_value, stock_name, stock_img").
-				Scan(&playerStockPreview)
-
-			pageComponent := templates.PlayerStockPreview(playerStockPreview)
 
 			ctx := context.Background()
 			pageComponent.Render(ctx, c.Writer)

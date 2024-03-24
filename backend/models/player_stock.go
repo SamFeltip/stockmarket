@@ -17,15 +17,6 @@ type PlayerStock struct {
 	Quantity       int
 }
 
-// sql result structs
-type PlayerStockPreview struct {
-	TotalInsight float64
-	StockValue   float64
-	StockName    string
-	StockImg     string
-	GameID       string
-}
-
 type PlayerStockPlayerResult struct {
 	StocksHeld int
 	StockValue float64
@@ -48,39 +39,28 @@ type StockInfoResult struct {
 	Variation       float64
 }
 
-func GetPlayerStock(playerStockIDstring string, db *gorm.DB) (PlayerStock, error) {
-	var playerStock PlayerStock
+func GetPlayerStockDisplays(gameID string, db *gorm.DB) ([]PlayerStockDisplay, error) {
+	var playerStocksResult = []PlayerStockDisplay{}
 
-	// player_stock.GameStock.Stock.Name
+	err := db.Table("player_stocks as ps").
+		Select("ps.ID, gs.game_id, gs.value as game_stock_value, s.name as stock_name, s.image_path as stock_image_path, COALESCE(sum(i.value), 0) as total_insight").
+		Joins("left join player_insights as pi on pi.player_stock_id = ps.id").
+		Joins("left join insights as i on i.id = pi.insight_id").
+		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+		Joins("inner join stocks as s on s.id = gs.stock_id").
+		Where("gs.game_id = ?", gameID).
+		Group("ps.ID, gs.game_id, gs.value, s.name, s.image_path").
+		Scan(&playerStocksResult).Error
 
-	err := db.
-		Preload("GameStock").
-		Preload("GameStock.Stock").
-		Preload("GameStock.PlayerStocks").
-		Preload("GameStock.PlayerStocks.Player").
-		Preload("GameStock.PlayerStocks.Player.User").
-		Preload("Player").
-		Preload("Player.User").
-		Preload("PlayerInsights").
-		Preload("PlayerInsights.Insight").
-		Where("id = ?", playerStockIDstring).First(&playerStock).Error
-
-	return playerStock, err
-}
-
-func (player_stock PlayerStock) TotalInsight() float64 {
-
-	fmt.Println("player_stock stock: ", player_stock.GameStock.Stock.Name)
-
-	var total float64 = 0
-
-	for _, player_insight := range player_stock.PlayerInsights {
-		total += player_insight.Insight.Value
+	if err != nil {
+		fmt.Println("could not load player stocks", err)
+		return nil, err
 	}
 
-	return total
-}
+	if len(playerStocksResult) == 0 {
+		fmt.Println("no player stocks found for this player")
+		return nil, gorm.ErrRecordNotFound
+	}
 
-func (player_stock PlayerStock) Value() float64 {
-	return float64(player_stock.Quantity) * player_stock.GameStock.Value
+	return playerStocksResult, nil
 }

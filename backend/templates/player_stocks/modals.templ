@@ -65,19 +65,19 @@ templ ModalStyles() {
 }
 
 // use bootstrap modal
-templ BuyModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer models.PlayerStockPlayerResult, stockInfo models.StockInfoResult, playerStockID uint) {
+templ BuyModal(playerStockDisplay models.PlayerStockDisplay, playerStockPlayer models.PlayerStockPlayerResult, stockInfo models.StockInfoResult, playerStockID uint) {
 	<div id="buyModal" class="modal fade" tabindex="-1">
 		<div class="modal-dialog">
 			<div class="modal-content">
                 <div class="modal-header">
-				    @PlayerStockPreview(playerStockPreview)
+				    @PlayerStockPreview(playerStockDisplay)
                 </div>
 
 				<div class="modal-body d-flex flex-column row-gap-3">
 					<stock-calculator
 						class="d-flex flex-row gap-1"
 						playerStock-quantity={ strconv.Itoa(playerStockPlayer.StocksHeld) }
-						gameStock-value={ strconv.FormatFloat(playerStockPreview.StockValue, 'f', -1, 64) }
+						gameStock-value={ strconv.FormatFloat(playerStockDisplay.GameStockValue, 'f', -1, 64) }
 						gameStock-sharesAvailable={ strconv.Itoa(stockInfo.SharesAvailable) }
 						player-cash={ strconv.Itoa(playerStockPlayer.Cash) }
 						mode="buy"
@@ -89,7 +89,7 @@ templ BuyModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer m
 							hx-swap="innerHTML"
 						>
 							<input type="hidden" id="playerStockID" name="PlayerStockID" value={ strconv.FormatUint(uint64(playerStockID), 10) }/>
-							<input type="hidden" name="gameID" value={ playerStockPreview.GameID }/>
+							<input type="hidden" name="gameID" value={ playerStockDisplay.GameID }/>
 							<input type="hidden" name="mode" value="1"/>
 
 							<div class="purchase-form flex-fill">
@@ -159,20 +159,20 @@ templ BuyModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer m
 	</div>
 }
 
-templ SellModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer models.PlayerStockPlayerResult, stockInfo models.StockInfoResult, playerStockID uint) {
+templ SellModal(playerStockDisplay models.PlayerStockDisplay, playerStockPlayer models.PlayerStockPlayerResult, stockInfo models.StockInfoResult, playerStockID uint) {
 	
 	<div id="sellModal" class="modal fade" tabindex="-1">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header d-flex justify-content-between">
-					@PlayerStockPreview(playerStockPreview)
+					@PlayerStockPreview(playerStockDisplay)
 				</div>
 
 				<div class="modal-body d-flex flex-column row-gap-3">
 					<stock-calculator
 						class="d-flex flex-row gap-1"
 						playerStock-quantity={ strconv.Itoa(playerStockPlayer.StocksHeld) }
-						gameStock-value={ strconv.FormatFloat(playerStockPreview.StockValue, 'f', -1, 64) }
+						gameStock-value={ strconv.FormatFloat(playerStockDisplay.GameStockValue, 'f', -1, 64) }
 						gameStock-sharesAvailable={ strconv.Itoa(stockInfo.SharesAvailable) }
 						player-cash={ strconv.Itoa(playerStockPlayer.Cash) }
 						mode="sell"
@@ -184,7 +184,7 @@ templ SellModal(playerStockPreview models.PlayerStockPreview, playerStockPlayer 
 							hx-swap="innerHTML"
 						>
 							<input type="hidden" id="playerStockID" name="PlayerStockID" value={ strconv.FormatUint(uint64(playerStockID), 10) }/>
-							<input type="hidden" name="gameID" value={ playerStockPreview.GameID }/>
+							<input type="hidden" name="gameID" value={ playerStockDisplay.GameID }/>
 							<input type="hidden" name="mode" value="-1"/>
 
 							<div class="purchase-form flex-fill">

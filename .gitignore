@@ -2,5 +2,7 @@
 backend/.DS_Store
 backend/.env
 backend/tmp/*
-tmp/*
 backend/database/backup.sql
+backend/static/imgs/*
+backend/static/fonts/*
+tmp/*

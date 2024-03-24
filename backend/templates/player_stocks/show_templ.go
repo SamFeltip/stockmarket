@@ -93,7 +93,7 @@ func PlayViewStyles() templ.Component {
 	})
 }
 
-func TotalInsight(playerStockPreview models.PlayerStockPreview) templ.Component {
+func TotalInsight(playerStockDisplay models.PlayerStockDisplay) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -106,7 +106,7 @@ func TotalInsight(playerStockPreview models.PlayerStockPreview) templ.Component 
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		if playerStockPreview.TotalInsight > 0 {
+		if playerStockDisplay.TotalInsight > 0 {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"total-insight text-success d-flex flex-row align-items-center\"><img height=\"6px\" class=\"pe-2\" src=\"/static/imgs/icons/stock_up.svg\" alt=\"stock up arrow\"><p style=\"font-size: 0.75rem\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -117,7 +117,7 @@ func TotalInsight(playerStockPreview models.PlayerStockPreview) templ.Component 
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", playerStockPreview.TotalInsight))
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", playerStockDisplay.TotalInsight))
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 61, Col: 60}
 			}
@@ -129,7 +129,7 @@ func TotalInsight(playerStockPreview models.PlayerStockPreview) templ.Component 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		} else if playerStockPreview.TotalInsight < 0 {
+		} else if playerStockDisplay.TotalInsight < 0 {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"total-insight text-danger d-flex flex-row align-items-center\"><img height=\"6px\" class=\"pe-2\" src=\"/static/imgs/icons/stock_down.svg\" alt=\"stock down arrow\"><p style=\"font-size: 0.75rem\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -140,7 +140,7 @@ func TotalInsight(playerStockPreview models.PlayerStockPreview) templ.Component 
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", playerStockPreview.TotalInsight))
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", playerStockDisplay.TotalInsight))
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 68, Col: 60}
 			}
@@ -174,7 +174,7 @@ func TotalInsight(playerStockPreview models.PlayerStockPreview) templ.Component 
 	})
 }
 
-func PlayerStockPreview(playerStockPreview models.PlayerStockPreview) templ.Component {
+func PlayerStockPreview(playerStockDisplay models.PlayerStockDisplay) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -191,7 +191,7 @@ func PlayerStockPreview(playerStockPreview models.PlayerStockPreview) templ.Comp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(playerStockPreview.StockImg))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(playerStockDisplay.StockImagePath))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -199,7 +199,7 @@ func PlayerStockPreview(playerStockPreview models.PlayerStockPreview) templ.Comp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(playerStockPreview.StockName))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(playerStockDisplay.StockName))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -213,9 +213,9 @@ func PlayerStockPreview(playerStockPreview models.PlayerStockPreview) templ.Comp
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
-		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", playerStockPreview.StockValue))
+		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", playerStockDisplay.GameStockValue))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 89, Col: 70}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 89, Col: 74}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -225,7 +225,7 @@ func PlayerStockPreview(playerStockPreview models.PlayerStockPreview) templ.Comp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = TotalInsight(playerStockPreview).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = TotalInsight(playerStockDisplay).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -385,7 +385,7 @@ func Investors(investors []models.InvestorResult) templ.Component {
 	})
 }
 
-func TotalInsightResultButton(insightResult models.PlayerStockPreview) templ.Component {
+func TotalInsightResultButton(playerStockDisplay models.PlayerStockDisplay) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -398,7 +398,7 @@ func TotalInsightResultButton(insightResult models.PlayerStockPreview) templ.Com
 			templ_7745c5c3_Var21 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		if insightResult.TotalInsight > 0 {
+		if playerStockDisplay.TotalInsight > 0 {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"btn btn-success\"><img class=\"pe-2\" height=\"16px\" src=\"/static/imgs/icons/stock_up_black.svg\" alt=\"stock up arrow\"> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -409,9 +409,9 @@ func TotalInsightResultButton(insightResult models.PlayerStockPreview) templ.Com
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var23 string
-			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", insightResult.TotalInsight))
+			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", playerStockDisplay.TotalInsight))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 129, Col: 54}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 129, Col: 59}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -421,7 +421,7 @@ func TotalInsightResultButton(insightResult models.PlayerStockPreview) templ.Com
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		} else if insightResult.TotalInsight < 0 {
+		} else if playerStockDisplay.TotalInsight < 0 {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"btn btn-danger\"><img class=\"pe-2\" height=\"16px\" src=\"/static/imgs/icons/stock_down_black.svg\" alt=\"stock down arrow\"> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -432,9 +432,9 @@ func TotalInsightResultButton(insightResult models.PlayerStockPreview) templ.Com
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var25 string
-			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", insightResult.TotalInsight))
+			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", playerStockDisplay.TotalInsight))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 134, Col: 54}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 134, Col: 59}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {
@@ -657,7 +657,7 @@ func StockInfo(stockInfoResult models.StockInfoResult) templ.Component {
 	})
 }
 
-func Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult, playerStockPreview models.PlayerStockPreview, investors []models.InvestorResult, insights []models.InsightResult, stockInfo models.StockInfoResult, isCurrentPlayer bool) templ.Component {
+func Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult, playerStockDisplay models.PlayerStockDisplay, investors []models.InvestorResult, insights []models.InsightResult, stockInfo models.StockInfoResult, isCurrentPlayer bool) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -712,7 +712,7 @@ func Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult, 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = TotalInsightResultButton(playerStockPreview).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = TotalInsightResultButton(playerStockDisplay).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -773,11 +773,11 @@ func Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult, 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = BuyModal(playerStockPreview, playerStockPlayer, stockInfo, playerStockID).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = BuyModal(playerStockDisplay, playerStockPlayer, stockInfo, playerStockID).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = SellModal(playerStockPreview, playerStockPlayer, stockInfo, playerStockID).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = SellModal(playerStockDisplay, playerStockPlayer, stockInfo, playerStockID).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

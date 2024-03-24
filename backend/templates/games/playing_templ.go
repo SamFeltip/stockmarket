@@ -13,6 +13,7 @@ import "bytes"
 import (
 	"fmt"
 	"stockmarket/models"
+	playerStockTempl "stockmarket/templates/player_stocks"
 	"strconv"
 )
 
@@ -151,7 +152,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(currentPlayerDisplay.UserName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 77, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 78, Col: 36}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -169,7 +170,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(currentPlayerDisplay.Cash))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 80, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 81, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -185,9 +186,9 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(currentPlayerDisplay.TotalValue(), 'f', -1, 64))
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(currentPlayerDisplay.TotalValue, 'f', -1, 64))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 83, Col: 80}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 84, Col: 78}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -233,7 +234,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(game.CurrentUserName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 97, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 98, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -270,7 +271,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(game.CurrentTurn))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 105, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 106, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -284,7 +285,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var18 string
 		templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(game.PlayerCount * 3))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 105, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 106, Col: 81}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 		if templ_7745c5c3_Err != nil {
@@ -302,7 +303,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(game.CurrentPeriod + 1))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 108, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 109, Col: 50}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
@@ -316,7 +317,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(game.PeriodCount + 1))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 108, Col: 89}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 109, Col: 89}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -343,23 +344,15 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"click\" hx-target=\"#play-view\"><span hx-trigger=\"load\" hx-get=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"click\" hx-target=\"#play-view\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("/player_stocks/preview/%s", strconv.FormatUint(uint64(ps.ID), 10))))
+			templ_7745c5c3_Err = playerStockTempl.PlayerStockPreview(ps).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("#player-stock-tab-%s", strconv.FormatUint(uint64(ps.ID), 10))))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"innerHTML\"></span></a></li>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a></li>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

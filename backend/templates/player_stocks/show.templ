@@ -54,19 +54,19 @@ templ PlayViewStyles() {
     </style>
 }
 
-templ TotalInsight(playerStockPreview models.PlayerStockPreview) {
-	if playerStockPreview.TotalInsight > 0 {
+templ TotalInsight(playerStockDisplay models.PlayerStockDisplay) {
+	if playerStockDisplay.TotalInsight > 0 {
 		<div class="total-insight text-success d-flex flex-row align-items-center">
 			<img height="6px" class="pe-2" src="/static/imgs/icons/stock_up.svg" alt="stock up arrow"/>
 			<p style="font-size: 0.75rem">
-				£{ fmt.Sprintf("%.2f", playerStockPreview.TotalInsight) }
+				£{ fmt.Sprintf("%.2f", playerStockDisplay.TotalInsight) }
 			</p>
 		</div>
-	} else if playerStockPreview.TotalInsight < 0 {
+	} else if playerStockDisplay.TotalInsight < 0 {
 		<div class="total-insight text-danger d-flex flex-row align-items-center">
 			<img height="6px" class="pe-2" src="/static/imgs/icons/stock_down.svg" alt="stock down arrow"/>
 			<p style="font-size: 0.75rem">
-				£{ fmt.Sprintf("%.2f", playerStockPreview.TotalInsight) }
+				£{ fmt.Sprintf("%.2f", playerStockDisplay.TotalInsight) }
 			</p>
 		</div>
 	} else {
@@ -79,17 +79,17 @@ templ TotalInsight(playerStockPreview models.PlayerStockPreview) {
 }
 
 
-templ PlayerStockPreview(playerStockPreview models.PlayerStockPreview) {
+templ PlayerStockPreview(playerStockDisplay models.PlayerStockDisplay) {
 
 	<div class="d-flex justify-content-between flex-fill">
 		<div class="d-flex flex-row align-items-center gap-1">
-			<img width="30px" src={ playerStockPreview.StockImg } alt={ playerStockPreview.StockName }/>
+			<img width="30px" src={ playerStockDisplay.StockImagePath } alt={ playerStockDisplay.StockName }/>
 		</div>
         <div class="text-end">
             <p>
-                £{ fmt.Sprintf("%.2f", playerStockPreview.StockValue) }
+                £{ fmt.Sprintf("%.2f", playerStockDisplay.GameStockValue) }
             </p>
-		    @TotalInsight(playerStockPreview)
+		    @TotalInsight(playerStockDisplay)
         </div>
 	</div>
 }
@@ -123,16 +123,16 @@ templ Investors(investors []models.InvestorResult) {
 	</div>
 }
 
-templ TotalInsightResultButton(insightResult models.PlayerStockPreview) {
-	if insightResult.TotalInsight > 0 {
+templ TotalInsightResultButton(playerStockDisplay models.PlayerStockDisplay) {
+	if playerStockDisplay.TotalInsight > 0 {
 		<div class="btn btn-success">
 			<img class="pe-2" height="16px" src="/static/imgs/icons/stock_up_black.svg" alt="stock up arrow"/>
-			£{ fmt.Sprintf("%.2f", insightResult.TotalInsight) }
+			£{ fmt.Sprintf("%.2f", playerStockDisplay.TotalInsight) }
 		</div>
-	} else if insightResult.TotalInsight < 0 {
+	} else if playerStockDisplay.TotalInsight < 0 {
 		<div class="btn btn-danger">
 			<img class="pe-2" height="16px" src="/static/imgs/icons/stock_down_black.svg" alt="stock down arrow"/>
-			£{ fmt.Sprintf("%.2f", insightResult.TotalInsight) }
+			£{ fmt.Sprintf("%.2f", playerStockDisplay.TotalInsight) }
 		</div>
 	} else {
 		<div class="btn btn-secondary">
@@ -206,7 +206,7 @@ templ StockInfo(stockInfoResult models.StockInfoResult) {
 	</div>
 }
 
-templ Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult, playerStockPreview models.PlayerStockPreview, investors []models.InvestorResult, insights []models.InsightResult, stockInfo models.StockInfoResult, isCurrentPlayer bool) {
+templ Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult, playerStockDisplay models.PlayerStockDisplay, investors []models.InvestorResult, insights []models.InsightResult, stockInfo models.StockInfoResult, isCurrentPlayer bool) {
 	<div id="play-view" class={"bg-white text-black rounded-bottom p-3", templ.KV("watching", !isCurrentPlayer)}>	
 		@PlayViewStyles()
 		@PlayerStockPlayer(playerStockPlayer)
@@ -214,7 +214,7 @@ templ Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult,
 		<div id="insights" class="d-flex flex-column gap-2">
 			<div class="d-flex justify-content-between">
 				<h4 class="text-black">Your insights</h4>
-				@TotalInsightResultButton(playerStockPreview)
+				@TotalInsightResultButton(playerStockDisplay)
 			</div>
 			@Insights(insights)
 		</div>
@@ -232,7 +232,7 @@ templ Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult,
 		}
 	</div>
 	@ModalStyles()
-	@BuyModal(playerStockPreview, playerStockPlayer, stockInfo, playerStockID)
-	@SellModal(playerStockPreview, playerStockPlayer, stockInfo, playerStockID)
+	@BuyModal(playerStockDisplay, playerStockPlayer, stockInfo, playerStockID)
+	@SellModal(playerStockDisplay, playerStockPlayer, stockInfo, playerStockID)
 
 }
