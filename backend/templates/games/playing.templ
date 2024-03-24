@@ -36,9 +36,6 @@ templ GameGridStyle() {
             grid-area: header;
         }
 
-        #game-grid > #tabs {
-            grid-area: tabs;
-        }
         #game-grid > aside {
             grid-area: feed;
             display: grid;
@@ -66,14 +63,113 @@ script SetTabListeners() {
             event.target.classList.add("active");
         });
     });
+
+	document.querySelector("img#show-users").addEventListener("click", function(){
+		swapIcons("stocks", "users");
+		moveDisplayTabs("player-tabs", "stock-tabs", "left");
+	});
+
+	document.querySelector("img#show-stocks").addEventListener("click", function(){
+		swapIcons("users", "stocks");
+		moveDisplayTabs("stock-tabs", "player-tabs", "right");
+	});
+
+
+}
+
+templ SwapDisplayButton() {
+	<script>
+		function swapIcons(showImage, hideImage){
+
+			document.querySelector(`img#show-${showImage}`).classList.add("infront");
+			document.querySelector(`img#show-${showImage}`).classList.remove("behind");
+
+			document.querySelector(`img#show-${hideImage}`).classList.add("behind");
+			document.querySelector(`img#show-${hideImage}`).classList.remove("infront");
+		}		
+	</script>
+}
+
+templ DisplayButtonStyle() {
+	<style>
+		.behind {
+			position: absolute;
+			z-index: 1;
+			transform: translate(-10px, 10px) rotate(-6deg);
+			transition: transform 0.5s ease;
+		}
+
+		.infront {
+			position: absolute;
+			transform: translate(0) rotate(0deg);
+			transition: transform 0.5s ease;
+			z-index: 2;
+		}
+	</style>
+}
+
+templ DisplayTabsStyles(){
+	<style>
+		#tabs .tabs-display-center {
+			transform: translateX(0);
+			transition: transform 0.5s ease;
+		}
+
+		#tabs .tabs-display-right {
+			transform: translateX(100%);
+			transition: transform 0.5s ease;
+		}
+
+		#tabs .tabs-display-left {
+			transform: translateX(-100%);
+			transition: transform 0.5s ease;
+		}
+	</style>
+}
+
+templ MoveDisplayTabs(){
+	<script>
+		function moveDisplayTabs(showTabsListID, hideTabsListID, hideTabsDirection) {
+
+			const oppositeTabDirections = {
+				"right": "left",
+				"left": "right"
+			}
+
+			const showTabsList = document.querySelector(`#tabs #${showTabsListID}`);
+			if(!showTabsList?.classList){
+				console.error("show tabs not exist")
+				return
+			}
+
+			showTabsList.classList.remove("tabs-display-right");
+			showTabsList.classList.remove("tabs-display-left");
+			showTabsList.classList.add("tabs-display-center");
+
+			const hideTabsList = document.querySelector(`#tabs #${hideTabsListID}`)
+
+			if(!hideTabsList?.classList) {
+				console.error("hide tabs not exist")
+				return
+			}
+
+			hideTabsList.classList.remove(`tabs-display-center`);
+			hideTabsList.classList.add(`tabs-display-${hideTabsDirection}`);
+		
+		}
+	</script>
 }
 
 templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay) {
 	@GameGridStyle()
 	<div id="game-grid" class="p-3">
-		<div id="profile" class="card card-green d-flex flex-row align-items-center p-2 gap-2" style="background-color: var(--bs-card-bg);">
-			// <div class="rounded" style="z-index: 990; position: relative; transform: translate(-10px, -10px); height: 60px; width: 60px; background-color: #ff0;"></div>
-			<img class="rounded" style="z-index: 999; " height="60px" width="60px" src={ currentPlayerDisplay.UserProfileRoot } alt={ currentPlayerDisplay.UserName }/>
+		<div id="profile" class="card card-green d-flex flex-row align-items-center py-2 px-4 gap-2" style="background-color: var(--bs-card-bg);">
+			@DisplayButtonStyle()
+			@SwapDisplayButton()
+			<div style="width: 60px; height: 60px;">
+				<img id="show-users" class="rounded border border-primary border-2 infront" style="" height="60px" width="60px" src={ currentPlayerDisplay.UserProfileRoot } alt={ currentPlayerDisplay.UserName }/>
+				<img id="show-stocks" class="rounded border border-primary border-2 p-2 behind" style="background-color: var(--bs-primary) !important" height="60px" width="60px" src="/static/imgs/icons/Stock.svg" alt="stocks icon"/>
+			</div>
 			<div>
 				<h2 class="text-capitalize mb-0" style="font-size: 1.5rem;">
 					{ currentPlayerDisplay.UserName }
@@ -81,7 +177,7 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 				<p>
 					Cash £{ strconv.Itoa(currentPlayerDisplay.Cash) }
 				</p>
-				<p>
+				<p style="font-size: 0.75rem;">
 					Net £{ strconv.FormatFloat(currentPlayerDisplay.TotalValue, 'f', -1, 64) }
 				</p>
 			</div>
@@ -112,22 +208,55 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 			</div>
 		</header>
 		<div id="content" class="">
-			<ol id="tabs" class="nav nav-tabs d-flex justify-content-between">
-				for _, ps := range currentPlayerDisplay.PlayerStocks {
-					<li class="nav-item d-flex flex-fill">
-						<a
-							id={ fmt.Sprintf("player-stock-tab-%s", strconv.FormatUint(uint64(ps.ID), 10)) }
-							class="flex-fill player-stock nav-link d-flex flex-row align-items-center justify-content-between gap-1"
-							hx-swap="outerHTML"
-							hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(ps.ID), 10)) }
-							hx-trigger="click"
-							hx-target="#play-view"
-						>
-							@playerStockTempl.PlayerStockPreview(ps)
-						</a>
-					</li>
-				}
-			</ol>
+			@DisplayTabsStyles()
+			@MoveDisplayTabs()
+			<div id="tabs" class="overflow-hidden" style="height: 55px;">
+				<div 
+				id="stock-tabs"
+				class="w-100 position-relative tabs-display-center">
+					<ol class="w-100 position-absolute nav nav-tabs d-flex justify-content-between">
+						for _, ps := range currentPlayerDisplay.PlayerStocks {
+							<li class="nav-item d-flex flex-fill">
+								<a
+									id={ fmt.Sprintf("player-stock-tab-%s", strconv.FormatUint(uint64(ps.ID), 10)) }
+									class="flex-fill player-stock nav-link d-flex flex-row align-items-center justify-content-between gap-1"
+									hx-swap="outerHTML"
+									hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(ps.ID), 10)) }
+									hx-trigger="click"
+									hx-target="#play-view"
+								>
+									@playerStockTempl.PlayerStockPreview(ps)
+								</a>
+							</li>
+						}
+					</ol>
+				</div>
+
+				<div 
+				id="player-tabs"
+				class="w-100 position-relative tabs-display-right"
+				>
+					<ol class="w-100 position-absolute  nav nav-tabs d-flex justify-content-between">
+						for _, ps := range currentPlayerDisplay.PlayerStocks {
+							<li class="nav-item d-flex flex-fill">
+								<a
+									id={ fmt.Sprintf("player-stock-tab-%s", strconv.FormatUint(uint64(ps.ID), 10)) }
+									class="flex-fill player-stock nav-link d-flex flex-row align-items-center justify-content-between gap-1"
+									hx-swap="outerHTML"
+									hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(ps.ID), 10)) }
+									hx-trigger="click"
+									hx-target="#play-view"
+								>
+									@playerStockTempl.PlayerStockPreview(ps)
+								</a>
+							</li>
+						}
+					</ol>
+				</div>
+
+
+
+			</div>
 			@SetTabListeners()
 			<div id="play-view" class="bg-white text-black rounded-bottom p-3" hx-swap="outerHTML" hx-trigger="load" hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(currentPlayerDisplay.PlayerStocks[0].ID), 10)) }></div>
 		</div>

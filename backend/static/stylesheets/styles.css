@@ -39,6 +39,7 @@ p {
     --bs-container-bg: #204712;
     --bs-body-color: white;
     --bs-primary: #FFF284;
+    --bs-primary-rgb: var(--bs-primary);
     --bs-btn-big: var(--bs-primary);
 
     --bs-secondary-rgb: 217,217,217;
@@ -155,6 +156,10 @@ p {
 
 .card:has(.card-img-top) .rounded {
     border-radius: 100px;
+}
+
+.border-primary {
+    border-color: var(--bs-primary) !important;
 }
 
 h2.primary {
