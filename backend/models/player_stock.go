@@ -39,7 +39,7 @@ type StockInfoResult struct {
 	Variation       float64
 }
 
-func GetPlayerStockDisplays(gameID string, db *gorm.DB) ([]PlayerStockDisplay, error) {
+func GetPlayerStockDisplays(gameID string, playerID uint, db *gorm.DB) ([]PlayerStockDisplay, error) {
 	var playerStocksResult = []PlayerStockDisplay{}
 
 	err := db.Table("player_stocks as ps").
@@ -48,8 +48,9 @@ func GetPlayerStockDisplays(gameID string, db *gorm.DB) ([]PlayerStockDisplay, e
 		Joins("left join insights as i on i.id = pi.insight_id").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
-		Where("gs.game_id = ?", gameID).
-		Group("ps.ID, gs.game_id, gs.value, s.name, s.image_path").
+		Where("gs.game_id = ? AND ps.player_id = ?", gameID, playerID).
+		Group("ps.ID, gs.game_id, gs.value, s.name, s.image_path, s.variation").
+		Order("s.variation").
 		Scan(&playerStocksResult).Error
 
 	if err != nil {

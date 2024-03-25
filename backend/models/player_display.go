@@ -74,7 +74,7 @@ func LoadCurrentPlayerDisplay(playerID uint, db *gorm.DB) (CurrentPlayerDisplay,
 		return CurrentPlayerDisplay{}, err
 	}
 
-	playerStockDisplays, err := GetPlayerStockDisplays(currentPlayerResult.GameID, db)
+	playerStockDisplays, err := GetPlayerStockDisplays(currentPlayerResult.GameID, playerID, db)
 
 	if err != nil {
 		fmt.Println("could not load player stocks", err)

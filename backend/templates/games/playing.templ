@@ -108,7 +108,7 @@ templ DisplayButtonStyle() {
 	</style>
 }
 
-templ DisplayTabsStyles(){
+templ DisplayTabsStyles() {
 	<style>
 		#tabs .tabs-display-center {
 			transform: translateX(0);
@@ -127,7 +127,7 @@ templ DisplayTabsStyles(){
 	</style>
 }
 
-templ MoveDisplayTabs(){
+templ MoveDisplayTabs() {
 	<script>
 		function moveDisplayTabs(showTabsListID, hideTabsListID, hideTabsDirection) {
 
@@ -160,7 +160,7 @@ templ MoveDisplayTabs(){
 	</script>
 }
 
-templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay) {
+templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay, players []models.PlayerDisplay) {
 	@GameGridStyle()
 	<div id="game-grid" class="p-3">
 		<div id="profile" class="card card-green d-flex flex-row align-items-center py-2 px-4 gap-2" style="background-color: var(--bs-card-bg);">
@@ -210,33 +210,12 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 		<div id="content" class="">
 			@DisplayTabsStyles()
 			@MoveDisplayTabs()
-			<div id="tabs" class="overflow-hidden" style="height: 55px;">
-				<div 
-				id="stock-tabs"
-				class="w-100 position-relative tabs-display-center">
-					<ol class="w-100 position-absolute nav nav-tabs d-flex justify-content-between">
-						for _, ps := range currentPlayerDisplay.PlayerStocks {
-							<li class="nav-item d-flex flex-fill">
-								<a
-									id={ fmt.Sprintf("player-stock-tab-%s", strconv.FormatUint(uint64(ps.ID), 10)) }
-									class="flex-fill player-stock nav-link d-flex flex-row align-items-center justify-content-between gap-1"
-									hx-swap="outerHTML"
-									hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(ps.ID), 10)) }
-									hx-trigger="click"
-									hx-target="#play-view"
-								>
-									@playerStockTempl.PlayerStockPreview(ps)
-								</a>
-							</li>
-						}
-					</ol>
-				</div>
-
-				<div 
-				id="player-tabs"
-				class="w-100 position-relative tabs-display-right"
+			<div id="tabs" class="overflow-hidden" style="height: 65px;">
+				<div
+					id="stock-tabs"
+					class="h-100 w-100 position-relative tabs-display-center"
 				>
-					<ol class="w-100 position-absolute  nav nav-tabs d-flex justify-content-between">
+					<ol class="h-100 w-100 position-absolute nav nav-tabs d-flex justify-content-between">
 						for _, ps := range currentPlayerDisplay.PlayerStocks {
 							<li class="nav-item d-flex flex-fill">
 								<a
@@ -253,9 +232,40 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 						}
 					</ol>
 				</div>
-
-
-
+				<div
+					id="player-tabs"
+					class="h-100 w-100 position-relative tabs-display-right"
+					style="top: -65px;"
+				>
+					<ol class="h-100 w-100 position-absolute  nav nav-tabs d-flex justify-content-between">
+						for _, player := range players {
+							<li class="nav-item d-flex flex-fill">
+								<a
+									id={ fmt.Sprintf("player-tab-%s", strconv.FormatUint(uint64(player.PlayerID), 10)) }
+									class="flex-fill player nav-link d-flex flex-row align-items-center justify-content-between gap-1"
+									hx-swap="outerHTML"
+									hx-get={ fmt.Sprintf("/players/show/%s", strconv.FormatUint(uint64(player.PlayerID), 10)) }
+									hx-trigger="click"
+									hx-target="#play-view"
+								>
+									<div class="d-flex gap-2 flex-left flex-row flex-fill">
+										<div class="d-flex flex-row align-items-center gap-1">
+											<img class="rounded" width="40px" src={ player.UserProfileRoot } alt={ player.UserName }/>
+										</div>
+										<div>
+											<p>
+												{ player.UserName }
+											</p>
+											<p style="font-size: 0.75rem;">
+												£{ strconv.Itoa(player.Cash) }
+											</p>
+										</div>
+									</div>
+								</a>
+							</li>
+						}
+					</ol>
+				</div>
 			</div>
 			@SetTabListeners()
 			<div id="play-view" class="bg-white text-black rounded-bottom p-3" hx-swap="outerHTML" hx-trigger="load" hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(currentPlayerDisplay.PlayerStocks[0].ID), 10)) }></div>
@@ -278,7 +288,6 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 				>
 					<input type="hidden" name="gameID" value={ game.ID }/>
 					<input type="hidden" name="game_action" value={ string(models.PlayerPass) }/>
-
 					<button
 						type="submit"
 						id="pass-button"
@@ -292,8 +301,8 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 	</div>
 }
 
-templ PlayingSocket(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay) {
+templ PlayingSocket(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay, players []models.PlayerDisplay) {
 	<div hx-swap-oob="innerHTML:main">
-		@Playing(game, currentPlayerDisplay)
+		@Playing(game, currentPlayerDisplay, players)
 	</div>
 }

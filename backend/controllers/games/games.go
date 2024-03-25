@@ -69,7 +69,7 @@ func Show(gameID string, current_user models.User, db *gorm.DB) templ.Component 
 			return gameWrapper
 		}
 
-		pageComponent := templates.Playing(gameDisplay, currentPlayerDisplay)
+		pageComponent := templates.Playing(gameDisplay, currentPlayerDisplay, players)
 		return pageComponent
 	case string(models.Closed):
 		gameInsights, err := models.GetGameInsights(game.ID, db)

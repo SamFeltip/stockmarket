@@ -71,7 +71,14 @@ func RunHub() {
 							continue
 						}
 
-						boardDisplay := gameTempl.PlayingSocket(game, current_player)
+						players, err := models.LoadPlayerDisplays(game.ID, db)
+
+						if err != nil {
+							fmt.Println("error getting players from game, perhaps they left and the connection wasn't removed?:", err)
+							continue
+						}
+
+						boardDisplay := gameTempl.PlayingSocket(game, current_player, players)
 
 						buffer = &bytes.Buffer{}
 						boardDisplay.Render(context.Background(), buffer)
