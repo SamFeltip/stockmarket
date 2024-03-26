@@ -14,7 +14,7 @@ import (
 func CreateFeedItemRoutes() {
 
 	r.GET("/feed_items/show/:game_id",
-		func(c *gin.Context) { middleware.AuthIsPlaying(c) },
+		func(c *gin.Context) { middleware.AuthIsLoggedIn(c) },
 		func(c *gin.Context) {
 
 			db := database.GetDb()

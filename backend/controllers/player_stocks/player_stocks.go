@@ -41,20 +41,22 @@ func Edit(playerStockID uint, gameID string, quantityAdd int, multiplier int, db
 	playerChangeResult := struct {
 		PlayerID       uint
 		PlayerCash     int
-		GameStockValue int
+		GameStockValue float64
 	}{}
 
 	err = db.Model(&playerChangeResult).Table("player_stocks as ps").
 		Select("p.id as player_id, p.cash as player_cash, gs.value as game_stock_value").
 		Joins("inner join players as p on p.id = ps.player_id").
-		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").Error
+		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+		Where("ps.id = ?", playerStockID).
+		First(&playerChangeResult).Error
 
 	if err != nil {
 		fmt.Println("could not get playerChangeResult", err)
 		return gameTemplates.Error(err), err
 	}
 
-	newPlayerCash := playerChangeResult.PlayerCash - quantityAdd*int(playerChangeResult.GameStockValue)
+	newPlayerCash := float64(playerChangeResult.PlayerCash) - float64(quantityAdd)*playerChangeResult.GameStockValue
 
 	err = db.Model(models.Player{}).Where("id = ?", playerChangeResult.PlayerID).Update("cash", newPlayerCash).Error
 

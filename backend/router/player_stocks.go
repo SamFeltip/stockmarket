@@ -78,6 +78,7 @@ func CreatePlayerStockRoutes() {
 				Joins("inner join players as p on p.id = ps.player_id").
 				Joins("inner join users as u on u.id = p.user_id").
 				Where("psl.id = ?", playerStockIDString).
+				Order("p.ID").
 				Scan(&investors)
 
 			var insightResults []models.InsightResult

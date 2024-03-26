@@ -83,7 +83,7 @@ func PlayerPortfolioStyles() templ.Component {
         #player-portfolio {
             display: grid;
             grid-template-columns: 75% auto;
-            grid-template-rows: auto 1fr;
+            grid-template-rows: auto 1fr auto;
 
             row-gap: 2rem;
 
@@ -94,7 +94,7 @@ func PlayerPortfolioStyles() templ.Component {
 
         #player-portfolio.is-current-player {
             grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto 1fr auto;
+            grid-template-rows: 120px 1fr auto auto;
             grid-template-areas:
                 "portfolio portfolio"
                 "insights net-worth"
@@ -129,12 +129,14 @@ func PlayerPortfolioStyles() templ.Component {
             grid-area: info;
         }
 
-        #player-portfolio #info-details{
-            flex-direction: column;
+        #player-portfolio:not(.is-current-player) #info-details{
+            
+            grid-template-rows: 1fr 1fr 1fr;
         }
 
         #player-portfolio.is-current-player #info-details {
-            flex-direction: row;
+            
+            grid-template-columns: 1fr 1fr 1fr;
         }
     `
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
@@ -165,12 +167,12 @@ func PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var7 = []any{"flex-fill py-4 px-5", templ.KV("is-current-player", len(insights) > 0)}
+		var templ_7745c5c3_Var7 = []any{"flex-fill p-3 gap-3 ", templ.KV("is-current-player", len(insights) > 0)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var7...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"player-portfolio\" style=\"grid-column-gap: 1rem;\" class=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"player-portfolio\" class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -215,7 +217,7 @@ func PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(ps.PlayerStockQuantity))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/players/show.templ`, Line: 84, Col: 84}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/players/show.templ`, Line: 86, Col: 84}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -235,7 +237,7 @@ func PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Var10 := `Your insights`
+			templ_7745c5c3_Var10 := `Your Insights`
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -253,7 +255,7 @@ func PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"net-worth\" class=\"pe-2 gap-2\"><h4 class=\"text-black\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"net-worth\" class=\"gap-2\"><h4 class=\"text-black\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -262,7 +264,7 @@ func PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><div class=\"card flex-fill\"><div class=\"card-body d-flex justify-content-center align-items-center\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><div class=\"card flex-fill\"><div id=\"graph\" class=\"card-body d-flex justify-content-center align-items-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -271,7 +273,7 @@ func PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div><div id=\"player-info\" class=\"ps-2 gap-2\"><h4 class=\"text-black\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div><div id=\"player-info\" class=\"d-flex flex-column gap-2\"><h4 class=\"text-black\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -280,7 +282,7 @@ func PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><div id=\"info-details\" class=\"d-flex gap-3\"><div class=\"card flex-fill\"><div class=\"card-body text-center\"><p class=\"fs-5\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><div id=\"info-details\" class=\"d-grid gap-3\"><div class=\"card flex-fill\"><div class=\"card-body text-center\"><p class=\"fs-5\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

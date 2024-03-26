@@ -244,8 +244,7 @@ func UpdateCurrentUser(gameID string, db *gorm.DB) (uint, error) {
 
 	err = db.
 		Table("players").
-		Select("players.id as player_id, users.id as user_id").
-		Joins("inner join users on players.user_id = users.id").
+		Select("players.id as player_id, players.user_id as user_id").
 		Where("game_id = ? AND active = ?", gameID, true).
 		Order("players.id").
 		Find(&players).Error

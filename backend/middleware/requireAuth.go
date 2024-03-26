@@ -23,6 +23,8 @@ func TestAuth(c *gin.Context) (models.User, error) {
 		fmt.Println("unauthorised: ", err)
 		c.Header("HX-Reconnect", "/login")
 		c.Redirect(http.StatusFound, "/login")
+		c.Abort()
+		return models.User{}, fmt.Errorf("cookie not found in request")
 	}
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -36,6 +38,7 @@ func TestAuth(c *gin.Context) (models.User, error) {
 
 	if err != nil {
 		fmt.Println("invalid token: ", err)
+		c.Abort()
 		return models.User{}, err
 	}
 
@@ -43,14 +46,13 @@ func TestAuth(c *gin.Context) (models.User, error) {
 
 	if !ok || !token.Valid {
 		fmt.Println("invalid token: ")
-
+		c.Abort()
 		return models.User{}, fmt.Errorf("invalid token")
 	}
 
 	if float64(time.Now().Unix()) > claims["exp"].(float64) {
 		fmt.Println("expired cookie: ")
-		c.Header("HX-Reconnect", "/login")
-		c.Redirect(http.StatusFound, "/login")
+		c.Abort()
 		return models.User{}, fmt.Errorf("expired cookie")
 	}
 
@@ -59,10 +61,10 @@ func TestAuth(c *gin.Context) (models.User, error) {
 	err = db.Where(claims["sub"]).First(&user).Error
 
 	if err != nil {
-		fmt.Println("could not find user: ", err)
-		c.Header("HX-Reconnect", "/login")
-		c.Redirect(http.StatusFound, "/login")
+		c.Abort()
 	}
+
+	c.Set("user", user)
 
 	return user, nil
 }

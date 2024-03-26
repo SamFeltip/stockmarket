@@ -47,7 +47,7 @@ func GameGridStyle() templ.Component {
                 "content    content     feed";
 
             grid-template-columns: 1fr 3fr 1fr;
-            grid-template-rows: 100px 1fr;
+            grid-template-rows: 120px 1fr;
             grid-gap: 16px;
         }
 
@@ -195,41 +195,41 @@ func SwapDisplayButton() templ.Component {
 				console.error("current player id or player stock id is null")
 				return
 			}
+			console.log("htmx ajaxing", current_player_id, player_stock_id)
+			const fetchPlayersShow = () => {
+				htmx.ajax(
+					'GET', 
+					` + "`" + `/players/show/${current_player_id}` + "`" + `, {
+						target: '#content-wrapper', 
+						swap:'innerHTML'	
+					}
+				).then(res => {
+					document.querySelectorAll(".player-tab").forEach((player) => {
+						player.classList.remove("active");
+					});
+					document.querySelector(` + "`" + `#player-tab-${current_player_id}` + "`" + `).classList.add("active")
+				})
+			}
+
+			const fetchPlayerStockShow = () => {
+				htmx.ajax(
+					'GET', 
+					` + "`" + `/player_stocks/show/${player_stock_id}` + "`" + `, {
+						target: '#content-wrapper', 
+						swap:'innerHTML'	
+					}
+				).then(res => {
+					document.querySelectorAll(".player-stock-tab").forEach((stock) => {
+						stock.classList.remove("active");
+					});
+					document.querySelector(` + "`" + `#player-stock-tab-${player_stock_id}` + "`" + `).classList.add("active")
+				})
+			}
 
 			if(showImage === "stocks") {
-				document.startViewTransition(() => {
-					htmx.ajax(
-						'GET', 
-						` + "`" + `/players/show/${current_player_id}` + "`" + `, 
-						{
-							trigger:'click', 
-							target: '#content-wrapper', 
-							swap:'innerHTML'	
-						}
-					).then(res => {
-						document.querySelectorAll(".player-tab").forEach((player) => {
-							player.classList.remove("active");
-						});
-						document.querySelector(` + "`" + `#player-tab-${current_player_id}` + "`" + `).classList.add("active")
-					})
-				});
+				document.startViewTransition ? document.startViewTransition(fetchPlayersShow) : fetchPlayersShow();
 			} else if (showImage === "users"){
-				document.startViewTransition(() => {
-					htmx.ajax(
-						'GET', 
-						` + "`" + `/player_stocks/show/${player_stock_id}` + "`" + `, 
-						{
-							trigger:'click', 
-							target: '#content-wrapper', 
-							swap:'innerHTML'	
-						}
-					).then(res => {
-						document.querySelectorAll(".player-stock-tab").forEach((stock) => {
-							stock.classList.remove("active");
-						});
-						document.querySelector(` + "`" + `#player-stock-tab-${player_stock_id}` + "`" + `).classList.add("active")
-					})
-				});
+				document.startViewTransition ? document.startViewTransition(fetchPlayerStockShow) : fetchPlayerStockShow();
 			}
 		}		
 	`

@@ -76,6 +76,7 @@ func LoadGameStockDisplays(gameID string, db *gorm.DB) ([]GameStockDisplay, erro
 		Select("gs.id, s.name, s.image_path, gs.value").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
 		Where("game_id = ?", gameID).
+		Order("s.variation").
 		Scan(&gameStocks).
 		Error
 

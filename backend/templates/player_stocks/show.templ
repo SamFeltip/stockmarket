@@ -17,9 +17,7 @@ templ PlayViewStyles() {
                 "buy-button sell-button";
 
             grid-template-columns: 1fr 1fr;
-            grid-template-rows: 100px 1fr auto auto;
-            
-            grid-gap: 40px;
+            grid-template-rows: 120px 1fr auto auto;
         }
 
 		#play-view.watching {
@@ -28,7 +26,6 @@ templ PlayViewStyles() {
                 "stocks investors"
                 "insights price-charts"
                 "insights stock-info";
-            grid-template-rows: 100px 1fr auto;
 			
         }
 
@@ -138,7 +135,16 @@ templ TotalInsightResultButton(playerStockDisplay models.PlayerStockDisplay) {
 }
 
 templ Insights(insightResults []models.InsightResult) {
-	<div class="d-grid gap-1 overflow-auto" style="grid-template-columns: 1fr 1fr; max-height: 60vh;">
+	<style>
+		#player-portfolio #insight-list {
+			max-height: 60vh;
+		}
+
+		#content-wrapper #insight-list {
+			max-height: 40vh;
+		}
+	</style>
+	<div id="insight-list" class="d-grid gap-1 overflow-auto" style="grid-template-columns: 1fr 1fr; max-height: 40vh;">
 		for _, insightResult := range insightResults {
 			<div class="card">
 				<div class="card-body text-center">
@@ -167,9 +173,9 @@ templ Insights(insightResults []models.InsightResult) {
 }
 
 templ StockInfo(stockInfoResult models.StockInfoResult) {
-	<div id="stock-info" class="d-flex flex-column">
+	<div id="stock-info" class="d-flex flex-column gap-2">
 		<h4 class="text-black">Info</h4>
-		<div class="gap-3 d-flex flex-row">
+		<div class="d-grid gap-3" style="grid-template-columns: 1fr 1fr 1fr;">
 			<div class="card flex-fill">
 				<div class="card-body text-center">
 					<p class="fs-5">
@@ -210,21 +216,21 @@ templ StockInfo(stockInfoResult models.StockInfoResult) {
 }
 
 templ Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult, playerStockDisplay models.PlayerStockDisplay, investors []models.InvestorResult, insights []models.InsightResult, stockInfo models.StockInfoResult, isCurrentPlayer bool) {
-	<div id="play-view" class={ "flex-fill bg-white text-black rounded-bottom p-3", templ.KV("watching", !isCurrentPlayer) }>
+	<div id="play-view" class={ "gap-3 flex-fill bg-white text-black rounded-bottom p-3", templ.KV("watching", !isCurrentPlayer) }>
 		@PlayerStockPlayer(playerStockPlayer)
 		@Investors(investors)
 		<div id="insights" class="d-flex flex-column gap-2">
 			<div class="d-flex justify-content-between">
-				<h4 class="text-black">Your insights</h4>
+				<h4 class="text-black">Your Insights</h4>
 				@TotalInsightResultButton(playerStockDisplay)
 			</div>
 			@Insights(insights)
 		</div>
-		<div id="price-charts">
-			<h4 class="text-black">Price charts</h4>
+		<div id="price-charts" class="gap-2">
+			<h4 class="text-black">Price chart</h4>
 			
 			<div class="card flex-fill">
-				<div class="card-body d-flex justify-content-center align-items-center">
+				<div id="graph" class="card-body d-flex justify-content-center align-items-center">
 					GRAPH!
 				</div>
 			</div>
