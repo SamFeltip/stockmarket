@@ -69,7 +69,7 @@ templ BuyModal(playerStockDisplay models.PlayerStockDisplay, playerStockPlayer m
 	<div id="buyModal" class="modal fade" tabindex="-1">
 		<div class="modal-dialog">
 			<div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header d-flex justify-content-between flex-fill">
 				    @PlayerStockPreview(playerStockDisplay)
                 </div>
 
@@ -164,7 +164,7 @@ templ SellModal(playerStockDisplay models.PlayerStockDisplay, playerStockPlayer 
 	<div id="sellModal" class="modal fade" tabindex="-1">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<div class="modal-header d-flex justify-content-between">
+				<div class="modal-header d-flex justify-content-between flex-fill">
 					@PlayerStockPreview(playerStockDisplay)
 				</div>
 

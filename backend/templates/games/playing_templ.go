@@ -94,17 +94,52 @@ func GameGridStyle() templ.Component {
 
 func SetTabListeners() templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_SetTabListeners_094c`,
-		Function: `function __templ_SetTabListeners_094c(){document.querySelector(".player-stock").classList.add("active");
+		Name: `__templ_SetTabListeners_38b9`,
+		Function: `function __templ_SetTabListeners_38b9(){document.querySelector(".player-stock-tab").classList.add("active");
 
-    document.querySelectorAll(".player-stock").forEach(stock => {
+    document.querySelectorAll(".player-stock-tab").forEach(stock => {
         stock.addEventListener("click", function(event){
-            document.querySelectorAll(".player-stock").forEach((stock) => {
+            document.querySelectorAll(".player-stock-tab").forEach((stock) => {
                 stock.classList.remove("active");
             });
             event.target.classList.add("active");
         });
+
+
+		// Add click event listeners to all child elements within the parent
+		const childElements = stock.querySelectorAll('*');
+		childElements.forEach(child => {
+			child.addEventListener('click', function(event) {
+				// Stop event propagation to prevent further bubbling
+				event.stopPropagation();
+				// Simulate a click event on the parent element
+				stock.click();
+			});
+		});
+
+		
     });
+
+	document.querySelectorAll(".player-tab").forEach(player => {
+		player.addEventListener("click", function(event){
+			document.querySelectorAll(".player-tab").forEach((player) => {
+				player.classList.remove("active");
+			});
+			event.target.classList.add("active");
+		});
+
+
+		// Add click event listeners to all child elements within the parent
+		const childElements = player.querySelectorAll('*');
+		childElements.forEach(child => {
+			child.addEventListener('click', function(event) {
+				// Stop event propagation to prevent further bubbling
+				event.stopPropagation();
+				// Simulate a click event on the parent element
+				player.click();
+			});
+		});
+	});
 
 	document.querySelector("img#show-users").addEventListener("click", function(){
 		swapIcons("stocks", "users");
@@ -115,8 +150,8 @@ func SetTabListeners() templ.ComponentScript {
 		swapIcons("users", "stocks");
 		moveDisplayTabs("stock-tabs", "player-tabs", "right");
 	});}`,
-		Call:       templ.SafeScript(`__templ_SetTabListeners_094c`),
-		CallInline: templ.SafeScriptInline(`__templ_SetTabListeners_094c`),
+		Call:       templ.SafeScript(`__templ_SetTabListeners_38b9`),
+		CallInline: templ.SafeScriptInline(`__templ_SetTabListeners_38b9`),
 	}
 }
 
@@ -139,12 +174,63 @@ func SwapDisplayButton() templ.Component {
 		}
 		templ_7745c5c3_Var4 := `
 		function swapIcons(showImage, hideImage){
+			const showImageElem = document.querySelector(` + "`" + `img#show-${showImage}` + "`" + `)
+			const hideImageElem = document.querySelector(` + "`" + `img#show-${hideImage}` + "`" + `)
+			
+			if (!showImageElem || !hideImageElem) {
+				console.error("show image or hide image not found")
+				return
+			}
 
-			document.querySelector(` + "`" + `img#show-${showImage}` + "`" + `).classList.add("infront");
-			document.querySelector(` + "`" + `img#show-${showImage}` + "`" + `).classList.remove("behind");
+			showImageElem.classList.add("infront");
+			showImageElem.classList.remove("behind");
 
-			document.querySelector(` + "`" + `img#show-${hideImage}` + "`" + `).classList.add("behind");
-			document.querySelector(` + "`" + `img#show-${hideImage}` + "`" + `).classList.remove("infront");
+			hideImageElem.classList.add("behind");
+			hideImageElem.classList.remove("infront");
+
+			const current_player_id = document.querySelector("#show-users")?.getAttribute("current-player-id");
+			const player_stock_id = document.querySelector("#show-stocks")?.getAttribute("player-stock-id");
+
+			if(current_player_id === null || player_stock_id === null) {
+				console.error("current player id or player stock id is null")
+				return
+			}
+
+			if(showImage === "stocks") {
+				document.startViewTransition(() => {
+					htmx.ajax(
+						'GET', 
+						` + "`" + `/players/show/${current_player_id}` + "`" + `, 
+						{
+							trigger:'click', 
+							target: '#content-wrapper', 
+							swap:'innerHTML'	
+						}
+					).then(res => {
+						document.querySelectorAll(".player-tab").forEach((player) => {
+							player.classList.remove("active");
+						});
+						document.querySelector(` + "`" + `#player-tab-${current_player_id}` + "`" + `).classList.add("active")
+					})
+				});
+			} else if (showImage === "users"){
+				document.startViewTransition(() => {
+					htmx.ajax(
+						'GET', 
+						` + "`" + `/player_stocks/show/${player_stock_id}` + "`" + `, 
+						{
+							trigger:'click', 
+							target: '#content-wrapper', 
+							swap:'innerHTML'	
+						}
+					).then(res => {
+						document.querySelectorAll(".player-stock-tab").forEach((stock) => {
+							stock.classList.remove("active");
+						});
+						document.querySelector(` + "`" + `#player-stock-tab-${player_stock_id}` + "`" + `).classList.add("active")
+					})
+				});
+			}
 		}		
 	`
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
@@ -364,14 +450,30 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"> <img id=\"show-stocks\" class=\"rounded border border-primary border-2 p-2 behind\" style=\"background-color: var(--bs-primary) !important\" height=\"60px\" width=\"60px\" src=\"/static/imgs/icons/Stock.svg\" alt=\"stocks icon\"></div><div><h2 class=\"text-capitalize mb-0\" style=\"font-size: 1.5rem;\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" current-player-id=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(strconv.FormatUint(uint64(currentPlayerDisplay.ID), 10)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"> <img id=\"show-stocks\" class=\"rounded border border-primary border-2 p-2 behind\" style=\"background-color: var(--bs-primary) !important\" height=\"60px\" width=\"60px\" src=\"/static/imgs/icons/Stock.svg\" alt=\"stocks icon\" player-stock-id=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(strconv.FormatUint(uint64(currentPlayerDisplay.PlayerStocks[0].ID), 10)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div><div><h2 class=\"text-capitalize mb-0\" style=\"font-size: 1.5rem;\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(currentPlayerDisplay.UserName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 175, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 278, Col: 36}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -389,7 +491,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(currentPlayerDisplay.Cash))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 178, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 281, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -407,7 +509,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(currentPlayerDisplay.TotalValue, 'f', -1, 64))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 181, Col: 78}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 284, Col: 78}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -453,7 +555,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(game.CurrentUserName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 195, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 298, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -490,7 +592,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(game.CurrentTurn))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 203, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 306, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
@@ -504,7 +606,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var26 string
 		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(game.PlayerCount * 3))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 203, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 306, Col: 81}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 		if templ_7745c5c3_Err != nil {
@@ -522,7 +624,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var28 string
 		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(game.CurrentPeriod + 1))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 206, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 309, Col: 50}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 		if templ_7745c5c3_Err != nil {
@@ -536,7 +638,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var30 string
 		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(game.PeriodCount + 1))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 206, Col: 89}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 309, Col: 89}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 		if templ_7745c5c3_Err != nil {
@@ -567,7 +669,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"flex-fill player-stock nav-link d-flex flex-row align-items-center justify-content-between gap-1\" hx-get=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"flex-fill player-stock-tab nav-link d-flex flex-row align-items-center justify-content-between gap-1\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -575,7 +677,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"click\" hx-target=\"#content-wrapper\" hx-swap=\"innerHTML\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"click\" hx-target=\"#content-wrapper\" hx-swap=\"innerHTML transition:true\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -601,7 +703,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"flex-fill player nav-link d-flex flex-row align-items-center justify-content-between gap-1\" hx-get=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"flex-fill player-tab player nav-link d-flex flex-row gap-2 flex-left align-items-center justify-content-between gap-1\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -609,7 +711,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"click\" hx-swap=\"innerHTML\" hx-target=\"#content-wrapper\"><div class=\"d-flex gap-2 flex-left flex-row flex-fill\"><div class=\"d-flex flex-row align-items-center gap-1\"><img class=\"rounded\" width=\"40px\" src=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"click\" hx-swap=\"innerHTML transition:true\" hx-target=\"#content-wrapper\"><div class=\"d-flex flex-row align-items-center gap-1\"><img class=\"rounded\" width=\"40px\" src=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -632,7 +734,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(player.UserName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 257, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 359, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {
@@ -650,13 +752,13 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			var templ_7745c5c3_Var33 string
 			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(player.Cash))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 260, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 362, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div></div></a></li>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div></a></li>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

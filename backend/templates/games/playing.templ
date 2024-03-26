@@ -54,16 +54,51 @@ templ GameGridStyle() {
 }
 
 script SetTabListeners() {
-    document.querySelector(".player-stock").classList.add("active");
+    document.querySelector(".player-stock-tab").classList.add("active");
 
-    document.querySelectorAll(".player-stock").forEach(stock => {
+    document.querySelectorAll(".player-stock-tab").forEach(stock => {
         stock.addEventListener("click", function(event){
-            document.querySelectorAll(".player-stock").forEach((stock) => {
+            document.querySelectorAll(".player-stock-tab").forEach((stock) => {
                 stock.classList.remove("active");
             });
             event.target.classList.add("active");
         });
+
+
+		// Add click event listeners to all child elements within the parent
+		const childElements = stock.querySelectorAll('*');
+		childElements.forEach(child => {
+			child.addEventListener('click', function(event) {
+				// Stop event propagation to prevent further bubbling
+				event.stopPropagation();
+				// Simulate a click event on the parent element
+				stock.click();
+			});
+		});
+
+		
     });
+
+	document.querySelectorAll(".player-tab").forEach(player => {
+		player.addEventListener("click", function(event){
+			document.querySelectorAll(".player-tab").forEach((player) => {
+				player.classList.remove("active");
+			});
+			event.target.classList.add("active");
+		});
+
+
+		// Add click event listeners to all child elements within the parent
+		const childElements = player.querySelectorAll('*');
+		childElements.forEach(child => {
+			child.addEventListener('click', function(event) {
+				// Stop event propagation to prevent further bubbling
+				event.stopPropagation();
+				// Simulate a click event on the parent element
+				player.click();
+			});
+		});
+	});
 
 	document.querySelector("img#show-users").addEventListener("click", function(){
 		swapIcons("stocks", "users");
@@ -75,18 +110,68 @@ script SetTabListeners() {
 		moveDisplayTabs("stock-tabs", "player-tabs", "right");
 	});
 
-
 }
 
 templ SwapDisplayButton() {
 	<script>
 		function swapIcons(showImage, hideImage){
+			const showImageElem = document.querySelector(`img#show-${showImage}`)
+			const hideImageElem = document.querySelector(`img#show-${hideImage}`)
+			
+			if (!showImageElem || !hideImageElem) {
+				console.error("show image or hide image not found")
+				return
+			}
 
-			document.querySelector(`img#show-${showImage}`).classList.add("infront");
-			document.querySelector(`img#show-${showImage}`).classList.remove("behind");
+			showImageElem.classList.add("infront");
+			showImageElem.classList.remove("behind");
 
-			document.querySelector(`img#show-${hideImage}`).classList.add("behind");
-			document.querySelector(`img#show-${hideImage}`).classList.remove("infront");
+			hideImageElem.classList.add("behind");
+			hideImageElem.classList.remove("infront");
+
+			const current_player_id = document.querySelector("#show-users")?.getAttribute("current-player-id");
+			const player_stock_id = document.querySelector("#show-stocks")?.getAttribute("player-stock-id");
+
+			if(current_player_id === null || player_stock_id === null) {
+				console.error("current player id or player stock id is null")
+				return
+			}
+
+			if(showImage === "stocks") {
+				document.startViewTransition(() => {
+					htmx.ajax(
+						'GET', 
+						`/players/show/${current_player_id}`, 
+						{
+							trigger:'click', 
+							target: '#content-wrapper', 
+							swap:'innerHTML'	
+						}
+					).then(res => {
+						document.querySelectorAll(".player-tab").forEach((player) => {
+							player.classList.remove("active");
+						});
+						document.querySelector(`#player-tab-${current_player_id}`).classList.add("active")
+					})
+				});
+			} else if (showImage === "users"){
+				document.startViewTransition(() => {
+					htmx.ajax(
+						'GET', 
+						`/player_stocks/show/${player_stock_id}`, 
+						{
+							trigger:'click', 
+							target: '#content-wrapper', 
+							swap:'innerHTML'	
+						}
+					).then(res => {
+						document.querySelectorAll(".player-stock-tab").forEach((stock) => {
+							stock.classList.remove("active");
+						});
+						document.querySelector(`#player-stock-tab-${player_stock_id}`).classList.add("active")
+					})
+				});
+			}
 		}		
 	</script>
 }
@@ -168,8 +253,26 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 			@DisplayButtonStyle()
 			@SwapDisplayButton()
 			<div style="width: 60px; height: 60px;">
-				<img id="show-users" class="rounded border border-primary border-2 infront" style="" height="60px" width="60px" src={ currentPlayerDisplay.UserProfileRoot } alt={ currentPlayerDisplay.UserName }/>
-				<img id="show-stocks" class="rounded border border-primary border-2 p-2 behind" style="background-color: var(--bs-primary) !important" height="60px" width="60px" src="/static/imgs/icons/Stock.svg" alt="stocks icon"/>
+				<img
+					id="show-users"
+					class="rounded border border-primary border-2 infront"
+					style=""
+					height="60px"
+					width="60px"
+					src={ currentPlayerDisplay.UserProfileRoot }
+					alt={ currentPlayerDisplay.UserName }
+					current-player-id={ strconv.FormatUint(uint64(currentPlayerDisplay.ID), 10) }
+				/>
+				<img
+					id="show-stocks"
+					class="rounded border border-primary border-2 p-2 behind"
+					style="background-color: var(--bs-primary) !important"
+					height="60px"
+					width="60px"
+					src="/static/imgs/icons/Stock.svg"
+					alt="stocks icon"
+					player-stock-id={ strconv.FormatUint(uint64(currentPlayerDisplay.PlayerStocks[0].ID), 10) }
+				/>
 			</div>
 			<div>
 				<h2 class="text-capitalize mb-0" style="font-size: 1.5rem;">
@@ -221,11 +324,11 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 							<li class="nav-item d-flex flex-fill">
 								<a
 									id={ fmt.Sprintf("player-stock-tab-%s", strconv.FormatUint(uint64(ps.ID), 10)) }
-									class="flex-fill player-stock nav-link d-flex flex-row align-items-center justify-content-between gap-1"
+									class="flex-fill player-stock-tab nav-link d-flex flex-row align-items-center justify-content-between gap-1"
 									hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(ps.ID), 10)) }
 									hx-trigger="click"
 									hx-target="#content-wrapper"
-									hx-swap="innerHTML"
+									hx-swap="innerHTML transition:true"
 								>
 									@playerStockTempl.PlayerStockPreview(ps)
 								</a>
@@ -243,24 +346,22 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 							<li class="nav-item d-flex flex-fill">
 								<a
 									id={ fmt.Sprintf("player-tab-%s", strconv.FormatUint(uint64(player.PlayerID), 10)) }
-									class="flex-fill player nav-link d-flex flex-row align-items-center justify-content-between gap-1"
+									class="flex-fill player-tab player nav-link d-flex flex-row gap-2 flex-left align-items-center justify-content-between gap-1"
 									hx-get={ fmt.Sprintf("/players/show/%s", strconv.FormatUint(uint64(player.PlayerID), 10)) }
 									hx-trigger="click"
-									hx-swap="innerHTML"
+									hx-swap="innerHTML transition:true"
 									hx-target="#content-wrapper"
 								>
-									<div class="d-flex gap-2 flex-left flex-row flex-fill">
-										<div class="d-flex flex-row align-items-center gap-1">
-											<img class="rounded" width="40px" src={ player.UserProfileRoot } alt={ player.UserName }/>
-										</div>
-										<div>
-											<p>
-												{ player.UserName }
-											</p>
-											<p style="font-size: 0.75rem;">
-												£{ strconv.Itoa(player.Cash) }
-											</p>
-										</div>
+									<div class="d-flex flex-row align-items-center gap-1">
+										<img class="rounded" width="40px" src={ player.UserProfileRoot } alt={ player.UserName }/>
+									</div>
+									<div>
+										<p>
+											{ player.UserName }
+										</p>
+										<p style="font-size: 0.75rem;">
+											£{ strconv.Itoa(player.Cash) }
+										</p>
 									</div>
 								</a>
 							</li>
@@ -269,15 +370,14 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 				</div>
 			</div>
 			@SetTabListeners()
-			
 			@playerStockTempl.PlayViewStyles()
 			@playerStockTempl.ModalStyles()
 			@playerTempl.PlayerPortfolioStyles()
-			<div 
+			<div
 				id="content-wrapper"
 				class="d-flex bg-white text-black rounded-bottom"
-				hx-swap="innerHTML" 
-				hx-trigger="load" 
+				hx-swap="innerHTML"
+				hx-trigger="load"
 				hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(currentPlayerDisplay.PlayerStocks[0].ID), 10)) }
 			></div>
 		</div>

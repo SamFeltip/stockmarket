@@ -81,16 +81,14 @@ templ TotalInsight(playerStockDisplay models.PlayerStockDisplay) {
 }
 
 templ PlayerStockPreview(playerStockDisplay models.PlayerStockDisplay) {
-	<div class="d-flex justify-content-between flex-fill">
-		<div class="d-flex flex-row align-items-center gap-1">
-			<img width="30px" src={ playerStockDisplay.StockImagePath } alt={ playerStockDisplay.StockName }/>
-		</div>
-		<div class="text-end">
-			<p>
-				£{ fmt.Sprintf("%.2f", playerStockDisplay.GameStockValue) }
-			</p>
-			@TotalInsight(playerStockDisplay)
-		</div>
+	<div class="d-flex flex-row align-items-center gap-1">
+		<img width="30px" src={ playerStockDisplay.StockImagePath } alt={ playerStockDisplay.StockName }/>
+	</div>
+	<div class="text-end">
+		<p>
+			£{ fmt.Sprintf("%.2f", playerStockDisplay.GameStockValue) }
+		</p>
+		@TotalInsight(playerStockDisplay)
 	</div>
 }
 
