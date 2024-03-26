@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"fmt"
 	playerStockTempl "stockmarket/templates/player_stocks"
+	playerTempl "stockmarket/templates/players"
 )
 
 templ GameGridStyle() {
@@ -221,10 +222,10 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 								<a
 									id={ fmt.Sprintf("player-stock-tab-%s", strconv.FormatUint(uint64(ps.ID), 10)) }
 									class="flex-fill player-stock nav-link d-flex flex-row align-items-center justify-content-between gap-1"
-									hx-swap="outerHTML"
 									hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(ps.ID), 10)) }
 									hx-trigger="click"
-									hx-target="#play-view"
+									hx-target="#content-wrapper"
+									hx-swap="innerHTML"
 								>
 									@playerStockTempl.PlayerStockPreview(ps)
 								</a>
@@ -243,10 +244,10 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 								<a
 									id={ fmt.Sprintf("player-tab-%s", strconv.FormatUint(uint64(player.PlayerID), 10)) }
 									class="flex-fill player nav-link d-flex flex-row align-items-center justify-content-between gap-1"
-									hx-swap="outerHTML"
 									hx-get={ fmt.Sprintf("/players/show/%s", strconv.FormatUint(uint64(player.PlayerID), 10)) }
 									hx-trigger="click"
-									hx-target="#play-view"
+									hx-swap="innerHTML"
+									hx-target="#content-wrapper"
 								>
 									<div class="d-flex gap-2 flex-left flex-row flex-fill">
 										<div class="d-flex flex-row align-items-center gap-1">
@@ -268,7 +269,17 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 				</div>
 			</div>
 			@SetTabListeners()
-			<div id="play-view" class="bg-white text-black rounded-bottom p-3" hx-swap="outerHTML" hx-trigger="load" hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(currentPlayerDisplay.PlayerStocks[0].ID), 10)) }></div>
+			
+			@playerStockTempl.PlayViewStyles()
+			@playerStockTempl.ModalStyles()
+			@playerTempl.PlayerPortfolioStyles()
+			<div 
+				id="content-wrapper"
+				class="d-flex bg-white text-black rounded-bottom"
+				hx-swap="innerHTML" 
+				hx-trigger="load" 
+				hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(currentPlayerDisplay.PlayerStocks[0].ID), 10)) }
+			></div>
 		</div>
 		<aside class="rounded bg-white text-black p-3">
 			<div class="d-grid" style="grid-template-rows: auto 1fr;">

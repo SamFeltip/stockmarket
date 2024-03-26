@@ -1,0 +1,108 @@
+package players
+
+import (
+    "strconv"
+    "stockmarket/models"
+)
+
+templ NoPlayer(err error) {
+    <div>
+        <h1>No Player</h1>
+        <p>{ err.Error() }</p>
+    </div>
+}
+
+templ PlayerPortfolioStyles(){
+    <style>
+        #player-portfolio {
+            display: grid;
+            grid-template-columns: 75% 25%;
+            grid-template-rows: auto 1fr;
+
+            flex-basis: auto;
+
+            row-gap: 2rem;
+
+            grid-template-areas: 
+                "portfolio portfolio"
+                "net-worth info";
+        }
+
+        #portfolio {
+            grid-area: portfolio;
+        }
+
+        #net-worth {
+            grid-area: net-worth;
+            display: grid;
+            grid-template-rows: auto 1fr;
+
+        }
+
+        #player-info {
+            grid-area: info;
+        }
+    </style>
+}
+
+templ PlayerPortfolio(playerStocks []models.PlayerStockDisplay) {
+    <div id="player-portfolio" class="flex-fill py-4 px-5">
+        <div id="portfolio">
+            <h1 class="text-black">Portfolio</h1>
+            <div class="d-flex flex-row justify-content-between">
+                for _, ps := range playerStocks {
+                    <div class="d-flex flex-column align-items-center">
+                        <img height="50px" src={ps.StockImagePath} alt={ps.StockName} />
+                        <p class="text-black">{ strconv.Itoa(ps.PlayerStockQuantity) }</p>
+                    </div>
+                }
+            </div>
+        </div>
+        <div id="net-worth" class="pe-2">
+            <h1 class="text-black">Net Worth</h1>
+            <div class="card flex-fill">
+                <div class="card-body d-flex justify-content-center align-items-center">
+                    GRAPH!
+                </div>
+            </div>
+
+        </div>
+
+        <div id="player-info" class="ps-2">
+            <h1 class="text-black">Info</h1>
+            <div class="d-flex flex-column gap-3">
+                <div class="card flex-fill">
+                    <div class="card-body text-center">
+                        <p class="fs-5">
+                            ? / 6
+                        </p>
+                        <p class="text-secondary">
+                            Ranking
+                        </p>
+                    </div>
+                </div>
+                <div class="card flex-fill">
+                    <div class="card-body text-center">
+                        <p class="fs-5">
+                            N/A
+                        </p>
+                        <p class="text-secondary">
+                            Director
+                        </p>
+                    </div>
+                </div>
+                <div class="card flex-fill">
+                    <div class="card-body text-center">
+                        <p class="fs-5">
+                            ???
+                        </p>
+                        <p class="text-secondary">
+                            Total Shares
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}

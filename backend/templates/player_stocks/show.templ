@@ -46,6 +46,8 @@ templ PlayViewStyles() {
 
         #play-view > #price-charts {
             grid-area: price-charts;
+			display: grid;
+			grid-template-rows: auto 1fr;
         }
 
         #play-view > #stock-info {
@@ -72,29 +74,25 @@ templ TotalInsight(playerStockDisplay models.PlayerStockDisplay) {
 	} else {
 		<div class="total-insight text-secondary">
 			<p style="font-size: 0.75rem">
-                boring!
-            </p>
+				boring!
+			</p>
 		</div>
 	}
 }
 
-
 templ PlayerStockPreview(playerStockDisplay models.PlayerStockDisplay) {
-
 	<div class="d-flex justify-content-between flex-fill">
 		<div class="d-flex flex-row align-items-center gap-1">
 			<img width="30px" src={ playerStockDisplay.StockImagePath } alt={ playerStockDisplay.StockName }/>
 		</div>
-        <div class="text-end">
-            <p>
-                £{ fmt.Sprintf("%.2f", playerStockDisplay.GameStockValue) }
-            </p>
-		    @TotalInsight(playerStockDisplay)
-        </div>
+		<div class="text-end">
+			<p>
+				£{ fmt.Sprintf("%.2f", playerStockDisplay.GameStockValue) }
+			</p>
+			@TotalInsight(playerStockDisplay)
+		</div>
 	</div>
 }
-
-
 
 templ PlayerStockPlayer(playerStockPlayerResult models.PlayerStockPlayerResult) {
 	<div id="stocks" class="rounded bg-secondary p-2 d-flex flex-column text-center justify-content-center">
@@ -141,7 +139,7 @@ templ TotalInsightResultButton(playerStockDisplay models.PlayerStockDisplay) {
 	}
 }
 
-templ Insights(insightResults []models.InsightResult){
+templ Insights(insightResults []models.InsightResult) {
 	<div class="d-grid gap-1 overflow-auto" style="grid-template-columns: 1fr 1fr; max-height: 60vh;">
 		for _, insightResult := range insightResults {
 			<div class="card">
@@ -207,8 +205,7 @@ templ StockInfo(stockInfoResult models.StockInfoResult) {
 }
 
 templ Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult, playerStockDisplay models.PlayerStockDisplay, investors []models.InvestorResult, insights []models.InsightResult, stockInfo models.StockInfoResult, isCurrentPlayer bool) {
-	<div id="play-view" class={"bg-white text-black rounded-bottom p-3", templ.KV("watching", !isCurrentPlayer)}>	
-		@PlayViewStyles()
+	<div id="play-view" class={ "flex-fill bg-white text-black rounded-bottom p-3", templ.KV("watching", !isCurrentPlayer) }>
 		@PlayerStockPlayer(playerStockPlayer)
 		@Investors(investors)
 		<div id="insights" class="d-flex flex-column gap-2">
@@ -220,6 +217,12 @@ templ Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult,
 		</div>
 		<div id="price-charts">
 			<h4 class="text-black">Price charts</h4>
+			
+			<div class="card flex-fill">
+				<div class="card-body d-flex justify-content-center align-items-center">
+					GRAPH!
+				</div>
+			</div>
 		</div>
 		@StockInfo(stockInfo)
 		if isCurrentPlayer {
@@ -231,8 +234,6 @@ templ Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult,
 			</button>
 		}
 	</div>
-	@ModalStyles()
 	@BuyModal(playerStockDisplay, playerStockPlayer, stockInfo, playerStockID)
 	@SellModal(playerStockDisplay, playerStockPlayer, stockInfo, playerStockID)
-
 }

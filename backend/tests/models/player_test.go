@@ -179,8 +179,6 @@ func TestLoadCurrentPlayerDisplay(t *testing.T) {
 
 }
 
-// test LoadCurrentPlayerDisplay
-
 func TestLoadPlayerDisplays(t *testing.T) {
 
 	db := database.SetupTestDb(logger.Warn)

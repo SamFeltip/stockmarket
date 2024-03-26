@@ -26,15 +26,6 @@ type CurrentPlayerDisplay struct {
 	TotalValue      float64
 }
 
-type PlayerStockDisplay struct {
-	ID             uint
-	GameID         string
-	TotalInsight   float64
-	GameStockValue float64
-	StockName      string
-	StockImagePath string
-}
-
 func LoadPlayerDisplays(gameID string, db *gorm.DB) ([]PlayerDisplay, error) {
 
 	var players []PlayerDisplay
@@ -74,7 +65,7 @@ func LoadCurrentPlayerDisplay(playerID uint, db *gorm.DB) (CurrentPlayerDisplay,
 		return CurrentPlayerDisplay{}, err
 	}
 
-	playerStockDisplays, err := GetPlayerStockDisplays(currentPlayerResult.GameID, playerID, db)
+	playerStockDisplays, err := GetPlayerStockPreviews(playerID, db)
 
 	if err != nil {
 		fmt.Println("could not load player stocks", err)
@@ -93,4 +84,23 @@ func LoadCurrentPlayerDisplay(playerID uint, db *gorm.DB) (CurrentPlayerDisplay,
 	}
 
 	return currentPlayer, nil
+}
+
+func LoadPlayerDisplay(id uint, db *gorm.DB) (PlayerDisplay, error) {
+
+	var player Player
+	err := db.Preload("User").First(&player, id).Error
+
+	if err != nil {
+		return PlayerDisplay{}, err
+	}
+
+	playerDisplay := PlayerDisplay{
+		PlayerID:        player.ID,
+		UserID:          player.User.ID,
+		UserName:        player.User.Name,
+		UserProfileRoot: player.User.ProfileRoot,
+	}
+
+	return playerDisplay, err
 }
