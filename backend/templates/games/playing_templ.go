@@ -336,7 +336,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"game-grid\" class=\"p-3\"><div id=\"profile\" class=\"card card-green d-flex flex-row align-items-center py-2 px-4 gap-2\" style=\"background-color: var(--bs-card-bg);\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"game-grid\" class=\"p-3\"><div id=\"profile\" class=\"card card-green d-grid align-items-center align-items-center py-2 px-4 gap-2\" style=\"grid-template-columns: 60px auto; background-color: var(--bs-card-bg);\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

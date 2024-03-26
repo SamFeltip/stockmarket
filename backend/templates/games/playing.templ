@@ -164,7 +164,7 @@ templ MoveDisplayTabs() {
 templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay, players []models.PlayerDisplay) {
 	@GameGridStyle()
 	<div id="game-grid" class="p-3">
-		<div id="profile" class="card card-green d-flex flex-row align-items-center py-2 px-4 gap-2" style="background-color: var(--bs-card-bg);">
+		<div id="profile" class="card card-green d-grid align-items-center align-items-center py-2 px-4 gap-2" style="grid-template-columns: 60px auto; background-color: var(--bs-card-bg);">
 			@DisplayButtonStyle()
 			@SwapDisplayButton()
 			<div style="width: 60px; height: 60px;">
