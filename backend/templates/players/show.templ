@@ -3,6 +3,7 @@ package players
 import (
     "strconv"
     "stockmarket/models"
+    playerStockTempl "stockmarket/templates/player_stocks"
 )
 
 templ NoPlayer(err error) {
@@ -19,13 +20,29 @@ templ PlayerPortfolioStyles(){
             grid-template-columns: 75% 25%;
             grid-template-rows: auto 1fr;
 
-            flex-basis: auto;
-
             row-gap: 2rem;
 
             grid-template-areas: 
                 "portfolio portfolio"
                 "net-worth info";
+        }
+
+        #player-portfolio.is-current-player {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr auto;
+            grid-template-areas:
+                "portfolio portfolio"
+                "insights net-worth"
+                "insights info";
+        }
+
+        #player-portfolio > #insights {
+            display: none;
+        }
+
+
+        #player-portfolio.is-current-player > #insights {
+            display: flex;
         }
 
         #portfolio {
@@ -39,16 +56,28 @@ templ PlayerPortfolioStyles(){
 
         }
 
+        #player-portfolio > #insights {
+            grid-area: insights;
+        }
+
         #player-info {
             grid-area: info;
+        }
+
+        #player-portfolio #info-details{
+            flex-direction: column;
+        }
+
+        #player-portfolio.is-current-player #info-details {
+            flex-direction: row;
         }
     </style>
 }
 
-templ PlayerPortfolio(playerStocks []models.PlayerStockDisplay) {
-    <div id="player-portfolio" class="flex-fill py-4 px-5">
+templ PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models.InsightResult) {
+    <div id="player-portfolio" style="grid-column-gap: 1rem;" class={"flex-fill py-4 px-5", templ.KV("is-current-player", len(insights) > 0)}>
         <div id="portfolio">
-            <h1 class="text-black">Portfolio</h1>
+            <h4 class="text-black">Portfolio</h4>
             <div class="d-flex flex-row justify-content-between">
                 for _, ps := range playerStocks {
                     <div class="d-flex flex-column align-items-center">
@@ -58,8 +87,16 @@ templ PlayerPortfolio(playerStocks []models.PlayerStockDisplay) {
                 }
             </div>
         </div>
-        <div id="net-worth" class="pe-2">
-            <h1 class="text-black">Net Worth</h1>
+
+        if len(insights) > 0 {
+            <div id="insights" class="flex-column gap-2">
+                <h4 class="text-black">Your insights</h4>
+                @playerStockTempl.Insights(insights)
+            </div>            
+        }
+
+        <div id="net-worth" class="pe-2 gap-2">
+            <h4 class="text-black">Net Worth</h4>
             <div class="card flex-fill">
                 <div class="card-body d-flex justify-content-center align-items-center">
                     GRAPH!
@@ -69,8 +106,8 @@ templ PlayerPortfolio(playerStocks []models.PlayerStockDisplay) {
         </div>
 
         <div id="player-info" class="ps-2">
-            <h1 class="text-black">Info</h1>
-            <div class="d-flex flex-column gap-3">
+            <h4 class="text-black">Info</h4>
+            <div id="info-details" class="d-flex gap-3">
                 <div class="card flex-fill">
                     <div class="card-body text-center">
                         <p class="fs-5">

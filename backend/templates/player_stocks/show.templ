@@ -142,6 +142,11 @@ templ Insights(insightResults []models.InsightResult) {
 		for _, insightResult := range insightResults {
 			<div class="card">
 				<div class="card-body text-center">
+					if insightResult.StockImagePath != "" {
+						<div class="d-flex justify-content-center">
+							<img height="35px" src={ insightResult.StockImagePath } alt={ insightResult.StockName }/>
+						</div>
+					}
 					<h5 class="text-black">
 						if insightResult.Value > 0 {
 							<img class="pe-2" height="16px" src="/static/imgs/icons/stock_up.svg" alt="stock up arrow"/>
@@ -150,9 +155,11 @@ templ Insights(insightResults []models.InsightResult) {
 						}
 						£{ fmt.Sprintf("%.2f", insightResult.Value) }
 					</h5>
-					<p>
-						{ insightResult.Description }
-					</p>
+					if insightResult.StockImagePath == "" {
+						<p>
+							{ insightResult.Description }
+						</p>
+					}
 				</div>
 			</div>
 		}

@@ -30,8 +30,10 @@ type InvestorResult struct {
 }
 
 type InsightResult struct {
-	Description string
-	Value       float64
+	StockImagePath string
+	StockName      string
+	Description    string
+	Value          float64
 }
 
 type StockInfoResult struct {
