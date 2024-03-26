@@ -282,7 +282,7 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 					Cash £{ strconv.Itoa(currentPlayerDisplay.Cash) }
 				</p>
 				<p style="font-size: 0.75rem;">
-					Net £{ strconv.FormatFloat(currentPlayerDisplay.TotalValue, 'f', -1, 64) }
+					Net £{ strconv.FormatFloat((currentPlayerDisplay.TotalValue + float64(currentPlayerDisplay.Cash)), 'f', -1, 64) }
 				</p>
 			</div>
 		</div>
@@ -300,7 +300,21 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 				</h3>
 			}
 		</div>
-		<header class="card card-green rounded p-3" style="background-color: var(--bs-card-bg);">
+		<div class="modal fade" id="gameModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="exampleModalLabel">Stockmarket! - { game.ID }</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<a class="btn btn-primary" href="/">Leave Game</a>
+						<a class="btn btn-secondary" href="/logout">Sign out</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<header data-bs-toggle="modal" data-bs-target="#gameModal" class="card card-green rounded p-3" style="background-color: var(--bs-card-bg);">
 			<h1>Stockmarket!</h1>
 			<div class="d-flex justify-content-between">
 				<div>
