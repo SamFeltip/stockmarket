@@ -82,7 +82,7 @@ func PlayerPortfolioStyles() templ.Component {
 		templ_7745c5c3_Var5 := `
         #player-portfolio {
             display: grid;
-            grid-template-columns: 75% 25%;
+            grid-template-columns: 75% auto;
             grid-template-rows: auto 1fr;
 
             row-gap: 2rem;
@@ -271,7 +271,7 @@ func PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div><div id=\"player-info\" class=\"ps-2\"><h4 class=\"text-black\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div><div id=\"player-info\" class=\"ps-2 gap-2\"><h4 class=\"text-black\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
