@@ -23,7 +23,13 @@ func init() {
 
 func main() {
 
-	database.SetupDevDb()
+	switch os.Getenv("ENVIRONMENT") {
+	case "production":
+		database.SetupProdDb()
+	case "development":
+		database.SetupDevDb()
+	}
+
 	websockets.InitializeHub()
 
 	r := router.SetupRoutes()

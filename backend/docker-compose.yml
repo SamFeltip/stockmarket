@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    ports:
+      - "1116:4040"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@db:${DB_PORT}/${DB_NAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+
+  db:
+    image: postgres:latest
+    volumes:
+      - ./database/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}

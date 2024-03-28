@@ -6,3 +6,4 @@ backend/database/backup.sql
 backend/static/imgs/*
 backend/static/fonts/*
 tmp/*
+backend/database/data/*
