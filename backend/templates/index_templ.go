@@ -284,7 +284,7 @@ func Base(title string, body templ.Component, c *gin.Context) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</title></head><body style=\"display: grid; height: 100vh; max-height: -webkit-fill-available;\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</title><meta charset=\"UTF-8\"><meta name=\"keywords\" content=\"stockmarket game PWA webgame webapp fun\"><meta name=\"description\" content=\"Play stockmarket now!\"><meta name=\"author\" content=\"Sam Felton\"><meta property=\"og:title\" content=\"Stockmarket!\"><meta property=\"og:type\" content=\"website\"><meta property=\"og:locale\" content=\"en_GB\"><meta property=\"og:url\" content=\"https://stockmarket.samfelton.com\"><meta property=\"og:description\" content=\"Play stockmarket now!\"><meta property=\"og:image\" content=\"https://stockmarket.samfelton.com/static/imgs/preview.png\"><meta name=\"twitter:card\" content=\"Play Stockmarket now!\"><meta name=\"twitter:title\" content=\"Stockmarket\"><meta name=\"twitter:description\" content=\"Play stockmarket now!\"><meta name=\"twitter:image\" content=\"https://stockmarket.samfelton.com/static/imgs/preview.png\"></head><body style=\"display: grid; height: 100vh; max-height: -webkit-fill-available;\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
