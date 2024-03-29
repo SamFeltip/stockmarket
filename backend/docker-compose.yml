@@ -15,7 +15,7 @@ services:
       - nginx-proxy-manager_default
   db:
     image: postgres:latest
-    user: samfelton
+    user: root
     volumes:
       - ./database/data:/var/lib/postgresql/data
     environment:
