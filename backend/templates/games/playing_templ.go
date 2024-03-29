@@ -607,7 +607,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a></div></div></div></div><header data-bs-toggle=\"modal\" data-bs-target=\"#gameModal\" class=\"card card-green rounded p-3\" style=\"background-color: var(--bs-card-bg);\"><h1>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a></div></div></div></div><header data-bs-toggle=\"modal\" data-bs-target=\"#gameModal\" class=\"card card-green rounded p-3\" style=\"background-color: var(--bs-card-bg);\"><h1 id=\"stockmarket-header\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
