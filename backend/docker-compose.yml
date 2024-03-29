@@ -10,7 +10,9 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@db:${DB_PORT}/${DB_NAME}
       - DB_PASSWORD=${DB_PASSWORD}
-
+    networks:
+      - default
+      - nginx-proxy-manager_default
   db:
     image: postgres:latest
     volumes:
@@ -18,3 +20,9 @@ services:
     environment:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
+    networks:
+      - default
+
+networks:
+  nginx-proxy-manager_default:
+    external: true
