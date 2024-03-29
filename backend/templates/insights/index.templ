@@ -6,7 +6,23 @@ import (
     "strconv"
 )
 
+templ Message(message string) {
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <h1>Insights</h1>
+        </div>
+        <div class="alert alert-primary" role="alert">
+            { message }
+        </div>
+    </div>
+
+}
+
 templ Index(insights []models.Insight){
+    <div id="message">
+    
+    </div>
+
     <div class="container">
         <div class="d-flex justify-content-between">
             <h1>Insights</h1>
@@ -19,6 +35,13 @@ templ Index(insights []models.Insight){
                     <h1 class="text-black mb-0">{ insight.Stock.Name }</h1>
                 </div>
                 <div class="card-body">
+                    <form
+                        hx-post="insights"
+                        hx-target="#message"
+                        hx-swap="innerHTML"
+                        hx-trigger="submit"
+                    >
+                    
                     <input type="hidden" name="insightID" value={ strconv.FormatUint(uint64(insight.ID), 10) }/>
                     <div class="row">
                         <div class="col-2">
@@ -28,10 +51,9 @@ templ Index(insights []models.Insight){
                             <input class="form-control" name="Description" type="text" value={ insight.Description }/>
                         </div>
 
-                        <button class="col-2 btn btn-secondary" hx-post="/insight/update">
-                            Update
-                        </button>
+                        <input type="submit" class="col-2 btn btn-secondary" value="Update"/>
                     </div>
+                    </form>
                     
                 </div>
             </div>
