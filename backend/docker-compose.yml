@@ -5,8 +5,6 @@ services:
     build: .
     ports:
       - "1116:4040"
-    depends_on:
-      - db
     environment:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@localhost:${DB_PORT}/${DB_NAME}
       - DB_PASSWORD=${DB_PASSWORD}
