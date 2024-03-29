@@ -315,7 +315,7 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 			</div>
 		</div>
 		<header data-bs-toggle="modal" data-bs-target="#gameModal" class="card card-green rounded p-3" style="background-color: var(--bs-card-bg);">
-			<h1>Stockmarket!</h1>
+			<h1 id="stockmarket-header">Stockmarket!</h1>
 			<div class="d-flex justify-content-between">
 				<div>
 					Turn { strconv.Itoa(game.CurrentTurn) }/{ strconv.Itoa(game.PlayerCount * 3) }

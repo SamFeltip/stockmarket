@@ -12,7 +12,7 @@ body {
     
 }
 
-header h1 {
+h1#stockmarket-header {
     font-display: block;
     font-family: 'Big Caslon', 'Times New Roman', Times, serif;
     color: #fff;
