@@ -56,7 +56,7 @@ func Edit(playerStockID uint, gameID string, quantityAdd int, multiplier int, db
 		return gameTemplates.Error(err), err
 	}
 
-	newPlayerCash := float64(playerChangeResult.PlayerCash) - float64(quantityAdd)*playerChangeResult.GameStockValue
+	newPlayerCash := float64(playerChangeResult.PlayerCash) - float64(quantityChange)*playerChangeResult.GameStockValue
 
 	err = db.Model(models.Player{}).Where("id = ?", playerChangeResult.PlayerID).Update("cash", newPlayerCash).Error
 

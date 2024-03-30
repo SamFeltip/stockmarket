@@ -176,6 +176,9 @@ func CreatePlayerStockRoutes() {
 			}
 
 			multiplier, err := strconv.Atoi(mode)
+
+			fmt.Println("mode:", mode, ", multiplier:", multiplier)
+
 			if err != nil {
 				fmt.Println("could not parse mode to int", err)
 				pageComponent := gameTemplates.Error(err)
