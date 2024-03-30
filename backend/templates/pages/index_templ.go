@@ -41,7 +41,7 @@ func Index() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<main class=\"d-flex flex-column justify-content-center p-2\"><div class=\"container-fluid rounded d-flex justify-content-center card card-green\" style=\"max-width: 40rem\"><header class=\"card-header text-center\"><h1>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<main class=\"d-flex flex-column justify-content-center p-2\"><div class=\"container-fluid rounded d-flex justify-content-center card card-green\" style=\"max-width: 40rem\"><header class=\"card-header text-center\"><h1 id=\"stockmarket-header\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

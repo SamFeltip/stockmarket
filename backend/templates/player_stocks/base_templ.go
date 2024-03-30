@@ -23,7 +23,7 @@ func Error(err error) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"play-view\" class=\"d-flex justify-content-center align-items-center bg-white text-black rounded-bottom p-3 \"><p>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"game-stock-info\" class=\"d-flex justify-content-center align-items-center bg-white text-black rounded-bottom p-3 \"><p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

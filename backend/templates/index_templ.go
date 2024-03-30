@@ -109,7 +109,7 @@ func Styles() templ.Component {
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<link rel=\"stylesheet\" href=\"/static/packages/inter.css\"><link rel=\"stylesheet\" href=\"/static/packages/bootstrap.min.css\"><link rel=\"stylesheet\" href=\"/static/stylesheets/styles.css\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<link rel=\"stylesheet\" href=\"/static/packages/inter.css\"><link rel=\"stylesheet\" href=\"/static/packages/bootstrap.min.css\"><link rel=\"stylesheet\" href=\"/static/stylesheets/styles.css\"><link rel=\"stylesheet\" href=\"/static/stylesheets/playing.css\"><link rel=\"stylesheet\" href=\"/static/stylesheets/models.css\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -278,7 +278,7 @@ func Base(title string, body templ.Component, c *gin.Context) templ.Component {
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/index.templ`, Line: 85, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/index.templ`, Line: 88, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {

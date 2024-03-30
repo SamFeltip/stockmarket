@@ -8,51 +8,6 @@ import (
 	playerTempl "stockmarket/templates/players"
 )
 
-templ GameGridStyle() {
-	<style>
-        #game-grid {
-			height: 100vh;
-			max-height: -webkit-fill-available;
-
-            display: grid;
-
-            grid-template-areas: 
-                "profile    now-playing header"
-                "content    content     feed";
-
-            grid-template-columns: 1fr 3fr 1fr;
-            grid-template-rows: 120px 1fr;
-            grid-gap: 16px;
-        }
-
-        #game-grid > #profile {
-            grid-area: profile;
-        }
-
-        #game-grid > #now-playing {
-            grid-area: now-playing;
-        }
-
-        #game-grid > header {
-            grid-area: header;
-        }
-
-        #game-grid > aside {
-            grid-area: feed;
-            display: grid;
-            grid-template-rows: 1fr auto;
-        }
-
-        #game-grid > #content{
-            grid-area: content;
-			
-			display: grid;
-    		grid-template-rows: auto 1fr;
-        }
-
-    </style>
-}
-
 script SetTabListeners() {
     document.querySelector(".player-stock-tab").classList.add("active");
 
@@ -176,43 +131,6 @@ templ SwapDisplayButton() {
 	</script>
 }
 
-templ DisplayButtonStyle() {
-	<style>
-		.behind {
-			position: absolute;
-			z-index: 1;
-			transform: translate(-10px, 10px) rotate(-6deg);
-			transition: transform 0.5s ease;
-		}
-
-		.infront {
-			position: absolute;
-			transform: translate(0) rotate(0deg);
-			transition: transform 0.5s ease;
-			z-index: 2;
-		}
-	</style>
-}
-
-templ DisplayTabsStyles() {
-	<style>
-		#tabs .tabs-display-center {
-			transform: translateX(0);
-			transition: transform 0.5s ease;
-		}
-
-		#tabs .tabs-display-right {
-			transform: translateX(100%);
-			transition: transform 0.5s ease;
-		}
-
-		#tabs .tabs-display-left {
-			transform: translateX(-100%);
-			transition: transform 0.5s ease;
-		}
-	</style>
-}
-
 templ MoveDisplayTabs() {
 	<script>
 		function moveDisplayTabs(showTabsListID, hideTabsListID, hideTabsDirection) {
@@ -247,10 +165,8 @@ templ MoveDisplayTabs() {
 }
 
 templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay, players []models.PlayerDisplay) {
-	@GameGridStyle()
 	<div id="game-grid" class="p-3">
 		<div id="profile" class="card card-green d-grid align-items-center align-items-center py-2 px-4 gap-2" style="grid-template-columns: 60px auto; background-color: var(--bs-card-bg);">
-			@DisplayButtonStyle()
 			@SwapDisplayButton()
 			<div style="width: 60px; height: 60px;">
 				<img
@@ -314,24 +230,26 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 				</div>
 			</div>
 		</div>
-		<header data-bs-toggle="modal" data-bs-target="#gameModal" class="card card-green rounded p-3" style="background-color: var(--bs-card-bg);">
-			<h1 id="stockmarket-header">Stockmarket!</h1>
-			<div class="d-flex justify-content-between">
-				<div>
-					Turn { strconv.Itoa(game.CurrentTurn) }/{ strconv.Itoa(game.PlayerCount * 3) }
-				</div>
-				<div>
-					Period { strconv.Itoa(game.CurrentPeriod + 1) }/{ strconv.Itoa(game.PeriodCount + 1) }
+		<header data-bs-toggle="modal" data-bs-target="#gameModal" class="d-flex flex-column justify-content-center card card-green rounded p-3 d-flex flex-row justify-content-center" style="background-color: var(--bs-card-bg);">
+			<div>
+				<h1 id="stockmarket-header" class="sh-small">Stockmarket!</h1>
+				<div class="d-flex justify-content-between">
+					<div>
+						Turn { strconv.Itoa(game.CurrentTurn) }/{ strconv.Itoa(game.PlayerCount * 3) }
+					</div>
+					<div>
+						Period { strconv.Itoa(game.CurrentPeriod + 1) }/{ strconv.Itoa(game.PeriodCount + 1) }
+					</div>
 				</div>
 			</div>
 		</header>
-		<div id="content" class="">
-			@DisplayTabsStyles()
+		<div id="content" class="d-grid" style="grid-template-rows: auto 1fr">
+			
 			@MoveDisplayTabs()
-			<div id="tabs" class="overflow-hidden" style="height: 65px;">
+			<div id="tabs" class="overflow-hidden" style="height:  65px;">
 				<div
 					id="stock-tabs"
-					class="h-100 w-100 position-relative tabs-display-center"
+					class="h-100 tabs-display-center"
 				>
 					<ol class="h-100 w-100 position-absolute nav nav-tabs d-flex justify-content-between">
 						for _, ps := range currentPlayerDisplay.PlayerStocks {
@@ -353,7 +271,7 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 				<div
 					id="player-tabs"
 					class="h-100 w-100 position-relative tabs-display-right"
-					style="top: -65px;"
+					style="top: -100%;"
 				>
 					<ol class="h-100 w-100 position-absolute  nav nav-tabs d-flex justify-content-between">
 						for _, player := range players {
@@ -384,8 +302,6 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 				</div>
 			</div>
 			@SetTabListeners()
-			@playerStockTempl.PlayViewStyles()
-			@playerStockTempl.ModalStyles()
 			@playerTempl.PlayerPortfolioStyles()
 			<div
 				id="content-wrapper"

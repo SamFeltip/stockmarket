@@ -1,0 +1,55 @@
+/* #game-grid #content  */
+
+.modal .purchase-form {
+    display: grid;
+    grid-template-areas:
+        "label . value"
+        "input-stock space input-cash"
+        "stock-btns . cash-btns"
+        "transaction-body transaction-body transaction-body";
+    grid-template-columns: 1fr 1rem 1fr;
+    grid-template-rows: 1fr 1fr 2rem;
+    row-gap: 1rem;
+}
+
+.modal .header-amount-of-stocks {
+    grid-area: label;
+}
+
+.modal .header-value {
+    grid-area: value;
+}
+
+.modal .input-cash-group {
+    grid-area: input-cash;
+}
+
+.modal .input-stock-group {
+    grid-area: input-stock;
+}
+
+.modal .stock-btns {
+    grid-area: stock-btns;
+}
+
+.modal .cash-btns {
+    grid-area: cash-btns;
+}
+
+
+.modal .transaction-body {
+    grid-area: transaction-body;
+}
+
+
+.modal .equals {
+    grid-area: space;
+}
+
+.modal .total-insight p {
+    font-size: 1rem !important;
+}
+
+.modal .total-insight img {
+    height: 8px;
+}

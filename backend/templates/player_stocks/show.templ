@@ -6,53 +6,6 @@ import (
 	"fmt"
 )
 
-templ PlayViewStyles() {
-	<style>
-        #play-view {
-            display: grid;
-            grid-template-areas: 
-                "stocks investors"
-                "insights price-charts"
-                "insights stock-info"
-                "buy-button sell-button";
-
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 120px 1fr auto auto;
-        }
-
-		#play-view.watching {
-
-            grid-template-areas: 
-                "stocks investors"
-                "insights price-charts"
-                "insights stock-info";
-			
-        }
-
-        #play-view > #stocks {
-            grid-area: stocks;
-        }
-
-        #play-view > #investors {
-            grid-area: investors;
-        }
-
-        #play-view > #insights {
-            grid-area: insights;
-        }
-
-        #play-view > #price-charts {
-            grid-area: price-charts;
-			display: grid;
-			grid-template-rows: auto 1fr;
-        }
-
-        #play-view > #stock-info {
-            grid-area: stock-info;
-        }
-    </style>
-}
-
 templ TotalInsight(playerStockDisplay models.PlayerStockDisplay) {
 	if playerStockDisplay.TotalInsight > 0 {
 		<div class="total-insight text-success d-flex flex-row align-items-center">
@@ -135,40 +88,38 @@ templ TotalInsightResultButton(playerStockDisplay models.PlayerStockDisplay) {
 }
 
 templ Insights(insightResults []models.InsightResult) {
-	<style>
-		#player-portfolio #insight-list {
-			max-height: 60vh;
-		}
-
-		#content-wrapper #insight-list {
-			max-height: 40vh;
-		}
-	</style>
-	<div id="insight-list" class="d-grid gap-1 overflow-auto" style="grid-template-columns: 1fr 1fr; max-height: 40vh;">
-		for _, insightResult := range insightResults {
-			<div class="card">
-				<div class="card-body text-center">
-					if insightResult.StockImagePath != "" {
-						<div class="d-flex justify-content-center">
-							<img height="35px" src={ insightResult.StockImagePath } alt={ insightResult.StockName }/>
-						</div>
-					}
-					<h5 class="text-black">
-						if insightResult.Value > 0 {
-							<img class="pe-2" height="16px" src="/static/imgs/icons/stock_up.svg" alt="stock up arrow"/>
-						} else {
-							<img class="pe-2" height="16px" src="/static/imgs/icons/stock_down.svg" alt="stock down arrow"/>
+	<div class="overflow-auto" style="max-height: 35vh;">
+		<div id="insight-list" style="
+				grid-template-columns: 1fr 1fr;
+				gap: 10px;
+				display: grid;
+				grid-template-rows: min-content;
+			">
+			for _, insightResult := range insightResults {
+				<div class="card">
+					<div class="card-body text-center">
+						if insightResult.StockImagePath != "" {
+							<div class="d-flex justify-content-center">
+								<img height="35px" src={ insightResult.StockImagePath } alt={ insightResult.StockName }/>
+							</div>
 						}
-						£{ fmt.Sprintf("%.2f", insightResult.Value) }
-					</h5>
-					if insightResult.StockImagePath == "" {
-						<p>
-							{ insightResult.Description }
-						</p>
-					}
+						<h5 class="text-black">
+							if insightResult.Value > 0 {
+								<img class="pe-2" height="16px" src="/static/imgs/icons/stock_up.svg" alt="stock up arrow"/>
+							} else {
+								<img class="pe-2" height="16px" src="/static/imgs/icons/stock_down.svg" alt="stock down arrow"/>
+							}
+							£{ fmt.Sprintf("%.2f", insightResult.Value) }
+						</h5>
+						if insightResult.StockImagePath == "" {
+							<p>
+								{ insightResult.Description }
+							</p>
+						}
+					</div>
 				</div>
-			</div>
-		}
+			}
+		</div>
 	</div>
 }
 
@@ -216,15 +167,17 @@ templ StockInfo(stockInfoResult models.StockInfoResult) {
 }
 
 templ Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult, playerStockDisplay models.PlayerStockDisplay, investors []models.InvestorResult, insights []models.InsightResult, stockInfo models.StockInfoResult, isCurrentPlayer bool) {
-	<div id="play-view" class={ "gap-3 flex-fill bg-white text-black rounded-bottom p-3", templ.KV("watching", !isCurrentPlayer) }>
+	<div id="game-stock-info" class={ "gap-3 flex-fill bg-white text-black rounded-bottom p-3", templ.KV("watching", !isCurrentPlayer) }>
 		@PlayerStockPlayer(playerStockPlayer)
 		@Investors(investors)
-		<div id="insights" class="d-flex flex-column gap-2">
-			<div class="d-flex justify-content-between">
-				<h4 class="text-black">Your Insights</h4>
-				@TotalInsightResultButton(playerStockDisplay)
+		<div id="insights">
+			<div class="d-grid gap-2" style="grid-template-rows: auto 1fr;">
+				<div class="d-flex justify-content-between">
+					<h4 class="text-black">Your Insights</h4>
+					@TotalInsightResultButton(playerStockDisplay)
+				</div>
+				@Insights(insights)
 			</div>
-			@Insights(insights)
 		</div>
 		<div id="price-charts" class="gap-2">
 			<h4 class="text-black">Price chart</h4>

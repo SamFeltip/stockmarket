@@ -80,64 +80,7 @@ func PlayerPortfolioStyles() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Var5 := `
-        #player-portfolio {
-            display: grid;
-            grid-template-columns: 75% auto;
-            grid-template-rows: auto 1fr auto;
-
-            row-gap: 2rem;
-
-            grid-template-areas: 
-                "portfolio portfolio"
-                "net-worth info";
-        }
-
-        #player-portfolio.is-current-player {
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 120px 1fr auto auto;
-            grid-template-areas:
-                "portfolio portfolio"
-                "insights net-worth"
-                "insights info";
-        }
-
-        #player-portfolio > #insights {
-            display: none;
-        }
-
-
-        #player-portfolio.is-current-player > #insights {
-            display: flex;
-        }
-
-        #portfolio {
-            grid-area: portfolio;
-        }
-
-        #net-worth {
-            grid-area: net-worth;
-            display: grid;
-            grid-template-rows: auto 1fr;
-
-        }
-
-        #player-portfolio > #insights {
-            grid-area: insights;
-        }
-
-        #player-info {
-            grid-area: info;
-        }
-
-        #player-portfolio:not(.is-current-player) #info-details{
-            
-            grid-template-rows: 1fr 1fr 1fr;
-        }
-
-        #player-portfolio.is-current-player #info-details {
-            
-            grid-template-columns: 1fr 1fr 1fr;
-        }
+        
     `
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 		if templ_7745c5c3_Err != nil {
@@ -217,7 +160,7 @@ func PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(ps.PlayerStockQuantity))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/players/show.templ`, Line: 86, Col: 84}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/players/show.templ`, Line: 29, Col: 84}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
