@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"fmt"
 	playerStockTempl "stockmarket/templates/player_stocks"
-	playerTempl "stockmarket/templates/players"
 )
 
 script SetTabListeners() {
@@ -302,7 +301,6 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 				</div>
 			</div>
 			@SetTabListeners()
-			@playerTempl.PlayerPortfolioStyles()
 			<div
 				id="content-wrapper"
 				class="d-flex bg-white text-black rounded-bottom"

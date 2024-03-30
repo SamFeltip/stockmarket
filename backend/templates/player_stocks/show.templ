@@ -129,7 +129,7 @@ templ StockInfo(stockInfoResult models.StockInfoResult) {
 		<div class="d-grid gap-3" style="grid-template-columns: 1fr 1fr 1fr;">
 			<div class="card flex-fill">
 				<div class="card-body text-center">
-					<p class="fs-5">
+					<p class="">
 						{ strconv.FormatFloat(stockInfoResult.Variation, 'f', -1, 64) }
 					</p>
 					<p class="text-secondary">
@@ -140,7 +140,7 @@ templ StockInfo(stockInfoResult models.StockInfoResult) {
 			<div class="card flex-fill">
 				<div class="card-body text-center">
 					if true {
-						<p class="fs-5">
+						<p class="">
 							N/A
 						</p>
 					} else {
@@ -154,7 +154,7 @@ templ StockInfo(stockInfoResult models.StockInfoResult) {
 			</div>
 			<div class="card flex-fill">
 				<div class="card-body text-center">
-					<p class="fs-5">
+					<p class="">
 						{ strconv.Itoa(stockInfoResult.SharesAvailable) }
 					</p>
 					<p class="text-secondary">
@@ -170,14 +170,14 @@ templ Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult,
 	<div id="game-stock-info" class={ "gap-3 flex-fill bg-white text-black rounded-bottom p-3", templ.KV("watching", !isCurrentPlayer) }>
 		@PlayerStockPlayer(playerStockPlayer)
 		@Investors(investors)
-		<div id="insights">
-			<div class="d-grid gap-2" style="grid-template-rows: auto 1fr;">
-				<div class="d-flex justify-content-between">
-					<h4 class="text-black">Your Insights</h4>
-					@TotalInsightResultButton(playerStockDisplay)
-				</div>
-				@Insights(insights)
+		<div id="insights" class="d-grid gap-2" style="grid-template-rows: auto 1fr;">
+			
+			<div class="d-flex justify-content-between">
+				<h4 class="text-black">Your Insights</h4>
+				@TotalInsightResultButton(playerStockDisplay)
 			</div>
+			@Insights(insights)
+		
 		</div>
 		<div id="price-charts" class="gap-2">
 			<h4 class="text-black">Price chart</h4>

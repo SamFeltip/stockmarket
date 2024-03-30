@@ -523,7 +523,7 @@ func StockInfo(stockInfoResult models.StockInfoResult) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><div class=\"d-grid gap-3\" style=\"grid-template-columns: 1fr 1fr 1fr;\"><div class=\"card flex-fill\"><div class=\"card-body text-center\"><p class=\"fs-5\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><div class=\"d-grid gap-3\" style=\"grid-template-columns: 1fr 1fr 1fr;\"><div class=\"card flex-fill\"><div class=\"card-body text-center\"><p class=\"\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -550,7 +550,7 @@ func StockInfo(stockInfoResult models.StockInfoResult) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if true {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p class=\"fs-5\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p class=\"\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -583,7 +583,7 @@ func StockInfo(stockInfoResult models.StockInfoResult) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div></div><div class=\"card flex-fill\"><div class=\"card-body text-center\"><p class=\"fs-5\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div></div><div class=\"card flex-fill\"><div class=\"card-body text-center\"><p class=\"\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -654,7 +654,7 @@ func Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult, 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"insights\"><div class=\"d-grid gap-2\" style=\"grid-template-rows: auto 1fr;\"><div class=\"d-flex justify-content-between\"><h4 class=\"text-black\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"insights\" class=\"d-grid gap-2\" style=\"grid-template-rows: auto 1fr;\"><div class=\"d-flex justify-content-between\"><h4 class=\"text-black\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -679,7 +679,7 @@ func Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult, 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div id=\"price-charts\" class=\"gap-2\"><h4 class=\"text-black\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div id=\"price-charts\" class=\"gap-2\"><h4 class=\"text-black\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

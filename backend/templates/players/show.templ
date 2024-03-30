@@ -13,12 +13,6 @@ templ NoPlayer(err error) {
     </div>
 }
 
-templ PlayerPortfolioStyles(){
-    <style>
-        
-    </style>
-}
-
 templ PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models.InsightResult) {
     <div id="player-portfolio" class={"flex-fill p-3 gap-3 ", templ.KV("is-current-player", len(insights) > 0)}>
         <div id="portfolio">
@@ -55,7 +49,7 @@ templ PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []model
             <div id="info-details" class="d-grid gap-3">
                 <div class="card flex-fill">
                     <div class="card-body text-center">
-                        <p class="fs-5">
+                        <p class="">
                             ? / 6
                         </p>
                         <p class="text-secondary">
@@ -65,7 +59,7 @@ templ PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []model
                 </div>
                 <div class="card flex-fill">
                     <div class="card-body text-center">
-                        <p class="fs-5">
+                        <p class="">
                             N/A
                         </p>
                         <p class="text-secondary">
@@ -75,7 +69,7 @@ templ PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []model
                 </div>
                 <div class="card flex-fill">
                     <div class="card-body text-center">
-                        <p class="fs-5">
+                        <p class="">
                             ???
                         </p>
                         <p class="text-secondary">
