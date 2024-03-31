@@ -91,20 +91,20 @@ templ SpecialInsights(gameID string, insights []models.InsightDisplay, gameStock
 			</div>
 		</div>
 
-		<div class="card card-green p-4 rounded  d-flex flex-row justify-content-between align-items-center">
-			<h2>
-				Net Worth:
-			</h2>
-			<div class="d-flex w-100 gap-5 flex-row justify-content-center">
-			for _, player := range players {
-				<div class="d-flex flex-column align-items-center">
-					<img height="80px" width="80px" class="rounded" src={ player.UserProfileRoot } alt={ player.UserName }/>
-					<td>£{ strconv.FormatFloat((player.TotalValue + float64(player.Cash)), 'f', -1, 64) }</td>
+		// <div class="card card-green p-4 rounded  d-flex flex-row justify-content-between align-items-center">
+		// 	<h2>
+		// 		Net Worth:
+		// 	</h2>
+		// 	<div class="d-flex w-100 gap-5 flex-row justify-content-center">
+		// 	for _, player := range players {
+		// 		<div class="d-flex flex-column align-items-center">
+		// 			<img height="80px" width="80px" class="rounded" src={ player.UserProfileRoot } alt={ player.UserName }/>
+		// 			<td>£{ strconv.FormatFloat((player.TotalValue + float64(player.Cash)), 'f', -1, 64) }</td>
 
-				</div>
-			}
-			</div>
-		</div>
+		// 		</div>
+		// 	}
+		// 	</div>
+		// </div>
 
 	</div>
 	<div id="next-step-wrapper" class="position-absolute bottom-0 p-3" style="right: 0;">

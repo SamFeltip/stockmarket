@@ -90,6 +90,9 @@ templ SwapDisplayButton() {
 				console.error("current player id or player stock id is null")
 				return
 			}
+
+			const contentWrapper = document.querySelector("#content-wrapper");
+
 			console.log("htmx ajaxing", current_player_id, player_stock_id)
 			const fetchPlayersShow = () => {
 				htmx.ajax(
@@ -122,9 +125,9 @@ templ SwapDisplayButton() {
 			}
 
 			if(showImage === "stocks") {
-				document.startViewTransition ? document.startViewTransition(fetchPlayersShow) : fetchPlayersShow();
+				contentWrapper.startViewTransition ? contentWrapper.startViewTransition(fetchPlayersShow) : fetchPlayersShow();
 			} else if (showImage === "users"){
-				document.startViewTransition ? document.startViewTransition(fetchPlayerStockShow) : fetchPlayerStockShow();
+				contentWrapper.startViewTransition ? contentWrapper.startViewTransition(fetchPlayerStockShow) : fetchPlayerStockShow();
 			}
 		}		
 	</script>
