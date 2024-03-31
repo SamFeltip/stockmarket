@@ -5,9 +5,8 @@ import (
 	"strconv"
 )
 
-templ SpecialInsightsSocket(insights []models.InsightDisplay) {
-	<div hx-swap-oob="innerHTML:main">
-		<div class="insights">
+templ SpecialInsights(insights []models.InsightDisplay) {
+    <div class="insights">
 			for _, insight := range insights {
 				<div class="insight">
 					<div class="insight-title">{ strconv.FormatFloat(insight.Value, 'f', -1, 64) }</div>
@@ -15,5 +14,9 @@ templ SpecialInsightsSocket(insights []models.InsightDisplay) {
 				</div>
 			}
 		</div>
+}
+templ SpecialInsightsSocket(insights []models.InsightDisplay) {
+	<div hx-swap-oob="innerHTML:main">
+		@SpecialInsights(insights)
 	</div>
 }
