@@ -78,7 +78,14 @@ func RunHub() {
 							continue
 						}
 
-						boardDisplay := gameTempl.PlayingSocket(game, current_player, players)
+						specialPlayerInsights, err := models.LoadSpecialPlayerInsights(current_player.ID, db)
+
+						if err != nil {
+							fmt.Println("error loading special insights:", err)
+							continue
+						}
+
+						boardDisplay := gameTempl.PlayingSocket(game, current_player, players, specialPlayerInsights)
 
 						buffer = &bytes.Buffer{}
 						boardDisplay.Render(context.Background(), buffer)

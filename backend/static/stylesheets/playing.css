@@ -183,3 +183,36 @@
     
     grid-template-columns: 1fr 1fr 1fr;
 }
+
+
+
+
+#insightModalButton {
+    animation: exclaim 0.5s ease-in-out 0s 1;
+}
+
+@keyframes exclaim {
+    0% {
+        transform: translateY(0);
+    }
+    30% {
+        transform: translateY(-10px);
+    }
+
+    40% {
+        transform: translateY(-10px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-10px) rotate(5deg);
+    }
+    60% {
+        transform: translateY(-10px) rotate(-5deg);
+    }
+    70% {
+        transform: translateY(-10px) rotate(0deg);
+    }
+
+    90% {
+        transform: translateY(0);
+    }
+}

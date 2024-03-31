@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"fmt"
+
+	"gorm.io/gorm"
+)
 
 type Insight struct {
 	gorm.Model
@@ -9,6 +13,14 @@ type Insight struct {
 	Stock       Stock
 	Description string
 	Value       float64
+}
+
+type InsightDisplay struct {
+	StockImagePath string
+	StockName      string
+	StockDisplay   bool
+	Description    string
+	Value          float64
 }
 
 type PlayerInsight struct {
@@ -43,4 +55,22 @@ func GetGameInsights(gameID string, db *gorm.DB) ([]GameInsight, error) {
 		Scan(&gameInsights).Error
 
 	return gameInsights, err
+}
+
+func LoadSpecialPlayerInsights(playerID uint, db *gorm.DB) ([]InsightDisplay, error) {
+
+	var insights []InsightDisplay
+
+	fmt.Println("fetching special player insights")
+
+	err := db.Table("player_insights as pi").
+		Select("i.description, i.value, s.image_path as stock_image_path, s.name as stock_name, s.display as stock_display").
+		Joins("inner join insights as i on i.id = pi.insight_id").
+		Joins("inner join player_stocks as ps on ps.id = pi.player_stock_id").
+		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+		Joins("inner join stocks as s on s.id = gs.stock_id").
+		Where("s.display = false AND ps.player_id = ?", playerID).Scan(&insights).
+		Error
+
+	return insights, err
 }

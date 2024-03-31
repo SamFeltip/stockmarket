@@ -163,7 +163,7 @@ templ MoveDisplayTabs() {
 	</script>
 }
 
-templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay, players []models.PlayerDisplay) {
+templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay, players []models.PlayerDisplay, specialInsights []models.InsightDisplay) {
 	<div id="game-grid" class="p-3">
 		<div id="profile" class="card card-green d-grid align-items-center align-items-center py-2 px-4 gap-2" style="grid-template-columns: 60px auto; background-color: var(--bs-card-bg);">
 			@SwapDisplayButton()
@@ -201,18 +201,52 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 				</p>
 			</div>
 		</div>
-		<div id="now-playing" class="card card-green p-2 rounded d-flex flex-column align-items-center justify-content-center" style="background-color: var(--bs-card-bg);">
+		<div class="modal fade" id="insightModal" tabindex="-1" aria-labelledby="insightModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="insightModalLabel">Special Insights - { game.ID }</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						@playerStockTempl.Insights(specialInsights)
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="now-playing" class="position-relative card card-green p-2 rounded d-flex flex-row align-items-center justify-content-center" style="background-color: var(--bs-card-bg);">
 			if game.CurrentUserID == currentPlayerDisplay.UserID {
-				<h3 class="primary">
-					It's your turn
-				</h3>
-				<p>
-					Buy, sell, use or pass
-				</p>
+				<div class="text-center">
+					<h3 class="primary">
+						It's your turn
+					</h3>
+					<p>
+						Buy, sell, use or pass
+					</p>
+				</div>
+				
 			} else {
 				<h3>
 					It's { game.CurrentUserName }'s turn!
 				</h3>
+			}
+
+			if len(specialInsights) > 0 {
+				<button 
+					id="insightModalButton" 
+					data-bs-toggle="modal" 
+					data-bs-target="#insightModal" 
+					aria-hidden="true" 
+					type="button" 
+					class="btn btn-primary position-relative position-absolute" 
+					style="right: 2rem; width: 4rem; height: 4rem;"
+				>
+					<img height="35px" src="/static/imgs/icons/special-insight.svg" alt="special insight"/>
+					<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+						{ strconv.Itoa(len(specialInsights)) }
+						<span class="visually-hidden">unread messages</span>
+					</span>
+				</button>
 			}
 		</div>
 		<div class="modal fade" id="gameModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -243,7 +277,6 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 			</div>
 		</header>
 		<div id="content" class="d-grid" style="grid-template-rows: auto 1fr">
-			
 			@MoveDisplayTabs()
 			<div id="tabs" class="overflow-hidden" style="height:  65px;">
 				<div
@@ -340,8 +373,8 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 	</div>
 }
 
-templ PlayingSocket(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay, players []models.PlayerDisplay) {
+templ PlayingSocket(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay, players []models.PlayerDisplay, specialInsights []models.InsightDisplay) {
 	<div hx-swap-oob="innerHTML:main">
-		@Playing(game, currentPlayerDisplay, players)
+		@Playing(game, currentPlayerDisplay, players, specialInsights)
 	</div>
 }

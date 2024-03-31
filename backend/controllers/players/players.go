@@ -19,7 +19,7 @@ func Show(playerID uint, currentPlayerID uint, db *gorm.DB) templ.Component {
 		return pageComponent
 	}
 
-	insights := []models.InsightResult{}
+	insights := []models.InsightDisplay{}
 	if playerID != currentPlayerID {
 		fmt.Println("not showing insights for other players")
 		pageComponent := templates.PlayerPortfolio(playerStockDisplays, insights)
@@ -28,7 +28,7 @@ func Show(playerID uint, currentPlayerID uint, db *gorm.DB) templ.Component {
 
 	fmt.Println("getting insights for current player:", playerID)
 	err = db.Table("player_insights as pi").
-		Select("i.value, i.description, s.name as stock_name, s.image_path as stock_image_path").
+		Select("i.value, s.name as stock_name, s.image_path as stock_image_path, s.display as stock_display").
 		Joins("inner join insights as i on i.id = pi.insight_id").
 		Joins("inner join player_stocks as ps on ps.id = pi.player_stock_id").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").

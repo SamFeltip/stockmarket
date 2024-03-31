@@ -69,7 +69,14 @@ func Show(gameID string, current_user models.User, db *gorm.DB) templ.Component 
 			return gameWrapper
 		}
 
-		pageComponent := templates.Playing(gameDisplay, currentPlayerDisplay, players)
+		specialPlayerInsights, err := models.LoadSpecialPlayerInsights(current_player.ID, db)
+
+		if err != nil {
+			fmt.Println("error loading special insights:", err)
+			return templates.Error(err)
+		}
+
+		pageComponent := templates.Playing(gameDisplay, currentPlayerDisplay, players, specialPlayerInsights)
 		return pageComponent
 	case string(models.Closed):
 		gameInsights, err := models.GetGameInsights(game.ID, db)

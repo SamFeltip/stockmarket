@@ -87,7 +87,7 @@ templ TotalInsightResultButton(playerStockDisplay models.PlayerStockDisplay) {
 	}
 }
 
-templ Insights(insightResults []models.InsightResult) {
+templ Insights(insightResults []models.InsightDisplay) {
 	<div class="overflow-auto" style="max-height: 35vh;">
 		<div id="insight-list" style="
 				grid-template-columns: 1fr 1fr;
@@ -109,9 +109,14 @@ templ Insights(insightResults []models.InsightResult) {
 							} else {
 								<img class="pe-2" height="16px" src="/static/imgs/icons/stock_down.svg" alt="stock down arrow"/>
 							}
-							£{ fmt.Sprintf("%.2f", insightResult.Value) }
+
+							if insightResult.StockDisplay {
+								£{ fmt.Sprintf("%.2f", insightResult.Value) }
+							} else {
+								{ strconv.FormatFloat((insightResult.Value * 100), 'f', -1, 64) }%
+							}
 						</h5>
-						if insightResult.StockImagePath == "" {
+						if insightResult.Description != "" {
 							<p>
 								{ insightResult.Description }
 							</p>
@@ -166,7 +171,7 @@ templ StockInfo(stockInfoResult models.StockInfoResult) {
 	</div>
 }
 
-templ Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult, playerStockDisplay models.PlayerStockDisplay, investors []models.InvestorResult, insights []models.InsightResult, stockInfo models.StockInfoResult, isCurrentPlayer bool) {
+templ Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult, playerStockDisplay models.PlayerStockDisplay, investors []models.InvestorResult, insights []models.InsightDisplay, stockInfo models.StockInfoResult, isCurrentPlayer bool) {
 	<div id="game-stock-info" class={ "gap-3 flex-fill bg-white text-black rounded-bottom p-3", templ.KV("watching", !isCurrentPlayer) }>
 		@PlayerStockPlayer(playerStockPlayer)
 		@Investors(investors)

@@ -13,7 +13,7 @@ templ NoPlayer(err error) {
     </div>
 }
 
-templ PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models.InsightResult) {
+templ PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models.InsightDisplay) {
     <div id="player-portfolio" class={"flex-fill p-3 gap-3 ", templ.KV("is-current-player", len(insights) > 0)}>
         <div id="portfolio">
             <h4 class="text-black">Portfolio</h4>
