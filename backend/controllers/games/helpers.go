@@ -97,6 +97,33 @@ func BroadcastGameClosed(gameInsights []models.GameInsight, gameID string, db *g
 	return nil
 }
 
+func BroadcastShowSpecialInsights(gameID string, db *gorm.DB) error {
+	fmt.Println("broadcasting show special insights")
+
+	specialInsights, err := models.LoadSpecialInsights(gameID, db)
+
+	if err != nil {
+		fmt.Println("could not get game insights", err)
+		return err
+	}
+
+	specialInsightsDisplay := templates.SpecialInsightsSocket(specialInsights)
+
+	buffer := &bytes.Buffer{}
+	specialInsightsDisplay.Render(context.Background(), buffer)
+
+	broadcastMessage := websocketModels.BroadcastMessage{
+		GameID:  gameID,
+		Buffer:  buffer,
+		Message: "special insights",
+	}
+
+	hub := websockets.GetHub()
+	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
+
+	return nil
+}
+
 func CheckForMarketClose(gameID string, db *gorm.DB) (templ.Component, error) {
 
 	game, err := models.LoadGameDisplay(gameID, db)

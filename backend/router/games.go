@@ -203,7 +203,34 @@ func CreateGameRoutes() {
 			pageComponent.Render(ctx, c.Writer)
 		})
 
-	r.POST("/api/games/next",
+	r.POST("/api/games/next_animate",
+		func(c *gin.Context) { middleware.AuthIsPlaying(c) },
+		func(c *gin.Context) {
+			db := database.GetDb()
+			gameID := c.PostForm("gameID")
+
+			if gameID == "" {
+				fmt.Println("no gameID in post request")
+				pageComponent := templates.Error(fmt.Errorf("no gameID in post request"))
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
+
+			fmt.Println("form data gathered", "gameID:", gameID)
+
+			pageComponent, err := controllers.NextPeriodAnimate(gameID, db)
+
+			if err != nil {
+				fmt.Println("error editing player stock", err)
+				return
+			}
+
+			ctx := context.Background()
+			pageComponent.Render(ctx, c.Writer)
+		})
+
+	r.POST("/api/games/next_period",
 		func(c *gin.Context) { middleware.AuthIsPlaying(c) },
 		func(c *gin.Context) {
 			db := database.GetDb()

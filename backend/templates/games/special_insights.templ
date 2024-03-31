@@ -1,0 +1,19 @@
+package games
+
+import (
+	"stockmarket/models"
+	"strconv"
+)
+
+templ SpecialInsightsSocket(insights []models.InsightDisplay) {
+	<div hx-swap-oob="innerHTML:main">
+		<div class="insights">
+			for _, insight := range insights {
+				<div class="insight">
+					<div class="insight-title">{ strconv.FormatFloat(insight.Value, 'f', -1, 64) }</div>
+					<div class="insight-content">{ insight.StockName }</div>
+				</div>
+			}
+		</div>
+	</div>
+}

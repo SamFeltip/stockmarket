@@ -503,7 +503,7 @@ func Closed(gameID string, gameInsights []models.GameInsight, gameStocks []model
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</style><div id=\"next-step-wrapper\" class=\"position-absolute bottom-0 p-3\" style=\"right: 0;\"><form hx-post=\"/api/games/next\"><input type=\"hidden\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</style><div id=\"next-step-wrapper\" class=\"position-absolute bottom-0 p-3\" style=\"right: 0;\"><form hx-post=\"/api/games/next_animate\"><input type=\"hidden\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
