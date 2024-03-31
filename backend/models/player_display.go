@@ -13,6 +13,7 @@ type PlayerDisplay struct {
 	UserProfileRoot string
 	Cash            int
 	Active          bool
+	TotalValue      float64
 }
 
 type CurrentPlayerDisplay struct {

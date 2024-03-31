@@ -29,6 +29,7 @@ var Waiting GameStatus = "waiting"
 var Playing GameStatus = "playing"
 var Closed GameStatus = "closed"
 var Finished GameStatus = "finished"
+var SpecialInsights GameStatus = "special_insights"
 
 /*
 creates a new game and all possible game stocks

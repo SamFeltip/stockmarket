@@ -66,7 +66,7 @@ func BroadcastUpdatePlayBoard(gameID string) error {
 func BroadcastGameClosed(gameInsights []models.GameInsight, gameID string, db *gorm.DB) error {
 	fmt.Println("broadcasting market closed")
 
-	displayGameStocks, err := models.LoadGameStockDisplays(gameID, db)
+	displayGameStocks, err := models.LoadGameStockDisplays(gameID, true, db)
 
 	if err != nil {
 		fmt.Println("could not load game stock displays", err)
@@ -107,7 +107,21 @@ func BroadcastShowSpecialInsights(gameID string, db *gorm.DB) error {
 		return err
 	}
 
-	specialInsightsDisplay := templates.SpecialInsightsSocket(specialInsights)
+	playerDisplays, err := models.LoadPlayerDisplays(gameID, db)
+
+	if err != nil {
+		fmt.Println("could not load player displays", err)
+		return err
+	}
+
+	gameStockDisplays, err := models.LoadGameStockDisplays(gameID, false, db)
+
+	if err != nil {
+		fmt.Println("could not load game stock displays", err)
+		return err
+	}
+
+	specialInsightsDisplay := templates.SpecialInsightsSocket(gameID, specialInsights, gameStockDisplays, playerDisplays)
 
 	buffer := &bytes.Buffer{}
 	specialInsightsDisplay.Render(context.Background(), buffer)

@@ -162,7 +162,23 @@ func NextPeriod(gameID string, db *gorm.DB) (templ.Component, error) {
 
 func NextPeriodAnimate(gameID string, db *gorm.DB) (templ.Component, error) {
 
-	err := BroadcastShowSpecialInsights(gameID, db)
+	game, err := models.FindGame(gameID, db)
+
+	if err != nil {
+		fmt.Println("could not find game", err)
+		return templates.Error(err), err
+	}
+
+	game.Status = string(models.SpecialInsights)
+
+	err = db.Save(&game).Error
+
+	if err != nil {
+		fmt.Println("could not update game status", err)
+		return templates.Error(err), err
+	}
+
+	err = BroadcastShowSpecialInsights(gameID, db)
 
 	if err != nil {
 		fmt.Println("could not broadcast period update", err)

@@ -1,0 +1,72 @@
+@keyframes popIn {
+    0% { opacity: 0; }
+}
+@keyframes glideIn {
+    0% {
+        opacity: 0;
+        /* transform: translateY(100px); */
+    }
+    30% {
+        opacity: 1;
+        /*transform: translateY(0px);*/
+    }
+    70% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+    
+}
+
+@keyframes glideInMini {
+    0% {
+        opacity: 0;
+        /*transform: translateY(20px);*/
+    }
+    30% {
+        opacity: 1;
+        /*transform: translateY(0px);*/
+    }
+    70% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+.price-modifier-display {
+    animation-name: glideInMini;
+    animation-duration: 2s;
+    animation-fill-mode: both;
+}
+
+.game-insight-card {
+    animation-name: glideIn;
+    animation-duration: 2s;
+    animation-fill-mode: both;
+}
+
+div.game-stock-view.first {
+    animation-name: popIn;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
+
+@keyframes slideInFromRight {
+    0% { right: -300px; }
+    100% { right: 0; }
+}
+
+#next-step-wrapper {
+    animation-name: slideInFromRight;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-delay: 4s;
+}

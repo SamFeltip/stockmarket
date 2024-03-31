@@ -3,20 +3,131 @@ package games
 import (
 	"stockmarket/models"
 	"strconv"
+    "fmt"
 )
 
-templ SpecialInsights(insights []models.InsightDisplay) {
-    <div class="insights">
+templ SpecialInsights(gameID string, insights []models.InsightDisplay, gameStocks []models.GameStockDisplay, players []models.PlayerDisplay) {
+    <div class="gap-3 p-4" style="height: 100vh; max-height: -webkit-fill-available; display: grid; grid-template-rows: 100px 1fr auto auto;">
+		<div class="d-flex flex-column align-items-center justify-content-center">
+			<h1>End of round</h1>
+            <h2>Additional insights</h2>
+		</div>
+
+		<div id="insight-view" class="card card-green p-4 rounded border border-white">
 			for _, insight := range insights {
-				<div class="insight">
-					<div class="insight-title">{ strconv.FormatFloat(insight.Value, 'f', -1, 64) }</div>
-					<div class="insight-content">{ insight.StockName }</div>
+				<div style="display: none; grid-template-columns: 2fr 1fr;" class={ "game-insight", "game-stock-insight-" + strconv.FormatUint(uint64(insight.GameStockID), 10), "gap-3 h-100" } data-game-stock-id={ strconv.FormatUint(uint64(insight.GameStockID), 10) }>
+					<div style="background-color: #3C5F2F;" class="rounded d-flex flex-row justify-content-around align-items-center">
+						<div id={ "game-stock-view-" + strconv.FormatUint(uint64(insight.GameStockID), 10) } class="game-stock-view d-flex flex-column align-items-center">
+							<div>
+								<img height="120px" src={ insight.StockImagePath } alt={ insight.StockName }/>
+							</div>
+							<h2>
+								{ insight.StockName }
+							</h2>
+						</div>
+						<div class="d-flex flex-column text-center">
+							<p>
+								Sum
+							</p>
+							<h1 class={ "stock-total-insight-value-display-" + strconv.FormatUint(uint64(insight.GameStockID), 10) }>
+								£<span class={ "stock-total-insight-value", "stock-total-insight-value-" + strconv.FormatUint(uint64(insight.GameStockID), 10) }>
+									0
+								</span>
+							</h1>
+							<div class={"price-modifier-display", templ.KV("text-danger", insight.Value <= 0), templ.KV("text-success", insight.Value > 0)}>
+								£
+								<span class="price-modifier">
+									{ fmt.Sprintf("%.2f", insight.Value) }
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="game-insight-card rounded bg-white text-black d-flex flex-column align-items-center justify-content-center">
+						<img height="120px" src={ insight.StockImagePath } alt={ insight.StockName }/>
+						<div class="d-flex flex-row gap-2 align-items-center">
+							if insight.Value > 0 {
+								<img height="24px" src="/static/imgs/icons/stock_up.svg" alt="stock up arrow"/>
+							} else {
+								<img height="24px" src="/static/imgs/icons/stock_down.svg" alt="stock down arrow"/>
+							}
+							<h2 class="text-black">
+								£{ fmt.Sprintf("%.2f", insight.Value) }
+							</h2>
+						</div>
+						<p>
+							{ insight.Description }
+						</p>
+					</div>
 				</div>
 			}
 		</div>
+
+        <div class="d-none">
+			for _, gameStock := range gameStocks {
+				<div id={ "game-stock-" + strconv.FormatUint(uint64(gameStock.ID), 10) } class="game-stock d-flex flex-column align-items-center" data-game-stock-id={ strconv.FormatUint(uint64(gameStock.ID), 10) }>
+					<!-- used for changing value display-->
+					<span class="d-none stock-total-insight-value">
+						0
+					</span>
+					<div>
+						£<span class="stock-value">{ fmt.Sprintf("%.2f", gameStock.Value ) }</span>
+					</div>
+				</div>
+			}
+		</div>
+
+		<div class="card card-green p-4 rounded  d-flex flex-row justify-content-between align-items-center">
+			<h2>
+				Cash:
+			</h2>
+			<div class="d-flex w-100 gap-5 flex-row justify-content-center">
+			for _, player := range players {
+				<div class="d-flex flex-column align-items-center">
+					<img height="80px" width="80px" class="rounded" src={ player.UserProfileRoot } alt={ player.UserName }/>
+					<td>£{ strconv.Itoa(player.Cash) }</td>
+
+				</div>
+			}
+			</div>
+		</div>
+
+		<div class="card card-green p-4 rounded  d-flex flex-row justify-content-between align-items-center">
+			<h2>
+				Net Worth:
+			</h2>
+			<div class="d-flex w-100 gap-5 flex-row justify-content-center">
+			for _, player := range players {
+				<div class="d-flex flex-column align-items-center">
+					<img height="80px" width="80px" class="rounded" src={ player.UserProfileRoot } alt={ player.UserName }/>
+					<td>£{ strconv.FormatFloat((player.TotalValue + float64(player.Cash)), 'f', -1, 64) }</td>
+
+				</div>
+			}
+			</div>
+		</div>
+
+	</div>
+	<div id="next-step-wrapper" class="position-absolute bottom-0 p-3" style="right: 0;">
+		<form hx-post="/api/games/next_animate">
+			<input type="hidden" value={ gameID } name="gameID"/>
+
+			<button
+				class="btn btn-primary d-flex flex-row gap-2 align-items-center"
+			>
+				Show Special Insights
+				<svg height="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg>
+			</button>
+		</form>
+	</div>
+
+	<link rel="stylesheet" href="/static/stylesheets/closed.css"/>
+	<script>
+        // bug: on socket, this is running inside htmx and so picks up both new gameStocks and existing gameStocks
+        animateGameStocks();
+    </script>
 }
-templ SpecialInsightsSocket(insights []models.InsightDisplay) {
+templ SpecialInsightsSocket(gameID string, insights []models.InsightDisplay, gameStocks []models.GameStockDisplay, players []models.PlayerDisplay) {
 	<div hx-swap-oob="innerHTML:main">
-		@SpecialInsights(insights)
+		@SpecialInsights(gameID, insights, gameStocks, players)
 	</div>
 }

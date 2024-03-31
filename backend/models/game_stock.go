@@ -69,13 +69,13 @@ type GameStockDisplay struct {
 	Value     float64
 }
 
-func LoadGameStockDisplays(gameID string, db *gorm.DB) ([]GameStockDisplay, error) {
+func LoadGameStockDisplays(gameID string, display bool, db *gorm.DB) ([]GameStockDisplay, error) {
 	var gameStocks []GameStockDisplay
 
 	err := db.Table("game_stocks as gs").
 		Select("gs.id, s.name, s.image_path, gs.value").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
-		Where("game_id = ? and s.display = true", gameID).
+		Where("game_id = ? and s.display = ?", gameID, display).
 		Order("s.variation").
 		Scan(&gameStocks).
 		Error

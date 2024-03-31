@@ -15,14 +15,6 @@ type Insight struct {
 	Value       float64
 }
 
-type InsightDisplay struct {
-	StockImagePath string
-	StockName      string
-	StockDisplay   bool
-	Description    string
-	Value          float64
-}
-
 type PlayerInsight struct {
 	gorm.Model
 	ID            uint `gorm:"primaryKey"`
@@ -32,6 +24,16 @@ type PlayerInsight struct {
 	Insight       Insight
 }
 
+// todo: reconsile gameInsight and InsightDisplay
+type InsightDisplay struct {
+	Description    string
+	GameStockID    uint
+	StockName      string
+	StockImagePath string
+	Value          float64
+	StockDisplay   bool
+}
+
 type GameInsight struct {
 	Description    string
 	InsightValue   float64
@@ -39,22 +41,6 @@ type GameInsight struct {
 	Name           string
 	ImagePath      string
 	GameStockValue float64
-}
-
-func GetGameInsights(gameID string, db *gorm.DB) ([]GameInsight, error) {
-
-	var gameInsights []GameInsight
-	err := db.Table("game_stocks as gs").
-		Select("i.description, i.value as insight_value, gs.ID as game_stock_id, s.name, s.image_path, gs.value as game_stock_value").
-		Joins("inner join stocks as s on s.id = gs.stock_id").
-		Joins("inner join player_stocks as ps on ps.game_stock_id = gs.id").
-		Joins("left join player_insights as pi on pi.player_stock_id = ps.id").
-		Joins("left join insights as i on i.id = pi.insight_id").
-		Where("gs.game_id = ? AND s.display = true", gameID).
-		Order("s.variation").
-		Scan(&gameInsights).Error
-
-	return gameInsights, err
 }
 
 func LoadSpecialPlayerInsights(playerID uint, db *gorm.DB) ([]InsightDisplay, error) {
@@ -79,7 +65,7 @@ func LoadSpecialInsights(gameID string, db *gorm.DB) ([]InsightDisplay, error) {
 	insights := []InsightDisplay{}
 
 	err := db.Table("player_insights as pi").
-		Select("i.description, i.value, s.image_path as stock_image_path, s.name as stock_name, s.display as stock_display").
+		Select("i.description, i.value, s.image_path as stock_image_path, s.name as stock_name, s.display as stock_display, gs.id as game_stock_id").
 		Joins("inner join insights as i on i.id = pi.insight_id").
 		Joins("inner join stocks as s on s.id = i.stock_id").
 		Joins("inner join player_stocks as ps on ps.id = pi.player_stock_id").
@@ -88,4 +74,20 @@ func LoadSpecialInsights(gameID string, db *gorm.DB) ([]InsightDisplay, error) {
 
 	return insights, err
 
+}
+
+func GetGameInsights(gameID string, db *gorm.DB) ([]GameInsight, error) {
+
+	var gameInsights []GameInsight
+	err := db.Table("game_stocks as gs").
+		Select("i.description, i.value as insight_value, gs.ID as game_stock_id, s.name, s.image_path, gs.value as game_stock_value").
+		Joins("inner join stocks as s on s.id = gs.stock_id").
+		Joins("inner join player_stocks as ps on ps.game_stock_id = gs.id").
+		Joins("left join player_insights as pi on pi.player_stock_id = ps.id").
+		Joins("left join insights as i on i.id = pi.insight_id").
+		Where("gs.game_id = ? AND s.display = true", gameID).
+		Order("s.variation").
+		Scan(&gameInsights).Error
+
+	return gameInsights, err
 }
