@@ -27,10 +27,10 @@ type PlayerInsight struct {
 // todo: reconsile gameInsight and InsightDisplay
 type InsightDisplay struct {
 	Description    string
+	Value          float64
 	GameStockID    uint
 	StockName      string
 	StockImagePath string
-	Value          float64
 	StockDisplay   bool
 }
 
@@ -61,11 +61,11 @@ func LoadSpecialPlayerInsights(playerID uint, db *gorm.DB) ([]InsightDisplay, er
 	return insights, err
 }
 
-func LoadSpecialInsights(gameID string, db *gorm.DB) ([]InsightDisplay, error) {
-	insights := []InsightDisplay{}
+func LoadSpecialInsights(gameID string, db *gorm.DB) ([]GameInsight, error) {
+	insights := []GameInsight{}
 
 	err := db.Table("player_insights as pi").
-		Select("i.description, i.value, s.image_path as stock_image_path, s.name as stock_name, s.display as stock_display, gs.id as game_stock_id").
+		Select("i.description, i.value as insight_value, s.image_path, s.name, gs.id as game_stock_id").
 		Joins("inner join insights as i on i.id = pi.insight_id").
 		Joins("inner join stocks as s on s.id = i.stock_id").
 		Joins("inner join player_stocks as ps on ps.id = pi.player_stock_id").

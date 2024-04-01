@@ -63,17 +63,18 @@ func (gameStock GameStock) SharesAvailable() int {
 }
 
 type GameStockDisplay struct {
-	ID        uint
-	Name      string
-	ImagePath string
-	Value     float64
+	ID                 uint
+	Name               string
+	ImagePath          string
+	SecondaryImagePath string
+	Value              float64
 }
 
 func LoadGameStockDisplays(gameID string, display bool, db *gorm.DB) ([]GameStockDisplay, error) {
 	var gameStocks []GameStockDisplay
 
 	err := db.Table("game_stocks as gs").
-		Select("gs.id, s.name, s.image_path, gs.value").
+		Select("gs.id, s.name, s.image_path, s.secondary_image_path, gs.value").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
 		Where("game_id = ? and s.display = ?", gameID, display).
 		Order("s.variation").

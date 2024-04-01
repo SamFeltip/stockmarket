@@ -19,15 +19,20 @@ import (
 
 func SetTabListeners() templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_SetTabListeners_38b9`,
-		Function: `function __templ_SetTabListeners_38b9(){document.querySelector(".player-stock-tab").classList.add("active");
+		Name: `__templ_SetTabListeners_ab14`,
+		Function: `function __templ_SetTabListeners_ab14(){document.querySelector(".player-stock-tab").classList.add("active");
 
     document.querySelectorAll(".player-stock-tab").forEach(stock => {
         stock.addEventListener("click", function(event){
             document.querySelectorAll(".player-stock-tab").forEach((stock) => {
                 stock.classList.remove("active");
+				stock.querySelector(".img-primary").style.display = "none";
+				stock.querySelector(".img-secondary").style.display = "block";
             });
             event.target.classList.add("active");
+
+			stock.querySelector(".img-primary").style.display = "block";
+			stock.querySelector(".img-secondary").style.display = "none";
         });
 
 
@@ -75,8 +80,8 @@ func SetTabListeners() templ.ComponentScript {
 		swapIcons("users", "stocks");
 		moveDisplayTabs("stock-tabs", "player-tabs", "right");
 	});}`,
-		Call:       templ.SafeScript(`__templ_SetTabListeners_38b9`),
-		CallInline: templ.SafeScriptInline(`__templ_SetTabListeners_38b9`),
+		Call:       templ.SafeScript(`__templ_SetTabListeners_ab14`),
+		CallInline: templ.SafeScriptInline(`__templ_SetTabListeners_ab14`),
 	}
 }
 
@@ -298,7 +303,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(currentPlayerDisplay.UserName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 196, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 201, Col: 36}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -316,7 +321,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(currentPlayerDisplay.Cash))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 199, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 204, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -334,7 +339,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat((currentPlayerDisplay.TotalValue + float64(currentPlayerDisplay.Cash)), 'f', -1, 64))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 202, Col: 117}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 207, Col: 117}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -352,7 +357,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(game.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 210, Col: 86}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 215, Col: 86}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -406,7 +411,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(game.CurrentUserName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 232, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 237, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -430,7 +435,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(len(specialInsights)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 248, Col: 42}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 253, Col: 42}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -462,7 +467,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(game.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 258, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 263, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
@@ -507,7 +512,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var26 string
 		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(game.CurrentTurn))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 273, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 278, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 		if templ_7745c5c3_Err != nil {
@@ -521,7 +526,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var28 string
 		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(game.PlayerCount * 3))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 273, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 278, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 		if templ_7745c5c3_Err != nil {
@@ -539,7 +544,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var30 string
 		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(game.CurrentPeriod + 1))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 276, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 281, Col: 51}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 		if templ_7745c5c3_Err != nil {
@@ -553,7 +558,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		var templ_7745c5c3_Var32 string
 		templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(game.PeriodCount + 1))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 276, Col: 90}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 281, Col: 90}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 		if templ_7745c5c3_Err != nil {
@@ -645,7 +650,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			var templ_7745c5c3_Var33 string
 			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(player.UserName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 326, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 331, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 			if templ_7745c5c3_Err != nil {
@@ -663,7 +668,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			var templ_7745c5c3_Var35 string
 			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(player.Cash))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 329, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 334, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 			if templ_7745c5c3_Err != nil {

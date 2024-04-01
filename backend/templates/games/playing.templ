@@ -14,8 +14,13 @@ script SetTabListeners() {
         stock.addEventListener("click", function(event){
             document.querySelectorAll(".player-stock-tab").forEach((stock) => {
                 stock.classList.remove("active");
+				stock.querySelector(".img-primary").style.display = "none";
+				stock.querySelector(".img-secondary").style.display = "block";
             });
             event.target.classList.add("active");
+
+			stock.querySelector(".img-primary").style.display = "block";
+			stock.querySelector(".img-secondary").style.display = "none";
         });
 
 

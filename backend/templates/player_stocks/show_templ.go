@@ -110,11 +110,27 @@ func PlayerStockPreview(playerStockDisplay models.PlayerStockDisplay) templ.Comp
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex flex-row align-items-center gap-1\"><img width=\"30px\" src=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex flex-row align-items-center gap-1\"><img class=\"img-primary\" style=\"display: none;\" width=\"30px\" src=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(playerStockDisplay.StockImagePath))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" alt=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(playerStockDisplay.StockName))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"> <img class=\"img-secondary\" width=\"30px\" src=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(playerStockDisplay.StockSecondaryImagePath))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -138,7 +154,7 @@ func PlayerStockPreview(playerStockDisplay models.PlayerStockDisplay) templ.Comp
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", playerStockDisplay.GameStockValue))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 38, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 39, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -183,7 +199,7 @@ func PlayerStockPlayer(playerStockPlayerResult models.PlayerStockPlayerResult) t
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(playerStockPlayerResult.StocksHeld))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 47, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 48, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -210,7 +226,7 @@ func PlayerStockPlayer(playerStockPlayerResult models.PlayerStockPlayerResult) t
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", playerStockPlayerResult.StockValue))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 50, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 51, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -286,7 +302,7 @@ func Investors(investors []models.InvestorResult) templ.Component {
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(investor.Quantity))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 63, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 64, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -334,7 +350,7 @@ func TotalInsightResultButton(playerStockDisplay models.PlayerStockDisplay) temp
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", playerStockDisplay.TotalInsight))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 75, Col: 59}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 76, Col: 59}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 			if templ_7745c5c3_Err != nil {
@@ -357,7 +373,7 @@ func TotalInsightResultButton(playerStockDisplay models.PlayerStockDisplay) temp
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", playerStockDisplay.TotalInsight))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 80, Col: 59}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 81, Col: 59}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -457,7 +473,7 @@ func Insights(insightResults []models.InsightDisplay) templ.Component {
 				var templ_7745c5c3_Var27 string
 				templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", insightResult.Value))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 113, Col: 52}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 114, Col: 52}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 				if templ_7745c5c3_Err != nil {
@@ -467,7 +483,7 @@ func Insights(insightResults []models.InsightDisplay) templ.Component {
 				var templ_7745c5c3_Var28 string
 				templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat((insightResult.Value * 100), 'f', -1, 64))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 115, Col: 71}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 116, Col: 71}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 				if templ_7745c5c3_Err != nil {
@@ -491,7 +507,7 @@ func Insights(insightResults []models.InsightDisplay) templ.Component {
 				var templ_7745c5c3_Var30 string
 				templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(insightResult.Description)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 120, Col: 35}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 121, Col: 35}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 				if templ_7745c5c3_Err != nil {
@@ -547,7 +563,7 @@ func StockInfo(stockInfoResult models.StockInfoResult) templ.Component {
 		var templ_7745c5c3_Var33 string
 		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(stockInfoResult.Variation, 'f', -1, 64))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 137, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 138, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 		if templ_7745c5c3_Err != nil {
@@ -607,7 +623,7 @@ func StockInfo(stockInfoResult models.StockInfoResult) templ.Component {
 		var templ_7745c5c3_Var38 string
 		templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(stockInfoResult.SharesAvailable))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 162, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/player_stocks/show.templ`, Line: 163, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 		if templ_7745c5c3_Err != nil {

@@ -306,7 +306,7 @@ func (game *Game) UpdatePeriod(db *gorm.DB) error {
 		Joins("left join insights as i on i.id = pi.insight_id").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
-		Where("gs.game_id = ?", game.ID).
+		Where("gs.game_id = ? and s.display = true", game.ID).
 		Group("gs.id, gs.value").
 		Scan(&gameStockChanges).Error
 
@@ -327,6 +327,13 @@ func (game *Game) UpdatePeriod(db *gorm.DB) error {
 			fmt.Println("could not update game stock", err)
 			return err
 		}
+	}
+
+	err = game.UpdatePlayerCash(db)
+
+	if err != nil {
+		fmt.Println("could not update player cash")
+		return err
 	}
 
 	players, err := GetPlayers(game.ID, db)
@@ -369,6 +376,52 @@ func (game *Game) UpdatePeriod(db *gorm.DB) error {
 	if err != nil {
 		fmt.Println("could not create feed item", err)
 		return err
+	}
+
+	return nil
+}
+
+func (game *Game) UpdatePlayerCash(db *gorm.DB) error {
+
+	type new_cash_result struct {
+		PlayerID   uint
+		StockID    uint
+		OldCash    int
+		CashChange float64
+		NewCash    float64
+	}
+
+	new_cash_results := []new_cash_result{}
+
+	err := db.Table("player_insights as pi").
+		Select("p.id as player_id, s.id as stock_id, p.cash as old_cash, (1 + sum(i.value)) as cash_change, p.cash * (1 + sum(i.value)) as new_cash").
+		Joins("inner join player_stocks as ps on pi.player_stock_id = ps.id").
+		Joins("inner join players as p on p.id = ps.player_id").
+		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+		Joins("inner join stocks as s on s.id = gs.stock_id").
+		Joins("inner join insights as i on i.id = pi.insight_id").
+		Where("p.game_id = ? and s.name = ?", game.ID, "currency").
+		Group("p.id, s.id").
+		Scan(&new_cash_results).Error
+
+	if err != nil {
+		fmt.Println("could not get player insights", err)
+		return err
+	}
+
+	// loop through players and update cash
+	for _, new_cash_result := range new_cash_results {
+
+		err := db.
+			Model(Player{}).
+			Where("id = ?", new_cash_result.PlayerID).
+			Update("cash", new_cash_result.NewCash).
+			Error
+
+		if err != nil {
+			fmt.Println("could not update player cash", err)
+			return err
+		}
 	}
 
 	return nil

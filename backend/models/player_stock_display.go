@@ -7,13 +7,14 @@ import (
 )
 
 type PlayerStockDisplay struct {
-	ID                  uint
-	GameID              string
-	TotalInsight        float64
-	GameStockValue      float64
-	PlayerStockQuantity int
-	StockName           string
-	StockImagePath      string
+	ID                      uint
+	GameID                  string
+	TotalInsight            float64
+	GameStockValue          float64
+	PlayerStockQuantity     int
+	StockName               string
+	StockImagePath          string
+	StockSecondaryImagePath string
 }
 
 func GetPlayerStockDisplays(playerID uint, db *gorm.DB) ([]PlayerStockDisplay, error) {

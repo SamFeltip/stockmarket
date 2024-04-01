@@ -6,11 +6,12 @@ import (
 
 type Stock struct {
 	gorm.Model
-	ID            uint   `gorm:"primaryKey"`
-	Name          string `gorm:"not null;unique"`
-	StartingValue float64
-	ImagePath     string `gorm:"not null;unique"`
-	Insights      []Insight
-	Variation     float64 // +/- maximum value of variation (0.50 increments)
-	Display       bool    `gorm:"default:true"`
+	ID                 uint   `gorm:"primaryKey"`
+	Name               string `gorm:"not null;unique"`
+	StartingValue      float64
+	ImagePath          string `gorm:"not null;unique"`
+	SecondaryImagePath string
+	Insights           []Insight
+	Variation          float64 // +/- maximum value of variation (0.50 increments)
+	Display            bool    `gorm:"default:true"`
 }
