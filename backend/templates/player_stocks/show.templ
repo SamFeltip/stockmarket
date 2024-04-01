@@ -90,12 +90,15 @@ templ TotalInsightResultButton(playerStockDisplay models.PlayerStockDisplay) {
 
 templ Insights(insightResults []models.InsightDisplay) {
 	<div class="overflow-auto" style="max-height: 35vh;">
-		<div id="insight-list" style="
+		<div
+			id="insight-list"
+			style="
 				grid-template-columns: 1fr 1fr;
 				gap: 10px;
 				display: grid;
 				grid-template-rows: min-content;
-			">
+			"
+		>
 			for _, insightResult := range insightResults {
 				<div class="card">
 					<div class="card-body text-center">
@@ -104,19 +107,22 @@ templ Insights(insightResults []models.InsightDisplay) {
 								<img height="35px" src={ insightResult.StockImagePath } alt={ insightResult.StockName }/>
 							</div>
 						}
-						<h5 class="text-black">
-							if insightResult.Value > 0 {
-								<img class="pe-2" height="16px" src="/static/imgs/icons/stock_up.svg" alt="stock up arrow"/>
-							} else {
-								<img class="pe-2" height="16px" src="/static/imgs/icons/stock_down.svg" alt="stock down arrow"/>
-							}
-
-							if insightResult.StockDisplay {
-								£{ fmt.Sprintf("%.2f", insightResult.Value) }
-							} else {
-								{ strconv.FormatFloat((insightResult.Value * 100), 'f', -1, 64) }%
-							}
-						</h5>
+						if insightResult.Value != 0 {
+							<div class="d-flex flex-row justify-content-center align-items-center">
+								if insightResult.Value > 0 {
+									<img class="pe-2" height="16px" src="/static/imgs/icons/stock_up.svg" alt="stock up arrow"/>
+								} else {
+									<img class="pe-2" height="16px" src="/static/imgs/icons/stock_down.svg" alt="stock down arrow"/>
+								}
+								<h5 class={ templ.KV("text-danger", insightResult.Value < 0), templ.KV("text-success", insightResult.Value >= 0), "mb-0" }>
+									if insightResult.StockDisplay {
+										£{ fmt.Sprintf("%.2f", insightResult.Value) }
+									} else {
+										{ strconv.FormatFloat((insightResult.Value * 100), 'f', -1, 64) }%
+									}
+								</h5>
+							</div>
+						}
 						if insightResult.Description != "" {
 							<p>
 								{ insightResult.Description }
@@ -177,17 +183,14 @@ templ Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult,
 		@PlayerStockPlayer(playerStockPlayer)
 		@Investors(investors)
 		<div id="insights" class="d-grid gap-2" style="grid-template-rows: auto 1fr;">
-			
 			<div class="d-flex justify-content-between">
 				<h4 class="text-black">Your Insights</h4>
 				@TotalInsightResultButton(playerStockDisplay)
 			</div>
 			@Insights(insights)
-		
 		</div>
 		<div id="price-charts" class="gap-2">
 			<h4 class="text-black">Price chart</h4>
-			
 			<div class="card flex-fill">
 				<div id="graph" class="card-body d-flex justify-content-center align-items-center">
 					GRAPH!

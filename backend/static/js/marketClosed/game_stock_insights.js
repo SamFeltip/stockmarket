@@ -124,10 +124,10 @@ function animateGameStocks() {
     gameStocks[0].dispatchEvent(showEvent)
 }
 
-function animateCurrency() {
-    const gameStock = document.querySelector("#game-stock-currency");
+async function animateCurrency() {
+    const currencyGameStock = document.querySelector("#game-stock-currency");
 
-    let currencyId = gameStock.getAttribute("data-game-stock-id")
+    let currencyId = currencyGameStock.getAttribute("data-game-stock-id")
 
     const gameStockInsights = document.querySelectorAll(`div.game-stock-insight-${currencyId}`)
 
@@ -140,7 +140,7 @@ function animateCurrency() {
                     gameInsight.style.display = "none"
                 })
 
-                const stockTotalInsightValue = gameStock.querySelector(".stock-total-insight-value")
+                const stockTotalInsightValue = currencyGameStock.querySelector(".stock-total-insight-value")
 
                 let value = parseFloat(stockTotalInsightValue.innerText)
 
@@ -149,7 +149,7 @@ function animateCurrency() {
 
                 value += parseFloat(priceModifier?.innerText || "0")
 
-                gameStock.querySelector(".stock-total-insight-value").innerText = value.toFixed(0)
+                currencyGameStock.querySelector(".stock-total-insight-value").innerText = value.toFixed(0)
 
                 gameStockInsights.forEach(gsi => {
                     gsi.querySelector(".stock-total-insight-value").innerText = value.toFixed(0)
@@ -162,11 +162,11 @@ function animateCurrency() {
         })
     })
 
-    Promise.all(revealInsightPromises).then(() => {
+    await Promise.all(revealInsightPromises).then(() => {
         // allow for the final animation to finish running
         return new Promise((resolve) => {
             setTimeout(() => {
-                const currencyTotalInsightValue = gameStock.querySelector(".stock-total-insight-value")
+                const currencyTotalInsightValue = currencyGameStock.querySelector(".stock-total-insight-value")
 
                 console.log("insights complete, rendering stock value animation...");
                 console.log(currencyTotalInsightValue)
@@ -202,6 +202,35 @@ function animateCurrency() {
             playerCash.innerText = newPlayerCash.toFixed(0)
 
         })
-
+    }).then(() => {
+        // wait for the final animation to finish
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve()
+            }, 1500)
+        })
     })
+
+    const holdStockGameStock = document.querySelector("#game-stock-hold-stock-price");
+
+    let holdStockId = holdStockGameStock.getAttribute("data-game-stock-id");
+
+    const stockHoldInsights = document.querySelectorAll(`div.game-stock-insight-${holdStockId}`)
+
+    let revealHoldStockPromises = Array.from(stockHoldInsights).map((stockHoldInsight, index) => {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                /** @type {NodeListOf<HTMLDivElement>} */
+                const gameInsights = document.querySelectorAll("div.game-insight")
+                gameInsights.forEach(gameInsight => {
+                    gameInsight.style.display = "none"
+                })
+
+                stockHoldInsight.style.display = "grid"
+                resolve()
+            }, index * 2000);
+        })
+    })
+
+    Promise.all(revealHoldStockPromises)
 }

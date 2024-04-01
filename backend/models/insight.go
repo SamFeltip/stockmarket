@@ -35,12 +35,13 @@ type InsightDisplay struct {
 }
 
 type GameInsight struct {
-	Description    string
-	InsightValue   float64
-	GameStockID    uint
-	Name           string
-	ImagePath      string
-	GameStockValue float64
+	Description        string
+	InsightValue       float64
+	GameStockID        uint
+	Name               string
+	ImagePath          string
+	SecondaryImagePath string
+	GameStockValue     float64
 }
 
 func LoadSpecialPlayerInsights(playerID uint, db *gorm.DB) ([]InsightDisplay, error) {
@@ -65,10 +66,12 @@ func LoadSpecialInsights(gameID string, db *gorm.DB) ([]GameInsight, error) {
 	insights := []GameInsight{}
 
 	err := db.Table("player_insights as pi").
-		Select("i.description, i.value as insight_value, s.image_path, s.name, gs.id as game_stock_id").
+		Select("i.description, i.value as insight_value, gs.id as game_stock_id, s.name, s.image_path, COALESCE(s.secondary_image_path, u.profile_root) as secondary_image_path").
 		Joins("inner join insights as i on i.id = pi.insight_id").
 		Joins("inner join stocks as s on s.id = i.stock_id").
 		Joins("inner join player_stocks as ps on ps.id = pi.player_stock_id").
+		Joins("inner join players as p on p.id = ps.player_id").
+		Joins("inner join users as u on u.id = p.user_id").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 		Where("gs.game_id = ? AND s.display = false", gameID).Scan(&insights).Error
 
