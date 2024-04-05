@@ -231,7 +231,9 @@ function animateHoldStocks() {
     let insightId = stockHoldInsight.getAttribute("data-insight-id")
 
     const firstStockHoldModal = new bootstrap.Modal(`#stock-hold-modal-${insightId}`, {
-        keyboard: false
+        keyboard: false,
+        focus: true,
+        backdrop: "static"
     })
 
     firstStockHoldModal.show();

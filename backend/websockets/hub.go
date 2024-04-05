@@ -85,7 +85,14 @@ func RunGameHub() {
 							continue
 						}
 
-						boardDisplay := gameTempl.PlayingSocket(game, current_player, players, specialPlayerInsights)
+						latestFeedItem, err := models.LoadLatestFeedItem(game.ID, db)
+
+						if err != nil {
+							fmt.Println("error loading latest insight:", err)
+							continue
+						}
+
+						boardDisplay := gameTempl.PlayingSocket(game, current_player, players, specialPlayerInsights, latestFeedItem)
 
 						buffer = &bytes.Buffer{}
 						boardDisplay.Render(context.Background(), buffer)

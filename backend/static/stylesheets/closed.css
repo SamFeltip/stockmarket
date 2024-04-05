@@ -90,8 +90,8 @@ div.game-stock-view.first {
 
 
 @keyframes slideInFromRight {
-    0% { right: -300px; }
-    100% { right: 0; }
+    0% { transform: translateX(300px); }
+    100% { transform: translateX(0); }
 }
 
 #next-step-wrapper {

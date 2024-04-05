@@ -187,8 +187,8 @@
 
 
 
-#insightModalButton {
-    animation: exclaim 0.5s ease-in-out 0s 1;
+#insightModalButton.wiggle-jump {
+    animation: exclaim 0.5s ease-in-out 2.5s 1;
 }
 
 @keyframes exclaim {
@@ -214,5 +214,20 @@
 
     90% {
         transform: translateY(0);
+    }
+}
+
+
+#play-notif {
+    animation: fadeout 0.5s ease-in-out 1s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeout {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
     }
 }

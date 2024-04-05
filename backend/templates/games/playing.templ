@@ -171,7 +171,7 @@ templ MoveDisplayTabs() {
 	</script>
 }
 
-templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay, players []models.PlayerDisplay, specialInsights []models.InsightDisplay) {
+templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay, players []models.PlayerDisplay, specialInsights []models.InsightDisplay, showNotif bool) {
 	<div id="game-grid" class="p-3">
 		<div id="profile" class="card card-green d-grid align-items-center align-items-center py-2 px-4 gap-2" style="grid-template-columns: 60px auto; background-color: var(--bs-card-bg);">
 			@SwapDisplayButton()
@@ -232,21 +232,19 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 						Buy, sell, use or pass
 					</p>
 				</div>
-				
 			} else {
 				<h3>
 					It's { game.CurrentUserName }'s turn!
 				</h3>
 			}
-
 			if len(specialInsights) > 0 {
-				<button 
-					id="insightModalButton" 
-					data-bs-toggle="modal" 
-					data-bs-target="#insightModal" 
-					aria-hidden="true" 
-					type="button" 
-					class="btn btn-primary position-relative position-absolute" 
+				<button
+					id="insightModalButton"
+					data-bs-toggle="modal"
+					data-bs-target="#insightModal"
+					aria-hidden="true"
+					type="button"
+					class={ "btn btn-primary position-relative position-absolute", templ.KV("wiggle-jump", showNotif) }
 					style="right: 2rem; width: 4rem; height: 4rem;"
 				>
 					<img height="35px" src="/static/imgs/icons/special-insight.svg" alt="special insight"/>
@@ -381,8 +379,46 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 	</div>
 }
 
-templ PlayingSocket(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay, players []models.PlayerDisplay, specialInsights []models.InsightDisplay) {
-	<div hx-swap-oob="innerHTML:main">
-		@Playing(game, currentPlayerDisplay, players, specialInsights)
+templ PlayNotification(feedItem models.FeedItem) {
+	<div id="play-notif" hx-swap-oob="outerHTML:#play-notif">
+		<div
+			class="d-flex justify-content-center flex-column align-items-center"
+			style="
+					position: absolute;
+					left:  0;
+					right:  0;
+					top:  0;
+					bottom:  0;
+				"
+		>
+			<img
+				class={ "rounded bg-secondary", templ.KV("p-2", (feedItem.Colour == "grey")) }
+				src={ feedItem.ImageRoot }
+				height="300px"
+				width="300px"
+				alt="profile"
+			/>
+			<div class="text-center">
+				<h1>{ feedItem.Title }</h1>
+				<p>{ feedItem.Message }</p>
+			</div>
+		</div>
+		<script>
+			document.querySelector("main").style.opacity = 0.2;
+			setTimeout(() => {
+				document.querySelectorAll("#play-notif").forEach(playNotification => {
+					playNotification.style.display = "none";
+				})
+
+				document.querySelector("main").style.opacity = 1;
+			}, 1500);
+		</script>
 	</div>
+}
+
+templ PlayingSocket(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay, players []models.PlayerDisplay, specialInsights []models.InsightDisplay, latestFeedItem models.FeedItem) {
+	<div hx-swap-oob="innerHTML:main">
+		@Playing(game, currentPlayerDisplay, players, specialInsights, false)
+	</div>
+	@PlayNotification(latestFeedItem)
 }

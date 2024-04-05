@@ -10,7 +10,9 @@ import "context"
 import "io"
 import "bytes"
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 func DeferedScripts() templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
@@ -287,13 +289,13 @@ func Base(title string, body templ.Component, c *gin.Context) templ.Component {
 		var templ_7745c5c3_Var18 string
 		templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/index.templ`, Line: 88, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/index.templ`, Line: 90, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</title><meta charset=\"UTF-8\"><meta name=\"keywords\" content=\"stockmarket game PWA webgame webapp fun\"><meta name=\"description\" content=\"Play stockmarket now!\"><meta name=\"author\" content=\"Sam Felton\"><meta property=\"og:title\" content=\"Stockmarket!\"><meta property=\"og:type\" content=\"website\"><meta property=\"og:locale\" content=\"en_GB\"><meta property=\"og:url\" content=\"https://stockmarket.samfelton.com\"><meta property=\"og:description\" content=\"Play stockmarket now!\"><meta property=\"og:image\" content=\"https://stockmarket.samfelton.com/static/imgs/preview.png\"><meta name=\"twitter:card\" content=\"Play Stockmarket now!\"><meta name=\"twitter:title\" content=\"Stockmarket\"><meta name=\"twitter:description\" content=\"Play stockmarket now!\"><meta name=\"twitter:image\" content=\"https://stockmarket.samfelton.com/static/imgs/preview.png\"></head><body style=\"display: grid; height: 100vh; max-height: -webkit-fill-available;\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</title><meta charset=\"UTF-8\"><meta name=\"keywords\" content=\"stockmarket game PWA webgame webapp fun\"><meta name=\"description\" content=\"Play stockmarket now!\"><meta name=\"author\" content=\"Sam Felton\"><meta property=\"og:title\" content=\"Stockmarket!\"><meta property=\"og:type\" content=\"website\"><meta property=\"og:locale\" content=\"en_GB\"><meta property=\"og:url\" content=\"https://stockmarket.samfelton.com\"><meta property=\"og:description\" content=\"Play stockmarket now!\"><meta property=\"og:image\" content=\"https://stockmarket.samfelton.com/static/imgs/preview.png\"><meta name=\"twitter:card\" content=\"Play Stockmarket now!\"><meta name=\"twitter:title\" content=\"Stockmarket\"><meta name=\"twitter:description\" content=\"Play stockmarket now!\"><meta name=\"twitter:image\" content=\"https://stockmarket.samfelton.com/static/imgs/preview.png\"></head><body style=\"display: grid; height: 100vh; width: 100vw; max-height: -webkit-fill-available;\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -302,6 +304,10 @@ func Base(title string, body templ.Component, c *gin.Context) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = OrientationWarning().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"play-notif\" class=\"d-none\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

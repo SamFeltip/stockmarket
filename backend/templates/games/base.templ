@@ -1,7 +1,7 @@
 package games
 
 templ Base(children templ.Component, gameID string){
-    <main class="d-flex flex-column justify-content-center" hx-ext="ws" ws-connect={ "/connected-game/" + gameID } hx-trigger="load">
+    <main class="position-relative overflow-x-hidden d-flex flex-column justify-content-center" hx-ext="ws" ws-connect={ "/connected-game/" + gameID } hx-trigger="load">
         @children
     </main>
 }

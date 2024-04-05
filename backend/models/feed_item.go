@@ -129,3 +129,14 @@ func NewFeedItem(quantity int, playerStockID uint, db *gorm.DB) (FeedItem, error
 
 	return feed_item, nil
 }
+
+func LoadLatestFeedItem(gameID string, db *gorm.DB) (FeedItem, error) {
+	feedItem := FeedItem{}
+
+	err := db.
+		Where("game_id = ?", gameID).
+		Order("created_at desc").
+		First(&feedItem).Error
+
+	return feedItem, err
+}

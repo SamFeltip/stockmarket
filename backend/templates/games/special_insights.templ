@@ -26,7 +26,6 @@ templ GameStockModal(displayGameStocks []models.GameStockDisplay, gameID string,
 					} else {
 						<h1 class="modal-title fs-5" id="insightModalDismiss">Waiting for { insightPlayerName } to suspend a share</h1>
 					}
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body d-grid" style="grid-template-columns: 1fr 1fr 1fr;">
 					for _, gameStock := range displayGameStocks {
@@ -53,9 +52,13 @@ templ GameStockModal(displayGameStocks []models.GameStockDisplay, gameID string,
 								<label class="text-success stock-change" for={ strconv.FormatUint(uint64(gameStock.ID), 10) }>
 									+£<span class="stock-value">{ fmt.Sprintf("%.2f", math.Abs(gameStock.TotalValueChange) ) }</span>
 								</label>
-							} else {
+							} else if gameStock.TotalValueChange < 0 {
 								<label class="text-danger stock-change" for={ strconv.FormatUint(uint64(gameStock.ID), 10) }>
 									-£<span class="stock-value">{ fmt.Sprintf("%.2f", math.Abs(gameStock.TotalValueChange) ) }</span>
+								</label>
+							} else {
+								<label class="text-secondary stock-change" for={ strconv.FormatUint(uint64(gameStock.ID), 10) }>
+									£0
 								</label>
 							}
 						</div>
@@ -99,7 +102,7 @@ templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSt
 			<input id="gameID" type="hidden" name="gameID" value={ gameID }/>
 		</div>
 		<div id="insight-view" class="card card-green p-4 rounded border border-5 border-white">
-			for index, insight := range insights {
+			for _, insight := range insights {
 				<div
 					id={ "insight-" + strconv.FormatUint(uint64(insight.InsightID), 10) }
 					class={ "game-insight", "game-stock-insight-" + strconv.FormatUint(uint64(insight.GameStockID), 10), "gap-3 h-100" }
@@ -128,7 +131,7 @@ templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSt
 								<button
 									id="stock-hold-modal-button"
 									data-bs-toggle="modal"
-									data-bs-target={ "#stock-hold-modal-" + strconv.Itoa(index) }
+									data-bs-target={ "#stock-hold-modal-" + strconv.FormatUint(uint64(insight.InsightID), 10) }
 									aria-hidden="true"
 									type="button"
 									class="btn btn-primary"
@@ -233,7 +236,7 @@ templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSt
 		// 	</div>
 		// </div>
 	</div>
-	<div id="next-step-wrapper" class="position-absolute bottom-0 p-3" style="right: 0;">
+	<div id="next-step-wrapper" class="position-absolute bottom-0 end-0 p-3">
 		<form hx-post="/api/games/next_period">
 			<input type="hidden" value={ gameID } name="gameID"/>
 			<button

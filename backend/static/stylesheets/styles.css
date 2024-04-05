@@ -8,8 +8,8 @@
     src: url("/static/fonts/BigCaslonRom.otf");
 }
 
-body {
-    
+main {
+    transition: opacity 0.5s ease; /* Apply the transition */
 }
 
 h1#stockmarket-header {
@@ -25,7 +25,7 @@ h1#stockmarket-header {
 }
 
 h1#stockmarket-header.sh-small {
-    font-size: 2.5vw;
+    font-size: 2.4vw;
 }
 
 p {
