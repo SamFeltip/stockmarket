@@ -815,7 +815,7 @@ func SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSto
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div><div id=\"next-step-wrapper\" class=\"position-absolute bottom-0 end-0 p-3\"><form hx-post=\"/api/games/next_period\"><input type=\"hidden\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div><div id=\"next-step-wrapper\" class=\"position-absolute bottom-0 end-0 p-3\"><form id=\"next-period\" hx-post=\"/api/games/next_period\"><input type=\"hidden\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

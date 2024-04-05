@@ -215,6 +215,15 @@ function animateCurrency() {
 function animateHoldStocks() {
     const holdStockGameStock = document.querySelector("#game-stock-hold-stock-price");
 
+    if (holdStockGameStock === null) {
+        console.error("No hold stock found")
+        
+        const nextPeriodForm = document.querySelector("form#next-period")
+        nextPeriodForm.requestSubmit()
+
+        return
+    }
+
     let holdStockId = holdStockGameStock.getAttribute("data-game-stock-id");
 
     const stockHoldInsights = document.querySelectorAll(`div.game-stock-insight-${holdStockId}`)

@@ -89,7 +89,9 @@ func CreatePlayerStockRoutes() {
 				Joins("inner join player_stocks as ps on ps.id = pi.player_stock_id").
 				Joins("inner join insights as i on pi.insight_id = i.id").
 				Joins("inner join stocks as s on s.id = i.stock_id").
-				Where("ps.id = ?", playerStockIDString).
+				Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+				Joins("inner join games as g on g.id = gs.game_id").
+				Where("ps.id = ? and pi.period = g.current_period", playerStockIDString).
 				Scan(&insightResults)
 
 			var stockInfoResult models.StockInfoResult
