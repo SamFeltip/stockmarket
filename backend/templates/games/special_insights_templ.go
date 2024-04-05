@@ -47,6 +47,14 @@ func GameStockModal(displayGameStocks []models.GameStockDisplay, gameID string, 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"> <input type=\"hidden\" name=\"insightID\" value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(strconv.FormatUint(uint64(insightID), 10)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-header\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -78,7 +86,7 @@ func GameStockModal(displayGameStocks []models.GameStockDisplay, gameID string, 
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(insightPlayerName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 26, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 27, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -175,7 +183,7 @@ func GameStockModal(displayGameStocks []models.GameStockDisplay, gameID string, 
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", gameStock.Value))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 48, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 49, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -210,7 +218,7 @@ func GameStockModal(displayGameStocks []models.GameStockDisplay, gameID string, 
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", math.Abs(gameStock.TotalValueChange)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 52, Col: 98}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 53, Col: 98}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -245,7 +253,7 @@ func GameStockModal(displayGameStocks []models.GameStockDisplay, gameID string, 
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", math.Abs(gameStock.TotalValueChange)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 56, Col: 98}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 57, Col: 98}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -434,7 +442,7 @@ func SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSto
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(insight.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 124, Col: 22}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 125, Col: 22}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
@@ -556,7 +564,7 @@ func SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSto
 				var templ_7745c5c3_Var27 string
 				templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(insight.InsightValue*100, 'f', -1, 64))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 151, Col: 72}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 152, Col: 72}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 				if templ_7745c5c3_Err != nil {
@@ -636,7 +644,7 @@ func SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSto
 				var templ_7745c5c3_Var30 string
 				templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(insight.InsightValue*100, 'f', -1, 64))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 167, Col: 71}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 168, Col: 71}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 				if templ_7745c5c3_Err != nil {
@@ -659,7 +667,7 @@ func SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSto
 			var templ_7745c5c3_Var32 string
 			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(insight.Description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 172, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 173, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 			if templ_7745c5c3_Err != nil {
@@ -716,7 +724,7 @@ func SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSto
 			var templ_7745c5c3_Var35 string
 			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(gameStock.Value*100, 'f', -1, 64))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 191, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 192, Col: 90}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 			if templ_7745c5c3_Err != nil {
@@ -796,7 +804,7 @@ func SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSto
 			var templ_7745c5c3_Var39 string
 			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(player.Cash))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 213, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/special_insights.templ`, Line: 214, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 			if templ_7745c5c3_Err != nil {

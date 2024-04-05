@@ -13,13 +13,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func BroadcastStockHold(gameID string, db *gorm.DB) error {
-	fmt.Println("broadhcasting stock hold...")
+func BroadcastStockHold(gameID string, newInsightId uint, db *gorm.DB) error {
+	fmt.Println("broadcasting stock hold...")
 
 	buffer := &bytes.Buffer{}
 
-	// put json in buffer without using templates.
-	buffer.WriteString(`{"nextInsight": "11"}`)
+	str := fmt.Sprintf(`{"nextInsight": "%d"}`, newInsightId)
+
+	buffer.WriteString(str)
 
 	broadcastMessage := websocketModels.BroadcastMessage{
 		GameID:  gameID,

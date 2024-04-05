@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	controllers "stockmarket/controllers/games"
-	helpers "stockmarket/controllers/games"
 	"stockmarket/database"
 	"stockmarket/middleware"
 	"stockmarket/models"
@@ -260,18 +259,42 @@ func CreateGameRoutes() {
 
 	r.POST("/games/hold_stock",
 		func(ctx *gin.Context) { middleware.AuthIsPlaying(ctx) },
-		func(ctx *gin.Context) {
+		func(c *gin.Context) {
 			fmt.Println("hold stock posted")
 
 			db := database.GetDb()
-			gameID := ctx.PostForm("gameID")
+			gameID := c.PostForm("gameID")
 
 			if gameID == "" {
 				fmt.Println("no gameID in post request")
 				return
 			}
 
-			helpers.BroadcastStockHold(gameID, db)
+			oldInsightIdString := c.PostForm("insightID")
+
+			if oldInsightIdString == "" {
+				fmt.Println("no playerInsightId in post request")
+				return
+			}
+
+			oldInsightId64, err := strconv.ParseUint(oldInsightIdString, 10, 64)
+
+			if err != nil {
+				fmt.Println("could not convert playerInsightId to int", oldInsightIdString)
+				return
+			}
+
+			oldInsightId := uint(oldInsightId64)
+
+			pageComponent, err := controllers.HoldStock(gameID, oldInsightId, db)
+
+			if err != nil {
+				fmt.Println("error holding stock", err)
+				return
+			}
+
+			ctx := context.Background()
+			pageComponent.Render(ctx, c.Writer)
 		})
 
 	r.GET("/games",

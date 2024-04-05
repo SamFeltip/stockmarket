@@ -187,3 +187,23 @@ func NextPeriodAnimate(gameID string, db *gorm.DB) (templ.Component, error) {
 
 	return templates.Loading(), nil
 }
+
+func HoldStock(gameID string, oldInsightId uint, db *gorm.DB) (templ.Component, error) {
+
+	nextInsightValue, err := models.GetNextInsightValue(gameID, oldInsightId, db)
+
+	if err != nil {
+		fmt.Println("could not get next insight value", err)
+		return templates.Error(err), err
+	}
+
+	if nextInsightValue == 0 {
+		fmt.Println("next insight value is 0")
+		temp, err := NextPeriod(gameID, db)
+		return temp, err
+	}
+
+	BroadcastStockHold(gameID, nextInsightValue, db)
+
+	return templates.Loading(), nil
+}
