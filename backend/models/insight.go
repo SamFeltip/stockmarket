@@ -22,6 +22,7 @@ type PlayerInsight struct {
 	PlayerStock   PlayerStock
 	InsightID     uint
 	Insight       Insight
+	Period        int
 }
 
 // todo: reconsile gameInsight and InsightDisplay
@@ -57,8 +58,9 @@ func LoadSpecialPlayerInsights(playerID uint, db *gorm.DB) ([]InsightDisplay, er
 		Joins("inner join insights as i on i.id = pi.insight_id").
 		Joins("inner join player_stocks as ps on ps.id = pi.player_stock_id").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+		Joins("inner join games as g on g.id = gs.game_id").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
-		Where("s.display = false AND ps.player_id = ?", playerID).Scan(&insights).
+		Where("s.display = false AND ps.player_id = ? and pi.period = g.current_period", playerID).Scan(&insights).
 		Error
 
 	return insights, err
@@ -75,7 +77,8 @@ func LoadSpecialInsights(gameID string, db *gorm.DB) ([]GameInsight, error) {
 		Joins("inner join players as p on p.id = ps.player_id").
 		Joins("inner join users as u on u.id = p.user_id").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
-		Where("gs.game_id = ? AND s.display = false", gameID).
+		Joins("inner join games as g on g.id = gs.game_id").
+		Where("gs.game_id = ? AND s.display = false and pi.period = g.current_period", gameID).
 		Order("i.Id").
 		Scan(&insights).Error
 
@@ -88,11 +91,12 @@ func GetGameInsights(gameID string, db *gorm.DB) ([]GameInsight, error) {
 	var gameInsights []GameInsight
 	err := db.Table("game_stocks as gs").
 		Select("i.description, i.value as insight_value, gs.ID as game_stock_id, s.name, s.image_path, gs.value as game_stock_value").
+		Joins("inner join games as g on g.id = gs.game_id").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
 		Joins("inner join player_stocks as ps on ps.game_stock_id = gs.id").
 		Joins("left join player_insights as pi on pi.player_stock_id = ps.id").
 		Joins("left join insights as i on i.id = pi.insight_id").
-		Where("gs.game_id = ? AND s.display = true", gameID).
+		Where("gs.game_id = ? AND s.display = true AND g.current_period = pi.period", gameID).
 		Order("s.variation").
 		Scan(&gameInsights).Error
 
@@ -112,7 +116,8 @@ func GetNextInsightValue(gameID string, oldInsightId uint, db *gorm.DB) (uint, e
 		Joins("inner join stocks as s on s.id = i.stock_id").
 		Joins("inner join player_stocks as ps on ps.id = pi.player_stock_id").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
-		Where("gs.game_id = ? AND i.Id > ? AND s.Name = ?", gameID, oldInsightId, "Hold Stock Price").
+		Joins("inner join games as g on g.id = gs.game_id").
+		Where("gs.game_id = ? AND i.Id > ? AND s.Name = ? AND g.current_period = pi.period", gameID, oldInsightId, "Hold Stock Price").
 		Order("i.Id").
 		Scan(&nextInsights).Error
 

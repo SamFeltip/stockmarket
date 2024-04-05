@@ -212,6 +212,7 @@ func (game *Game) GeneratePlayerInsights(players []Player, db *gorm.DB) error {
 			player_insight := PlayerInsight{
 				PlayerStock: player_stock,
 				Insight:     top_insights[i],
+				Period:      game.CurrentPeriod,
 			}
 
 			err = db.Create(&player_insight).Error
