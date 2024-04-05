@@ -108,6 +108,21 @@ p {
     --bs-btn-hover-color: #black;
     --bs-btn-active-color: #black;
     --bs-btn-disabled-color: #black;
+
+    --bs-btn-bg: #BABABA;
+    --bs-btn-border-color: #BABABA;
+
+    --bs-btn-active-border-color: #BBB;
+    --bs-btn-hover-border-color: #BBB;
+}
+
+.btn-outline-secondary {
+    --bs-btn-color: #black;
+    
+    --bs-btn-active-bg: #E3E3E3;
+    --bs-btn-active-color: #black;
+
+    --bs-border-width: 0;
 }
 
 .form-control {

@@ -124,7 +124,8 @@ function animateGameStocks() {
     gameStocks[0].dispatchEvent(showEvent)
 }
 
-async function animateCurrency() {
+// used in hidden game stock section
+function animateCurrency() {
     const currencyGameStock = document.querySelector("#game-stock-currency");
 
     let currencyId = currencyGameStock.getAttribute("data-game-stock-id")
@@ -162,7 +163,7 @@ async function animateCurrency() {
         })
     })
 
-    await Promise.all(revealInsightPromises).then(() => {
+    Promise.all(revealInsightPromises).then(() => {
         // allow for the final animation to finish running
         return new Promise((resolve) => {
             setTimeout(() => {
@@ -204,13 +205,14 @@ async function animateCurrency() {
         })
     }).then(() => {
         // wait for the final animation to finish
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve()
-            }, 1500)
-        })
+        setTimeout(() => {
+            animateHoldStocks()
+        }, 1500)
     })
+}
 
+// used in hidden game stock section
+function animateHoldStocks(){
     const holdStockGameStock = document.querySelector("#game-stock-hold-stock-price");
 
     let holdStockId = holdStockGameStock.getAttribute("data-game-stock-id");

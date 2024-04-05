@@ -8,8 +8,75 @@ import (
     "math"
 )
 
+templ GameStockModal(displayGameStocks []models.GameStockDisplay, index int) {
+    <form 
+    hx-post="#"
+    id={ "stockHoldModal" + strconv.Itoa(index) }  
+    class="modal fade"
+    aria-labelledby="insightModalDismiss" 
+    tabindex="-1"
+    aria-hidden="true"
+>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="insightModalDismiss">Would you like to suspend a share?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                for _, gameStock := range displayGameStocks {
+                    
+                    <input 
+                        id={  strconv.FormatUint(uint64(gameStock.ID), 10) } 
+                        class="btn-check hold-game-stock" 
+                        type="radio" 
+                        name="hold-game-stock" 
+                        value={ strconv.FormatUint(uint64(gameStock.ID), 10) }
+                        autocomplete="off"
+                    />
+                    <div 
+                        id={ "game-stock-" + strings.ReplaceAll(strings.ToLower(gameStock.Name), " ", "-" ) } 
+                        class="game-stock-value-change btn btn-outline-secondary" 
+                        data-game-stock-id={ strconv.FormatUint(uint64(gameStock.ID), 10) }
+                    >                                                        
+                        <label for={ strconv.FormatUint(uint64(gameStock.ID), 10) }>
+                            <img height="64px" src={ gameStock.ImagePath } alt={ gameStock.Name }/>
+                        </label>
+                        
+                        <div class="fw-bolder">
+                            £<span class="stock-value">{ fmt.Sprintf("%.2f", gameStock.Value) }</span>
+                        </div>
+                        if gameStock.TotalValueChange > 0 {
+                            <label class="text-success stock-change" for={ strconv.FormatUint(uint64(gameStock.ID), 10) }>
+                                +£<span class="stock-value">{ fmt.Sprintf("%.2f", math.Abs(gameStock.TotalValueChange) ) }</span>
+                            </label>
+                        } else {
+                            <label class="text-danger stock-change" for={ strconv.FormatUint(uint64(gameStock.ID), 10) }>
+                                -£<span class="stock-value">{ fmt.Sprintf("%.2f", math.Abs(gameStock.TotalValueChange) ) }</span>
+                            </label>
+                        }
+                    </div>
+                }
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary flex-fill" name="confirm" value="false">
+                    Skip
+                </button>
+                <button class="btn btn-success flex-fill" name="confirm" value="true">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+}
+
 templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameStocks []models.GameStockDisplay, displayGameStocks []models.GameStockDisplay, players []models.PlayerDisplay) {
-    <div class="gap-3 p-4" style="height: 100vh; max-height: -webkit-fill-available; display: grid; grid-template-rows: 100px 1fr auto auto;">
+    <div 
+        class="gap-3 p-4 d-grid"
+        style="height: 100vh; max-height: -webkit-fill-available; grid-template-rows: 100px 1fr auto auto;"
+    >
 		<div class="d-flex flex-column align-items-center justify-content-center">
 			<h1>End of round</h1>
             <h2>Additional insights</h2>
@@ -17,9 +84,19 @@ templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSt
 
 		<div id="insight-view" class="card card-green p-4 rounded border border-5 border-white">
 			for index, insight := range insights {
-				<div style="display: none; grid-template-columns: 2fr 1fr;" class={ "game-insight", "game-stock-insight-" + strconv.FormatUint(uint64(insight.GameStockID), 10), "gap-3 h-100" } data-game-stock-id={ strconv.FormatUint(uint64(insight.GameStockID), 10) }>
-					<div style="background-color: #3C5F2F; grid-template-columns: 1fr 1fr" class="rounded d-grid align-items-center">
-						<div id={ "game-stock-view-" + strconv.FormatUint(uint64(insight.GameStockID), 10) } class="game-stock-view d-flex flex-column align-items-center">
+				<div 
+                    class={ "game-insight", "game-stock-insight-" + strconv.FormatUint(uint64(insight.GameStockID), 10), "gap-3 h-100" } 
+                    style="display: none; grid-template-columns: 2fr 1fr;" 
+                    data-game-stock-id={ strconv.FormatUint(uint64(insight.GameStockID), 10) }
+                >
+					<div 
+                        class="rounded d-grid align-items-center"
+                        style="background-color: #3C5F2F; grid-template-columns: 1fr 1fr" 
+                    >
+						<div 
+                            id={ "game-stock-view-" + strconv.FormatUint(uint64(insight.GameStockID), 10) } 
+                            class="game-stock-view d-flex flex-column align-items-center"
+                        >
 							<div>
 								<img height="120px" src={ insight.SecondaryImagePath } alt={ insight.Name } class="rounded"/>
 							</div>
@@ -29,63 +106,7 @@ templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSt
 						</div>
 						<div class="d-flex flex-column text-center">
                             if insight.InsightValue == 0 {
-                                <div class="modal fade" id={ "stockHoldModal" + strconv.Itoa(index) }  aria-labelledby="insightModalDismiss" tabindex="-1" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="insightModalDismiss">Would you like to suspend a share?</h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body d-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-                                                for _, gameStock := range displayGameStocks {
-
-                                                    <div 
-                                                        id={ "game-stock-" + strings.ReplaceAll(strings.ToLower(gameStock.Name), " ", "-" ) } 
-                                                        class="game-stock-value-change rounded d-flex flex-column align-items-center py-3" 
-                                                        data-game-stock-id={ strconv.FormatUint(uint64(gameStock.ID), 10) }
-                                                    >
-                                                        <img height="64px" src={ gameStock.ImagePath } alt={ gameStock.Name }/>
-                                                        <div class="fw-bolder">
-                                                            £<span class="stock-value">{ fmt.Sprintf("%.2f", gameStock.Value) }</span>
-                                                        </div>
-                                                        if gameStock.TotalValueChange > 0 {
-                                                            <div class="text-success">
-                                                                +£<span class="stock-value">{ fmt.Sprintf("%.2f", math.Abs(gameStock.TotalValueChange) ) }</span>
-                                                            </div>
-                                                        } else {
-                                                            <div class="text-danger">
-                                                                -£<span class="stock-value">{ fmt.Sprintf("%.2f", math.Abs(gameStock.TotalValueChange) ) }</span>
-                                                            </div>
-                                                        }
-                                                        
-                                                    </div>
-                                                }
-
-                                                <script>
-                                                    const gameStockValueChanges = document.querySelectorAll(".game-stock-value-change")
-
-                                                    gameStockValueChanges.forEach(gameStockValueChange => {
-                                                        gameStockValueChange.addEventListener("click", e => {
-                                                            gameStockValueChanges.forEach(gsvc => gsvc.classList.remove("bg-secondary"))
-
-                                                            gameStockValueChange.classList.add("bg-secondary")
-                                                        })
-                                                    })
-                                                </script>
-
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button class="btn btn-secondary flex-fill">
-                                                    Skip
-                                                </button>
-                                                <button class="btn btn-success flex-fill">
-                                                    Confirm
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
+                                @GameStockModal(displayGameStocks, index)                                
                                 <button 
                                     id="stockHoldModalButton" 
                                     data-bs-toggle="modal" 
@@ -94,7 +115,7 @@ templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSt
                                     type="button" 
                                     class="btn btn-primary" 
                                 >
-                                    Player will now choose a Stock
+                                    Click here to select a stock to Suspend
                                 </button>
                             } else {
                                 <p>
@@ -133,6 +154,8 @@ templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSt
 					</div>
 				</div>
 			}
+
+            
 		</div>
 
         <div class="d-none">
@@ -156,7 +179,7 @@ templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSt
             </div>
 		</div>
 
-		<div id="player-view" class="card card-green p-4 rounded d-flex flex-row justify-content-between align-items-center border-5 border-white">
+		<div id="player-view" class="card card-green p-4 rounded border-5 border-white d-flex flex-row justify-content-between align-items-center">
 			<h2>
 				Cash:
 			</h2>
