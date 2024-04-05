@@ -25,20 +25,21 @@ func GetPlayerStockDisplays(playerID uint, db *gorm.DB) ([]PlayerStockDisplay, e
 		Joins("left join player_insights as pi on pi.player_stock_id = ps.id").
 		Joins("left join insights as i on i.id = pi.insight_id").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+		Joins("inner join games as g on g.id = gs.game_id").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
-		Where("ps.player_id = ?", playerID).
+		Where("ps.player_id = ? and s.display = true and g.current_period = pi.period", playerID).
 		Group("ps.ID, gs.game_id, gs.value, s.name, s.image_path, s.variation").
 		Order("s.variation").
 		Scan(&playerStocksResult).Error
 
 	if err != nil {
 		fmt.Println("could not load player stocks", err)
-		return nil, err
+		return playerStocksResult, nil
 	}
 
 	if len(playerStocksResult) == 0 {
 		fmt.Println("no player stocks found for this player")
-		return nil, gorm.ErrRecordNotFound
+		return playerStocksResult, nil
 	}
 
 	return playerStocksResult, nil

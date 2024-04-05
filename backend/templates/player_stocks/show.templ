@@ -31,9 +31,9 @@ templ TotalInsight(playerStockDisplay models.PlayerStockDisplay) {
 }
 
 templ PlayerStockPreview(playerStockDisplay models.PlayerStockDisplay) {
-	<div class="d-flex flex-row align-items-center gap-1">
-		<img class="img-primary" style="display: none;" width="30px" src={ playerStockDisplay.StockImagePath } alt={ playerStockDisplay.StockName }/>
-		<img class="img-secondary" width="30px" src={ playerStockDisplay.StockSecondaryImagePath } alt={ playerStockDisplay.StockName }/>
+	<div class="d-flex flex-row align-items-center">
+		<img class="img-primary" style="display: none; width: 100%; max-width: 30px;" src={ playerStockDisplay.StockImagePath } alt={ playerStockDisplay.StockName }/>
+		<img class="img-secondary" style="width: 100%; max-width: 30px;" src={ playerStockDisplay.StockSecondaryImagePath } alt={ playerStockDisplay.StockName }/>
 	</div>
 	<div class="text-end">
 		<p>

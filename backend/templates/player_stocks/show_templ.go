@@ -110,7 +110,7 @@ func PlayerStockPreview(playerStockDisplay models.PlayerStockDisplay) templ.Comp
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex flex-row align-items-center gap-1\"><img class=\"img-primary\" style=\"display: none;\" width=\"30px\" src=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex flex-row align-items-center\"><img class=\"img-primary\" style=\"display: none; width: 100%; max-width: 30px;\" src=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -126,7 +126,7 @@ func PlayerStockPreview(playerStockDisplay models.PlayerStockDisplay) templ.Comp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"> <img class=\"img-secondary\" width=\"30px\" src=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"> <img class=\"img-secondary\" style=\"width: 100%; max-width: 30px;\" src=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -598,7 +598,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"flex-fill player-stock-tab nav-link d-flex flex-row align-items-center justify-content-between gap-1\" hx-get=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"flex-fill player-stock-tab nav-link d-flex flex-row align-items-center justify-content-between\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -708,7 +708,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div></div><aside class=\"rounded bg-white text-black p-3\"><div class=\"d-grid\" style=\"grid-template-rows: auto 1fr;\"><h2 class=\"text-black\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div></div><aside class=\"rounded bg-white text-black p-3 d-none d-lg-block\"><div class=\"d-grid\" style=\"grid-template-rows: auto 1fr;\"><h2 class=\"text-black\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

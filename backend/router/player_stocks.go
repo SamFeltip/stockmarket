@@ -56,8 +56,9 @@ func CreatePlayerStockRoutes() {
 				Joins("left join player_insights as pi on pi.player_stock_id = ps.id").
 				Joins("left join insights as i on i.id = pi.insight_id").
 				Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+				Joins("inner join games as g on g.id = gs.game_id").
 				Joins("inner join stocks as s on s.id = gs.stock_id").
-				Where("ps.id = ?", playerStockIDString).
+				Where("ps.id = ? and g.current_period = pi.period", playerStockIDString).
 				Group("ps.id, gs.value, s.name, s.image_path, gs.game_id").
 				Scan(&playerStockDisplay).Error
 

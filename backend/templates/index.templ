@@ -45,7 +45,7 @@ templ Navbar() {
 					if IsLoggedIn(ctx) {
 						<div class="nav-item">
 							<a class="nav-link" href="/logout">
-								<img src={GetCurrentUser(ctx).ProfileRoot} alt="profile" height="40px" class="rounded"/>
+								<img src={ GetCurrentUser(ctx).ProfileRoot } alt="profile" height="40px" class="rounded"/>
 								Logout
 							</a>
 						</div>

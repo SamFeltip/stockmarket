@@ -42,6 +42,7 @@ func GetPlayerStockPreviews(playerID uint, db *gorm.DB) ([]PlayerStockDisplay, e
 		Joins("left join player_insights as pi on pi.player_stock_id = ps.id").
 		Joins("left join insights as i on i.id = pi.insight_id").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+		Joins("inner join games as g on g.id = gs.game_id").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
 		Where("ps.player_id = ? AND s.display = true", playerID).
 		Group("ps.ID, gs.game_id, gs.value, s.name, s.image_path, s.secondary_image_path, s.variation").
@@ -55,7 +56,7 @@ func GetPlayerStockPreviews(playerID uint, db *gorm.DB) ([]PlayerStockDisplay, e
 
 	if len(playerStocksResult) == 0 {
 		fmt.Println("no player stocks found for this player")
-		return nil, gorm.ErrRecordNotFound
+		return playerStocksResult, nil
 	}
 
 	return playerStocksResult, nil

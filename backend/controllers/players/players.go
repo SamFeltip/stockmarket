@@ -32,8 +32,9 @@ func Show(playerID uint, currentPlayerID uint, db *gorm.DB) templ.Component {
 		Joins("inner join insights as i on i.id = pi.insight_id").
 		Joins("inner join player_stocks as ps on ps.id = pi.player_stock_id").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+		Joins("inner join games as g on g.id = gs.game_id").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
-		Where("ps.player_id = ?", playerID).
+		Where("ps.player_id = ? AND pi.period = g.current_period", playerID).
 		Order("s.Variation").
 		Scan(&insights).Error
 
