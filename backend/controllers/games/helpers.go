@@ -121,7 +121,14 @@ func BroadcastShowSpecialInsights(gameID string, db *gorm.DB) error {
 		return err
 	}
 
-	specialInsightsDisplay := templates.SpecialInsightsSocket(gameID, specialInsights, gameStockDisplays, playerDisplays)
+	displayGameStocks, err := models.LoadGameStockDisplays(gameID, true, db)
+
+	if err != nil {
+		fmt.Println("could not load game stock displays", err)
+		return err
+	}
+
+	specialInsightsDisplay := templates.SpecialInsightsSocket(gameID, specialInsights, gameStockDisplays, displayGameStocks, playerDisplays)
 
 	buffer := &bytes.Buffer{}
 	specialInsightsDisplay.Render(context.Background(), buffer)

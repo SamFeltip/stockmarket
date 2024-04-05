@@ -114,7 +114,7 @@ func Closed(gameID string, gameInsights []models.GameInsight, gameStocks []model
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var6 = []any{"stock-total-insight-value-display-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10)}
+			var templ_7745c5c3_Var6 = []any{"fw-bolder", "stock-total-insight-value-display-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10)}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var6...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

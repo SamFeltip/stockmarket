@@ -118,7 +118,7 @@ func Styles() templ.Component {
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<link rel=\"stylesheet\" href=\"/static/packages/inter.css\"><link rel=\"stylesheet\" href=\"/static/packages/bootstrap.min.css\"><link rel=\"stylesheet\" href=\"/static/stylesheets/styles.css\"><link rel=\"stylesheet\" href=\"/static/stylesheets/playing.css\"><link rel=\"stylesheet\" href=\"/static/stylesheets/modals.css\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<link rel=\"stylesheet\" href=\"/static/fonts/inter.css\"><link rel=\"stylesheet\" href=\"/static/packages/bootstrap.min.css\"><link rel=\"stylesheet\" href=\"/static/stylesheets/styles.css\"><link rel=\"stylesheet\" href=\"/static/stylesheets/playing.css\"><link rel=\"stylesheet\" href=\"/static/stylesheets/modals.css\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

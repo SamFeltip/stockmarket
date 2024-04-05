@@ -28,7 +28,7 @@ templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []mode
 							<p>
 								Sum
 							</p>
-							<h1 class={ "stock-total-insight-value-display-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
+							<h1 class={ "fw-bolder", "stock-total-insight-value-display-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
 								£<span class={ "stock-total-insight-value", "stock-total-insight-value-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
 									0
 								</span>

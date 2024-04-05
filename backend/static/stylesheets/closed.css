@@ -1,6 +1,18 @@
 @keyframes popIn {
     0% { opacity: 0; }
 }
+
+
+@keyframes glideIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+    
+}
+
 @keyframes glideInOut {
     0% {
         opacity: 0;
@@ -61,6 +73,12 @@
 .game-insight-card {
     animation-name: glideInOut;
     animation-duration: 2s;
+    animation-fill-mode: both;
+}
+
+.game-insight-card.sticky {
+    animation-name: glideIn;
+    animation-duration: 1s;
     animation-fill-mode: both;
 }
 
