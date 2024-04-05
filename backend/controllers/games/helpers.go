@@ -13,6 +13,25 @@ import (
 	"gorm.io/gorm"
 )
 
+func BroadcastStockHold(gameID string, db *gorm.DB) error {
+
+	buffer := &bytes.Buffer{}
+
+	// put json in buffer without using templates.
+	buffer.WriteString(`{"message": "hold stock"}`)
+
+	broadcastMessage := websocketModels.BroadcastMessage{
+		GameID:  gameID,
+		Buffer:  buffer,
+		Message: "hold stock",
+	}
+
+	hub := websockets.GetPlayerInsightHub()
+	hub.Broadcast <- &broadcastMessage
+
+	return nil
+}
+
 func BroadcastUpdatePlayersList(gameID string, userCardList templ.Component) error {
 
 	buffer := &bytes.Buffer{}
@@ -23,7 +42,7 @@ func BroadcastUpdatePlayersList(gameID string, userCardList templ.Component) err
 		Buffer: buffer,
 	}
 
-	hub := websockets.GetHub()
+	hub := websockets.GetGameHub()
 	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 
 	return nil
@@ -41,7 +60,7 @@ func BroadcastUpdatePeriodCount(game models.Game) error {
 		Buffer: buffer,
 	}
 
-	hub := websockets.GetHub()
+	hub := websockets.GetGameHub()
 	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 
 	return nil
@@ -58,7 +77,7 @@ func BroadcastUpdatePlayBoard(gameID string) error {
 	}
 
 	fmt.Println("broadcasting show board: sending playing socket template")
-	hub := websockets.GetHub()
+	hub := websockets.GetGameHub()
 	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 	return nil
 }
@@ -91,7 +110,7 @@ func BroadcastGameClosed(gameInsights []models.GameInsight, gameID string, db *g
 		Message: "market closed",
 	}
 
-	hub := websockets.GetHub()
+	hub := websockets.GetGameHub()
 	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 
 	return nil
@@ -139,7 +158,7 @@ func BroadcastShowSpecialInsights(gameID string, db *gorm.DB) error {
 		Message: "special insights",
 	}
 
-	hub := websockets.GetHub()
+	hub := websockets.GetGameHub()
 	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 
 	return nil

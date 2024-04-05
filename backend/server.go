@@ -30,7 +30,9 @@ func main() {
 		database.SetupDevDb()
 	}
 
-	websockets.InitializeHub()
+	websockets.InitializeGameHub()
+
+	websockets.InitializeGameClosedHub()
 
 	r := router.SetupRoutes()
 	r.Static("/static", "./static")

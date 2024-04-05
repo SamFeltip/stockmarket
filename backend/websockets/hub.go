@@ -10,20 +10,20 @@ import (
 	gameTempl "stockmarket/templates/games"
 )
 
-var hub *websocketModels.Hub
+var gameHub *websocketModels.Hub
 
-func RunHub() {
+func RunGameHub() {
 	for {
 		select {
-		case client := <-hub.Register:
-			hub.Clients[client] = true
-		case client := <-hub.Unregister:
-			if _, ok := hub.Clients[client]; ok {
+		case client := <-gameHub.Register:
+			gameHub.Clients[client] = true
+		case client := <-gameHub.Unregister:
+			if _, ok := gameHub.Clients[client]; ok {
 				fmt.Println("client unregistered, deleting and closing", client.CurrentPlayerID)
-				delete(hub.Clients, client)
+				delete(gameHub.Clients, client)
 				close(client.Send)
 			}
-		case broadcastMessage := <-hub.Broadcast:
+		case broadcastMessage := <-gameHub.Broadcast:
 
 			buffer := broadcastMessage.Buffer
 			broadcast_game_id := broadcastMessage.GameID
@@ -33,7 +33,7 @@ func RunHub() {
 
 			db := database.GetDb()
 
-			for client := range hub.Clients {
+			for client := range gameHub.Clients {
 				fmt.Println("checking", client.CurrentPlayerID)
 				// only send message to clients in the same game
 				if client.GameID != broadcast_game_id {
@@ -97,7 +97,7 @@ func RunHub() {
 				case client.Send <- buffer:
 				default:
 					close(client.Send)
-					delete(hub.Clients, client)
+					delete(gameHub.Clients, client)
 				}
 
 				buffer = broadcastMessage.Buffer
@@ -107,25 +107,84 @@ func RunHub() {
 	}
 }
 
-func NewHub() *websocketModels.Hub {
+var playerInsightHub *websocketModels.Hub
 
-	hub = &websocketModels.Hub{
+func RunPlayerInsightHub() {
+	for {
+		select {
+		case client := <-playerInsightHub.Register:
+			playerInsightHub.Clients[client] = true
+		case client := <-playerInsightHub.Unregister:
+			if _, ok := playerInsightHub.Clients[client]; ok {
+				fmt.Println("client unregistered, deleting and closing", client.CurrentPlayerID)
+				delete(playerInsightHub.Clients, client)
+				close(client.Send)
+			}
+		case broadcastMessage := <-playerInsightHub.Broadcast:
+
+			buffer := broadcastMessage.Buffer
+			broadcast_game_id := broadcastMessage.GameID
+			message := broadcastMessage.Message
+
+			fmt.Println("broadcasted! ", broadcast_game_id, message)
+
+			for client := range playerInsightHub.Clients {
+				select {
+				case client.Send <- buffer:
+				default:
+					close(client.Send)
+					delete(playerInsightHub.Clients, client)
+				}
+
+				buffer = broadcastMessage.Buffer
+
+			}
+		}
+	}
+}
+
+func NewGameHub() *websocketModels.Hub {
+
+	gameHub = &websocketModels.Hub{
 		Broadcast:  make(chan *websocketModels.BroadcastMessage),
 		Register:   make(chan *websocketModels.Client),
 		Unregister: make(chan *websocketModels.Client),
 		Clients:    make(map[*websocketModels.Client]bool),
 	}
+	return gameHub
+}
+
+func NewPlayerInsightHub() *websocketModels.Hub {
+
+	playerInsightHub = &websocketModels.Hub{
+		Broadcast:  make(chan *websocketModels.BroadcastMessage),
+		Register:   make(chan *websocketModels.Client),
+		Unregister: make(chan *websocketModels.Client),
+		Clients:    make(map[*websocketModels.Client]bool),
+	}
+	return playerInsightHub
+}
+
+func InitializeGameHub() *websocketModels.Hub {
+	hub := NewGameHub()
+
+	go RunGameHub()
+
 	return hub
 }
 
-func InitializeHub() *websocketModels.Hub {
-	hub := NewHub()
+func InitializeGameClosedHub() *websocketModels.Hub {
+	hub := NewPlayerInsightHub()
 
-	go RunHub()
+	go RunPlayerInsightHub()
 
 	return hub
 }
 
-func GetHub() *websocketModels.Hub {
-	return hub
+func GetGameHub() *websocketModels.Hub {
+	return gameHub
+}
+
+func GetPlayerInsightHub() *websocketModels.Hub {
+	return playerInsightHub
 }

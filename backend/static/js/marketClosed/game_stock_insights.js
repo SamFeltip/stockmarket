@@ -219,20 +219,39 @@ function animateHoldStocks(){
 
     const stockHoldInsights = document.querySelectorAll(`div.game-stock-insight-${holdStockId}`)
 
-    let revealHoldStockPromises = Array.from(stockHoldInsights).map((stockHoldInsight, index) => {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                /** @type {NodeListOf<HTMLDivElement>} */
-                const gameInsights = document.querySelectorAll("div.game-insight")
-                gameInsights.forEach(gameInsight => {
-                    gameInsight.style.display = "none"
-                })
+    const stockHoldInsight = stockHoldInsights[0];
 
-                stockHoldInsight.style.display = "grid"
-                resolve()
-            }, index * 2000);
-        })
+    const gameInsights = document.querySelectorAll("div.game-insight")
+    gameInsights.forEach(gameInsight => {
+        gameInsight.style.display = "none"
     })
 
-    Promise.all(revealHoldStockPromises)
+    stockHoldInsight.style.display = "grid"
+
+    const gameID = document.querySelector("#gameID").value;
+
+    const socket = new WebSocket(`ws://localhost:4040/hold-stock-waiting/${gameID}`);
+
+    socket.onmessage = function(event) {
+        const message = JSON.parse(event.data);
+        console.log(message);
+
+        if (!message.hasOwnProperty('type') || !message.hasOwnProperty('nextInsight')) {
+            console.error("invalid websocket response")
+            return
+        }
+        
+        const newGameInsight = document.querySelector(`#insight-${message.nextInsight}`);
+
+        if(newGameInsight === null){
+            console.error("invalid game stock insight recieved from websocket")
+            return
+        }
+
+        gameInsights.forEach(gameInsight => {
+            gameInsight.style.display = "none"
+        })
+        
+        newGameInsight.style.display = "grid";
+    }
 }

@@ -8,7 +8,7 @@ import (
     "math"
 )
 
-templ GameStockModal(displayGameStocks []models.GameStockDisplay, index int) {
+templ GameStockModal(displayGameStocks []models.GameStockDisplay, gameID string, index int) {
     <form 
     hx-post="#"
     id={ "stockHoldModal" + strconv.Itoa(index) }  
@@ -17,6 +17,7 @@ templ GameStockModal(displayGameStocks []models.GameStockDisplay, index int) {
     tabindex="-1"
     aria-hidden="true"
 >
+    <input type="hidden" name="gameID" value={ gameID }/>
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -80,11 +81,13 @@ templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSt
 		<div class="d-flex flex-column align-items-center justify-content-center">
 			<h1>End of round</h1>
             <h2>Additional insights</h2>
+            <input id="gameID" type="hidden" name="gameID" value={ gameID }/>
 		</div>
 
 		<div id="insight-view" class="card card-green p-4 rounded border border-5 border-white">
 			for index, insight := range insights {
 				<div 
+                    id={ "insight-" + strconv.FormatUint(uint64(insight.InsightID), 10) }
                     class={ "game-insight", "game-stock-insight-" + strconv.FormatUint(uint64(insight.GameStockID), 10), "gap-3 h-100" } 
                     style="display: none; grid-template-columns: 2fr 1fr;" 
                     data-game-stock-id={ strconv.FormatUint(uint64(insight.GameStockID), 10) }
@@ -106,7 +109,7 @@ templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSt
 						</div>
 						<div class="d-flex flex-column text-center">
                             if insight.InsightValue == 0 {
-                                @GameStockModal(displayGameStocks, index)                                
+                                @GameStockModal(displayGameStocks, gameID, index)
                                 <button 
                                     id="stockHoldModalButton" 
                                     data-bs-toggle="modal" 
