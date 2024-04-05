@@ -129,6 +129,14 @@ func RunPlayerInsightHub() {
 			fmt.Println("broadcasted! ", broadcast_game_id, message)
 
 			for client := range playerInsightHub.Clients {
+				fmt.Println("checking", client.CurrentPlayerID)
+				// only send message to clients in the same game
+				if client.GameID != broadcast_game_id {
+					fmt.Println("client not in game", broadcast_game_id, "instead in", client.GameID)
+					continue
+				}
+				fmt.Println("client in game", broadcast_game_id)
+
 				select {
 				case client.Send <- buffer:
 				default:

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	controllers "stockmarket/controllers/games"
+	helpers "stockmarket/controllers/games"
 	"stockmarket/database"
 	"stockmarket/middleware"
 	"stockmarket/models"
@@ -255,6 +256,22 @@ func CreateGameRoutes() {
 
 			ctx := context.Background()
 			pageComponent.Render(ctx, c.Writer)
+		})
+
+	r.POST("/games/hold_stock",
+		func(ctx *gin.Context) { middleware.AuthIsPlaying(ctx) },
+		func(ctx *gin.Context) {
+			fmt.Println("hold stock posted")
+
+			db := database.GetDb()
+			gameID := ctx.PostForm("gameID")
+
+			if gameID == "" {
+				fmt.Println("no gameID in post request")
+				return
+			}
+
+			helpers.BroadcastStockHold(gameID, db)
 		})
 
 	r.GET("/games",

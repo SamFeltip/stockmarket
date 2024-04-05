@@ -236,7 +236,7 @@ function animateHoldStocks(){
         const message = JSON.parse(event.data);
         console.log(message);
 
-        if (!message.hasOwnProperty('type') || !message.hasOwnProperty('nextInsight')) {
+        if (!message.hasOwnProperty('nextInsight')) {
             console.error("invalid websocket response")
             return
         }

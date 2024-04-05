@@ -14,11 +14,12 @@ import (
 )
 
 func BroadcastStockHold(gameID string, db *gorm.DB) error {
+	fmt.Println("broadhcasting stock hold...")
 
 	buffer := &bytes.Buffer{}
 
 	// put json in buffer without using templates.
-	buffer.WriteString(`{"message": "hold stock"}`)
+	buffer.WriteString(`{"nextInsight": "11"}`)
 
 	broadcastMessage := websocketModels.BroadcastMessage{
 		GameID:  gameID,
