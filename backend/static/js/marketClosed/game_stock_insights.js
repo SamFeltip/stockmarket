@@ -173,9 +173,9 @@ function animateCurrency() {
                 console.log(currencyTotalInsightValue)
 
                 let cashChangePercent = parseFloat(currencyTotalInsightValue?.innerText || "0")
-                
+
                 resolve({ cashChangePercent })
-                
+
             }, 1500)
         })
     }).then(({ cashChangePercent }) => {
@@ -197,7 +197,7 @@ function animateCurrency() {
 
             const oldPlayerCashString = playerCash?.innerText || "0"
             const oldPlayerCash = parseFloat(oldPlayerCashString)
-            
+
             const newPlayerCash = oldPlayerCash * (1 + cashChangePercent / 100)
 
             playerCash.innerText = newPlayerCash.toFixed(0)
@@ -212,7 +212,7 @@ function animateCurrency() {
 }
 
 // used in hidden game stock section
-function animateHoldStocks(){
+function animateHoldStocks() {
     const holdStockGameStock = document.querySelector("#game-stock-hold-stock-price");
 
     let holdStockId = holdStockGameStock.getAttribute("data-game-stock-id");
@@ -228,11 +228,19 @@ function animateHoldStocks(){
 
     stockHoldInsight.style.display = "grid"
 
+    let insightId = stockHoldInsight.getAttribute("data-insight-id")
+
+    const firstStockHoldModal = new bootstrap.Modal(`#stock-hold-modal-${insightId}`, {
+        keyboard: false
+    })
+
+    firstStockHoldModal.show();
+
     const gameID = document.querySelector("#gameID").value;
 
     const socket = new WebSocket(`ws://localhost:4040/hold-stock-waiting/${gameID}`);
 
-    socket.onmessage = function(event) {
+    socket.onmessage = function (event) {
         const message = JSON.parse(event.data);
         console.log(message);
 
@@ -240,10 +248,10 @@ function animateHoldStocks(){
             console.error("invalid websocket response")
             return
         }
-        
+
         const newGameInsight = document.querySelector(`#insight-${message.nextInsight}`);
 
-        if(newGameInsight === null){
+        if (newGameInsight === null) {
             console.error("invalid game stock insight recieved from websocket")
             return
         }
@@ -251,7 +259,15 @@ function animateHoldStocks(){
         gameInsights.forEach(gameInsight => {
             gameInsight.style.display = "none"
         })
-        
+
         newGameInsight.style.display = "grid";
+
+        const stockHoldModal = new bootstrap.Modal(`#stock-hold-modal-${message.nextInsight}`, {
+            keyboard: false
+        })
+
+        stockHoldModal.show();
+
+
     }
 }

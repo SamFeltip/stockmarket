@@ -8,10 +8,10 @@ import (
 	"math"
 )
 
-templ GameStockModal(displayGameStocks []models.GameStockDisplay, gameID string, index int) {
+templ GameStockModal(displayGameStocks []models.GameStockDisplay, gameID string, insightID uint, currentPlayerName string, insightPlayerName string) {
 	<form
 		hx-post="/games/hold_stock"
-		id={ "stockHoldModal" + strconv.Itoa(index) }
+		id={ "stock-hold-modal-" + strconv.FormatUint(uint64(insightID), 10) }
 		class="modal fade"
 		aria-labelledby="insightModalDismiss"
 		tabindex="-1"
@@ -21,7 +21,11 @@ templ GameStockModal(displayGameStocks []models.GameStockDisplay, gameID string,
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h1 class="modal-title fs-5" id="insightModalDismiss">Would you like to suspend a share?</h1>
+					if insightPlayerName == currentPlayerName {
+						<h1 class="modal-title fs-5" id="insightModalDismiss">Would you like to suspend a share?</h1>
+					} else {
+						<h1 class="modal-title fs-5" id="insightModalDismiss">Waiting for { insightPlayerName } to suspend a share</h1>
+					}
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body d-grid" style="grid-template-columns: 1fr 1fr 1fr;">
@@ -57,31 +61,34 @@ templ GameStockModal(displayGameStocks []models.GameStockDisplay, gameID string,
 						</div>
 					}
 				</div>
-				<div class="modal-footer">
-					<button
-						class="btn btn-close btn-secondary flex-fill"
-						name="confirm"
-						value="false"
-						data-bs-dismiss="modal"
-						aria-label="Close"
-					>
-						Skip
-					</button>
-					<button 
-                    class="btn btn-close btn-success flex-fill"
-                    name="confirm" value="true"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                    >
-						Confirm
-					</button>
-				</div>
+				if insightPlayerName == currentPlayerName {
+					<div class="modal-footer">
+						<button
+							class="btn close btn-secondary flex-fill"
+							name="confirm"
+							value="false"
+							data-bs-dismiss="modal"
+							aria-label="Close"
+						>
+							Skip
+						</button>
+						<button
+							class="btn close btn-success flex-fill"
+							name="confirm"
+							value="true"
+							data-bs-dismiss="modal"
+							aria-label="Close"
+						>
+							Confirm
+						</button>
+					</div>
+				}
 			</div>
 		</div>
 	</form>
 }
 
-templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameStocks []models.GameStockDisplay, displayGameStocks []models.GameStockDisplay, players []models.PlayerDisplay) {
+templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameStocks []models.GameStockDisplay, displayGameStocks []models.GameStockDisplay, players []models.PlayerDisplay, currentPlayer models.PlayerDisplay) {
 	<div
 		class="gap-3 p-4 d-grid"
 		style="height: 100vh; max-height: -webkit-fill-available; grid-template-rows: 100px 1fr auto auto;"
@@ -98,6 +105,7 @@ templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSt
 					class={ "game-insight", "game-stock-insight-" + strconv.FormatUint(uint64(insight.GameStockID), 10), "gap-3 h-100" }
 					style="display: none; grid-template-columns: 2fr 1fr;"
 					data-game-stock-id={ strconv.FormatUint(uint64(insight.GameStockID), 10) }
+					data-insight-id={ strconv.FormatUint(uint64(insight.InsightID), 10) }
 				>
 					<div
 						class="rounded d-grid align-items-center"
@@ -116,11 +124,11 @@ templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSt
 						</div>
 						<div class="d-flex flex-column text-center">
 							if insight.InsightValue == 0 {
-								@GameStockModal(displayGameStocks, gameID, index)
+								@GameStockModal(displayGameStocks, gameID, insight.InsightID, currentPlayer.UserName, insight.UserName)
 								<button
-									id="stockHoldModalButton"
+									id="stock-hold-modal-button"
 									data-bs-toggle="modal"
-									data-bs-target={ "#stockHoldModal" + strconv.Itoa(index) }
+									data-bs-target={ "#stock-hold-modal-" + strconv.Itoa(index) }
 									aria-hidden="true"
 									type="button"
 									class="btn btn-primary"
@@ -232,8 +240,10 @@ templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSt
 				class="btn btn-primary d-flex flex-row gap-2 align-items-center"
 			>
 				Next Round
-				<svg height="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-<path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"></path></svg>
+				<svg height="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+					<!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+					<path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"></path>
+				</svg>
 			</button>
 		</form>
 	</div>
@@ -244,8 +254,8 @@ templ SpecialInsights(gameID string, insights []models.GameInsight, hiddenGameSt
     </script>
 }
 
-templ SpecialInsightsSocket(gameID string, insights []models.GameInsight, hiddenGameStocks []models.GameStockDisplay, displayGameStocks []models.GameStockDisplay, players []models.PlayerDisplay) {
+templ SpecialInsightsSocket(gameID string, insights []models.GameInsight, hiddenGameStocks []models.GameStockDisplay, displayGameStocks []models.GameStockDisplay, players []models.PlayerDisplay, currentPlayer models.PlayerDisplay) {
 	<div hx-swap-oob="innerHTML:main">
-		@SpecialInsights(gameID, insights, hiddenGameStocks, displayGameStocks, players)
+		@SpecialInsights(gameID, insights, hiddenGameStocks, displayGameStocks, players, currentPlayer)
 	</div>
 }

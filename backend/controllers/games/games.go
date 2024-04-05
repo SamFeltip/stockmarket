@@ -125,7 +125,14 @@ func Show(gameID string, current_user models.User, db *gorm.DB) templ.Component 
 			return templates.Error(err)
 		}
 
-		pageComponent := templates.SpecialInsights(gameID, gameInsights, hiddenGameStocks, displayGameStocks, playerDisplays)
+		currentPlayerDisplay, err := models.LoadPlayerDisplay(current_player.ID, db)
+
+		if err != nil {
+			fmt.Println("error loading current player display:", err)
+			return templates.Error(err)
+		}
+
+		pageComponent := templates.SpecialInsights(gameID, gameInsights, hiddenGameStocks, displayGameStocks, playerDisplays, currentPlayerDisplay)
 		return pageComponent
 
 	default:
