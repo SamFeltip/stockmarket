@@ -90,6 +90,49 @@ func RunGameHub() {
 						buffer = &bytes.Buffer{}
 						boardDisplay.Render(context.Background(), buffer)
 
+					} else if message == "special insights" {
+						fmt.Println("broadcasting show special insights")
+
+						specialInsights, err := models.LoadSpecialInsights(game.ID, db)
+
+						if err != nil {
+							fmt.Println("could not get game insights", err)
+							continue
+						}
+
+						gameStockDisplays, err := models.LoadGameStockDisplays(game.ID, false, db)
+
+						if err != nil {
+							fmt.Println("could not load game stock displays", err)
+							continue
+						}
+
+						displayGameStocks, err := models.LoadGameStockDisplays(game.ID, true, db)
+
+						if err != nil {
+							fmt.Println("could not load game stock displays", err)
+							continue
+						}
+
+						playerDisplays, err := models.LoadPlayerDisplays(game.ID, db)
+
+						if err != nil {
+							fmt.Println("could not load player displays", err)
+							continue
+						}
+
+						currentPlayerDisplay, err := models.LoadPlayerDisplay(current_player.ID, db)
+
+						if err != nil {
+							fmt.Println("could not load current player display", err)
+							continue
+						}
+
+						specialInsightsDisplay := gameTempl.SpecialInsightsSocket(game.ID, specialInsights, gameStockDisplays, displayGameStocks, playerDisplays, currentPlayerDisplay)
+
+						buffer := &bytes.Buffer{}
+						specialInsightsDisplay.Render(context.Background(), buffer)
+
 					}
 				}
 

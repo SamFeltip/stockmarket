@@ -118,51 +118,10 @@ func BroadcastGameClosed(gameInsights []models.GameInsight, gameID string, db *g
 }
 
 func BroadcastShowSpecialInsights(gameID string, db *gorm.DB) error {
-	fmt.Println("broadcasting show special insights")
-
-	specialInsights, err := models.LoadSpecialInsights(gameID, db)
-
-	if err != nil {
-		fmt.Println("could not get game insights", err)
-		return err
-	}
-
-	gameStockDisplays, err := models.LoadGameStockDisplays(gameID, false, db)
-
-	if err != nil {
-		fmt.Println("could not load game stock displays", err)
-		return err
-	}
-
-	displayGameStocks, err := models.LoadGameStockDisplays(gameID, true, db)
-
-	if err != nil {
-		fmt.Println("could not load game stock displays", err)
-		return err
-	}
-
-	playerDisplays, err := models.LoadPlayerDisplays(gameID, db)
-
-	if err != nil {
-		fmt.Println("could not load player displays", err)
-		return err
-	}
-
-	currentPlayerDisplay, err := models.LoadPlayerDisplay(current_player.ID, db)
-
-	if err != nil {
-		fmt.Println("could not load current player display", err)
-		return err
-	}
-
-	specialInsightsDisplay := templates.SpecialInsightsSocket(gameID, specialInsights, gameStockDisplays, displayGameStocks, playerDisplays, currentPlayerDisplay)
-
-	buffer := &bytes.Buffer{}
-	specialInsightsDisplay.Render(context.Background(), buffer)
 
 	broadcastMessage := websocketModels.BroadcastMessage{
 		GameID:  gameID,
-		Buffer:  buffer,
+		Buffer:  nil,
 		Message: "special insights",
 	}
 
