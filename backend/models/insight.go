@@ -56,7 +56,7 @@ func LoadSpecialPlayerInsights(playerID uint, db *gorm.DB) ([]InsightDisplay, er
 	err := db.Table("player_insights as pi").
 		Select("i.description, i.value, s.image_path as stock_image_path, s.name as stock_name, s.display as stock_display").
 		Joins("inner join insights as i on i.id = pi.insight_id").
-		Joins("inner join player_stocks as ps on ps.id = pi.player_stock_id").
+		Joins("inner join player_stocks as ps ON pi.player_stock_id = ps.id").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 		Joins("inner join games as g on g.id = gs.game_id").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
@@ -128,4 +128,25 @@ func GetNextInsightValue(gameID string, oldInsightId uint, db *gorm.DB) (uint, e
 	fmt.Println("nextInsights", nextInsights[0].Id)
 
 	return nextInsights[0].Id, err
+}
+
+func DeletePlayerInsights(gameID string, oldInsightId uint, db *gorm.DB) error {
+
+	insight := Insight{}
+	err := db.Model(insight).Where(oldInsightId).Error
+
+	if err != nil {
+		return err
+	}
+
+	err = db.Table("player_insights as pi").
+		Joins("inner join insights as i on i.id = pi.insight_id").
+		Joins("inner join stocks as s on s.id = i.stock_id").
+		Joins("inner join player_stocks as ps on ps.id = pi.player_stock_id").
+		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+		Joins("inner join games as g on g.id = gs.game_id").
+		Where("gs.game_id = ? AND i.stock_id = ? AND g.current_period = pi.period", gameID, insight.StockID).
+		Delete(&PlayerInsight{}).Error
+
+	return err
 }

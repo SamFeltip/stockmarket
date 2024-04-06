@@ -203,7 +203,7 @@ func HoldStock(gameID string, oldInsightId uint, db *gorm.DB) (templ.Component, 
 		return temp, err
 	}
 
-	// err = models.DeletePlayerInsights()
+	err = models.DeletePlayerInsights(gameID, oldInsightId, db)
 
 	BroadcastStockHold(gameID, nextInsightValue, db)
 

@@ -77,7 +77,8 @@ func LoadGameStockDisplays(gameID string, display bool, db *gorm.DB) ([]GameStoc
 	err := db.Table("game_stocks as gs").
 		Select("gs.id, s.name, s.image_path, s.secondary_image_path, gs.value, COALESCE(sum(i.value), 0) as total_value_change").
 		Joins("inner join player_stocks as ps on ps.game_stock_id = gs.id").
-		Joins("inner join player_insights as pi on pi.player_stock_id = ps.id").
+		Joins("inner join games as g on g.id = gs.game_id").
+		Joins("inner join player_insights as pi on (pi.player_stock_id = ps.id and g.current_period = pi.period)").
 		Joins("inner join insights as i on i.id = pi.insight_id").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
 		Where("game_id = ? AND s.display = ?", gameID, display).

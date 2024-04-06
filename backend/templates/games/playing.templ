@@ -348,7 +348,7 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 				hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(currentPlayerDisplay.PlayerStocks[0].ID), 10)) }
 			></div>
 		</div>
-		<aside class="rounded bg-white text-black p-3 d-none d-lg-block">
+		<aside class="rounded bg-white text-black p-3 d-none d-lg-grid">
 			<div class="d-grid" style="grid-template-rows: auto 1fr;">
 				<h2 class="text-black">
 					Feed

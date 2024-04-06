@@ -128,6 +128,12 @@ function animateGameStocks() {
 function animateCurrency() {
     const currencyGameStock = document.querySelector("#game-stock-currency");
 
+    if (currencyGameStock === null) {
+        console.error("No currency found")
+        animateHoldStocks()
+        return
+    }
+
     let currencyId = currencyGameStock.getAttribute("data-game-stock-id")
 
     const gameStockInsights = document.querySelectorAll(`div.game-stock-insight-${currencyId}`)

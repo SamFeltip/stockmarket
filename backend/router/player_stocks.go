@@ -87,9 +87,9 @@ func CreatePlayerStockRoutes() {
 			// my insights
 			db.Table("player_insights as pi").
 				Select("i.description, i.value, s.display as stock_display").
-				Joins("inner join player_stocks as ps on ps.id = pi.player_stock_id").
 				Joins("inner join insights as i on pi.insight_id = i.id").
 				Joins("inner join stocks as s on s.id = i.stock_id").
+				Joins("inner join player_stocks as ps ON pi.player_stock_id = ps.id").
 				Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 				Joins("inner join games as g on g.id = gs.game_id").
 				Where("ps.id = ? and pi.period = g.current_period", playerStockIDString).
