@@ -149,7 +149,7 @@ p, h6, .form-control, .input-group-text {
     --bs-modal-bg: white;
     --bs-modal-color: black;
     --bs-heading-color: black;
-    --bs-modal-margin: 20vh;
+    /* --bs-modal-margin: 20vh; */
     --bs-modal-header-padding: 1.2rem 1.2rem;
     --bs-modal-padding: 1.2rem;
 }
@@ -257,7 +257,8 @@ h2.primary {
         font-size: 2vw;
     } */
 }
-@media (orientation: portrait) and (max-width: 500px) {
+
+/* @media (orientation: portrait) and (max-width: 500px) {
   
     #orientation-warning {
 
@@ -276,6 +277,13 @@ h2.primary {
     main {
         opacity: 0.1;
     }
+} */
+
+@media screen and (min-width: 576px) {
+    .position-sm-absolute {
+        position: absolute !important;
+    }
+    
 }
 
 @media screen and (min-width: 992px) {

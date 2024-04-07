@@ -19,7 +19,7 @@ templ GameStockModal(displayGameStocks []models.GameStockDisplay, gameID string,
 	>
 		<input type="hidden" name="gameID" value={ gameID }/>
 		<input type="hidden" name="insightID" value={ strconv.FormatUint(uint64(insightID), 10) }/>
-		<div class="modal-dialog">
+		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
 					if insightPlayerName == currentPlayerName {

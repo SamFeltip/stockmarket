@@ -1,87 +1,99 @@
 package players
 
 import (
-    "strconv"
-    "stockmarket/models"
-    playerStockTempl "stockmarket/templates/player_stocks"
+	"strconv"
+	"stockmarket/models"
+	playerStockTempl "stockmarket/templates/player_stocks"
 )
 
 templ NoPlayer(err error) {
-    <div>
-        <h1>No Player</h1>
-        <p>{ err.Error() }</p>
-    </div>
+	<div>
+		<h1>No Player</h1>
+		<p>{ err.Error() }</p>
+	</div>
 }
 
-templ PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models.InsightDisplay, isCurrentPlayer bool) {
-    <div id="player-portfolio" class={"flex-fill p-3 ", templ.KV("is-current-player", len(insights) > 0)}>
-        <div id="portfolio">
-            <h4 class="text-black">Portfolio</h4>
-            <div class="d-flex flex-row justify-content-between">
-                for _, ps := range playerStocks {
-                    <div class="d-flex flex-column align-items-center">
-                        <img height="50px" src={ps.StockImagePath} alt={ps.StockName} />
-                        <p class="text-black">{ strconv.Itoa(ps.PlayerStockQuantity) }</p>
-                        if isCurrentPlayer {
-                            @playerStockTempl.TotalInsight(ps)
-                        }
-                    </div>
-                }
-            </div>
-        </div>
-
-        if len(insights) > 0 {
-            <div id="insights" class="flex-column gap-2">
-                <h4 class="text-black">Your Insights</h4>
-                @playerStockTempl.Insights(insights)
-            </div>          
-        }
-
-        <div id="net-worth" class="gap-2">
-            <h4 class="text-black">Net Worth</h4>
-            <div class="card flex-fill">
-                <div id="graph" class="card-body d-flex justify-content-center align-items-center">
-                    GRAPH!
-                </div>
-            </div>
-
-        </div>
-
-        <div id="player-info" class="d-flex flex-column gap-2">
-            <h4 class="text-black">Info</h4>
-            <div id="info-details" class="d-grid gap-3">
+templ PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models.InsightDisplay, player models.PlayerDisplay, isCurrentPlayer bool) {
+	<div id="player-portfolio" class={ "flex-fill p-3 gap-3", templ.KV("is-current-player", len(insights) > 0) }>
+		<div id="portfolio">
+			<h4 class="text-black">Portfolio</h4>
+			<div class="d-flex flex-row justify-content-between flex-wrap">
+				for _, ps := range playerStocks {
+					<div class="d-flex flex-column align-items-center p-2">
+						<img height="50px" src={ ps.StockImagePath } alt={ ps.StockName }/>
+						<p class="text-black">{ strconv.Itoa(ps.PlayerStockQuantity) }</p>
+						if isCurrentPlayer {
+							@playerStockTempl.TotalInsight(ps)
+						}
+					</div>
+				}
+			</div>
+		</div>
+		if len(insights) > 0 {
+			<div id="insights" class="flex-column gap-2">
+				<h4 class="text-black">Your Insights</h4>
+				@playerStockTempl.Insights(insights)
+			</div>
+		}
+		<div id="net-worth" class="gap-2">
+			<h4 class="text-black">Net Worth</h4>
+            <div id="graph" class="d-grid gap-3">
                 <div class="card flex-fill">
-                    <div class="card-body text-center">
+                    <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
                         <p class="">
-                            ? / 6
+                            £{ strconv.Itoa(player.Cash) }
                         </p>
                         <p class="text-secondary">
-                            Ranking
+                            Cash
                         </p>
                     </div>
                 </div>
                 <div class="card flex-fill">
-                    <div class="card-body text-center">
+                    <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
                         <p class="">
-                            N/A
+                            £{ strconv.FormatFloat((player.TotalValue + float64(player.Cash)), 'f', -1, 64) }
                         </p>
                         <p class="text-secondary">
-                            Director
-                        </p>
-                    </div>
-                </div>
-                <div class="card flex-fill">
-                    <div class="card-body text-center">
-                        <p class="">
-                            ???
-                        </p>
-                        <p class="text-secondary">
-                            Total Shares
+                            Net Worth
                         </p>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
+		</div>
+		<div id="player-info" class="d-flex flex-column gap-2">
+			<h4 class="text-black">Info</h4>
+			<div id="info-details" class="d-grid gap-3">
+				<div class="card flex-fill">
+					<div class="card-body text-center">
+						<p class="">
+							? / 6
+						</p>
+						<p class="text-secondary">
+							Ranking
+						</p>
+					</div>
+				</div>
+				<div class="card flex-fill">
+					<div class="card-body text-center">
+						<p class="">
+							N/A
+						</p>
+						<p class="text-secondary">
+							Director
+						</p>
+					</div>
+				</div>
+				<div class="card flex-fill">
+					<div class="card-body text-center">
+						<p class="">
+							???
+						</p>
+						<p class="text-secondary">
+							Total Shares
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 }

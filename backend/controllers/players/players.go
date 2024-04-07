@@ -19,10 +19,18 @@ func Show(playerID uint, currentPlayerID uint, db *gorm.DB) templ.Component {
 		return pageComponent
 	}
 
+	playerDisplay, err := models.LoadPlayerDisplay(playerID, db)
+
+	if err != nil {
+		fmt.Println("error loading player:", err)
+		pageComponent := templates.NoPlayer(fmt.Errorf("could not find player"))
+		return pageComponent
+	}
+
 	insights := []models.InsightDisplay{}
 	if playerID != currentPlayerID {
 		fmt.Println("not showing insights for other players")
-		pageComponent := templates.PlayerPortfolio(playerStockDisplays, insights, false)
+		pageComponent := templates.PlayerPortfolio(playerStockDisplays, insights, playerDisplay, false)
 		return pageComponent
 	}
 
@@ -42,6 +50,6 @@ func Show(playerID uint, currentPlayerID uint, db *gorm.DB) templ.Component {
 		fmt.Println("error loading insights:", err)
 	}
 
-	pageComponent := templates.PlayerPortfolio(playerStockDisplays, insights, true)
+	pageComponent := templates.PlayerPortfolio(playerStockDisplays, insights, playerDisplay, true)
 	return pageComponent
 }

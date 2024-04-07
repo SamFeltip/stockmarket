@@ -8,7 +8,7 @@ import (
 // use bootstrap modal
 templ BuyModal(playerStockDisplay models.PlayerStockDisplay, playerStockPlayer models.PlayerStockPlayerResult, stockInfo models.StockInfoResult, playerStockID uint) {
 	<div id="buyModal" class="modal fade" tabindex="-1">
-		<div class="modal-dialog">
+		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
                 <div class="modal-header d-flex justify-content-between flex-fill">
 				    @PlayerStockPreview(playerStockDisplay, true)
@@ -103,7 +103,7 @@ templ BuyModal(playerStockDisplay models.PlayerStockDisplay, playerStockPlayer m
 templ SellModal(playerStockDisplay models.PlayerStockDisplay, playerStockPlayer models.PlayerStockPlayerResult, stockInfo models.StockInfoResult, playerStockID uint) {
 	
 	<div id="sellModal" class="modal fade" tabindex="-1">
-		<div class="modal-dialog">
+		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header d-flex justify-content-between flex-fill">
 					@PlayerStockPreview(playerStockDisplay, true)

@@ -110,7 +110,7 @@ func PlayerStockPreview(playerStockDisplay models.PlayerStockDisplay, isLarge bo
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var8 = []any{"d-flex justify-content-between align-items-center", templ.KV("flex-row", isLarge), templ.KV("flex-fill flex-column flex-xl-row", !isLarge)}
+		var templ_7745c5c3_Var8 = []any{"d-flex flex-fill justify-content-between align-items-center", templ.KV("flex-row", isLarge), templ.KV("flex-column flex-lg-row", !isLarge)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var8...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -216,7 +216,7 @@ func PlayerStockPreview(playerStockDisplay models.PlayerStockDisplay, isLarge bo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var11 = []any{"text-end", templ.KV("d-xl-block d-none", !isLarge)}
+		var templ_7745c5c3_Var11 = []any{"text-end", templ.KV("d-lg-block d-none", !isLarge)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var11...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -670,7 +670,7 @@ func StockInfo(stockInfoResult models.StockInfoResult) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><div class=\"d-grid gap-3\" style=\"grid-template-columns: 1fr 1fr 1fr;\"><div class=\"card flex-fill\"><div class=\"card-body text-center\"><p class=\"\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><div class=\"d-flex flex-column d-sm-grid gap-3\" style=\"grid-template-columns: 1fr 1fr 1fr;\"><div class=\"card flex-fill\"><div class=\"card-body text-center\"><p class=\"\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
