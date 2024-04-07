@@ -7,7 +7,7 @@ import (
 )
 
 templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []models.GameStockDisplay, players []models.PlayerDisplay){
-	<div class="gap-3 p-4" style="height: 100vh; max-height: -webkit-fill-available; display: grid; grid-template-rows: 100px 1fr auto auto;">
+	<div class="gap-3 p-4" style="height: 100vh; max-height: -webkit-fill-available; display: grid; grid-template-rows: auto 1fr auto auto;">
 		<div class="d-flex align-items-center justify-content-center">
 			<h1>End of round</h1>
 		</div>
@@ -19,11 +19,13 @@ templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []mode
 					class={ "game-insight", "game-stock-insight-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10), "gap-3 h-100 d-none" } 
 					data-game-stock-id={ strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }
 				>
-					<div style="background-color: #3C5F2F;" class="p-4 gap-2 rounded d-flex flex-row justify-content-around align-items-center">
+					<div 
+						style="background-color: #3C5F2F;" 
+						class="p-4 gap-2 rounded d-flex flex-column flex-sm-row justify-content-around align-items-center"
+					>
 						<div id={ "game-stock-view-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) } class="game-stock-view d-flex flex-column align-items-center">
-							<div>
-								<img class="w-100" src={ gameInsight.ImagePath } alt={ gameInsight.Name }/>
-							</div>
+							<img class="w-100 p-3" src={ gameInsight.ImagePath } alt={ gameInsight.Name }/>
+							
 							<h2 class="text-capitalize">
 								{ gameInsight.Name }
 							</h2>
