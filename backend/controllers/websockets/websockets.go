@@ -40,16 +40,16 @@ func ServeWs(c *gin.Context) (int, gin.H) {
 
 	player := cp.(models.Player)
 
-	hub := websockets.GetGameHub()
+	gameHub := websockets.GetGameHub()
 
 	if err != nil {
 		fmt.Println("error setting active game:", err)
 	}
 
-	client := websocketModels.NewClient(hub, conn, player.ID, gameID)
+	client := websocketModels.NewClient(gameHub, conn, player.ID, gameID)
 
 	fmt.Println("registering new client", player.User.Name, gameID)
-	hub.Register <- client
+	gameHub.Register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in
 	// new goroutines.
@@ -81,16 +81,16 @@ func ServeWInsights(c *gin.Context) (int, gin.H) {
 
 	player := cp.(models.Player)
 
-	hub := websockets.GetPlayerInsightHub()
+	playerInsightHub := websockets.GetPlayerInsightHub()
 
 	if err != nil {
 		fmt.Println("error setting active game:", err)
 	}
 
-	client := websocketModels.NewClient(hub, conn, player.ID, gameID)
+	client := websocketModels.NewClient(playerInsightHub, conn, player.ID, gameID)
 
 	fmt.Println("registering new client", player.User.Name, gameID)
-	hub.Register <- client
+	playerInsightHub.Register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in
 	// new goroutines.

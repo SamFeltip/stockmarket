@@ -52,6 +52,7 @@ func NewFeedItemMessage(gameID string, currentPeriod int, feedItemMessage FeedIt
 
 	feed_item := FeedItem{
 		GameID: gameID,
+		Title:  user.Name,
 		Period: currentPeriod,
 	}
 
@@ -82,7 +83,7 @@ func NewFeedItem(quantity int, playerStockID uint, db *gorm.DB) (FeedItem, error
 
 	var feed_item_response = struct {
 		ID              uint
-		UserName        string `gorm:"table:users; column:name"`
+		UserName        string
 		UserProfileRoot string
 		StockName       string
 		GameID          string
@@ -120,7 +121,7 @@ func NewFeedItem(quantity int, playerStockID uint, db *gorm.DB) (FeedItem, error
 		feed_item.Message = fmt.Sprintf("sold %d shares in %s", quantity*-1, feed_item_response.StockName)
 	}
 
-	fmt.Println("creating new FeedItem", feed_item.Message)
+	fmt.Println("creating new FeedItem", feed_item.Message, "title:", feed_item.Title)
 	err = db.Create(&feed_item).Error
 
 	if err != nil {

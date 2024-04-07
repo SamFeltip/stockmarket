@@ -248,14 +248,13 @@ function animateHoldStocks() {
     const firstStockHoldModal = new bootstrap.Modal(`#stock-hold-modal-${insightId}`, {
         keyboard: false,
         focus: true,
-        backdrop: "static"
     })
 
     firstStockHoldModal.show();
 
     const gameID = document.querySelector("#gameID").value;
 
-    const socket = new WebSocket(`ws://localhost:4040/hold-stock-waiting/${gameID}`);
+    const socket = new WebSocket(`ws://${window.location.host}/hold-stock-waiting/${gameID}`);
 
     socket.onmessage = function (event) {
         const message = JSON.parse(event.data);

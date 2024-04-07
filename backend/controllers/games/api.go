@@ -87,6 +87,7 @@ func StartGame(gameID string) (templ.Component, error) {
 }
 
 func PlayAction(gameID string, current_user models.User, db *gorm.DB) (templ.Component, error) {
+	fmt.Println("play action")
 
 	game, err := models.FindGame(gameID, db)
 

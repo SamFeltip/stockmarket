@@ -53,23 +53,25 @@ func ReadPump(c *websocketModels.Client) {
 
 	for {
 		_, message, err := c.Conn.ReadMessage()
+		fmt.Println("new message recieved: ", message)
 		if err != nil {
 			// if message is websocket: close 1001 (going away)
 			if !gorrilaws.IsCloseError(err, gorrilaws.CloseGoingAway) {
 				fmt.Println("Failed to read message:", err)
 				break
+			} else {
+				fmt.Println("Websocket closed:", err)
+
+				fmt.Println("details:", c.CurrentPlayerID, c.GameID)
+				err := models.PlayerLeft(c.CurrentPlayerID, db)
+
+				if err != nil {
+					fmt.Println("error setting player to inactive:", err)
+				}
+
+				break
 			}
 
-			fmt.Println("Websocket closed:", err)
-
-			fmt.Println("details:", c.CurrentPlayerID, c.GameID)
-			err := models.PlayerLeft(c.CurrentPlayerID, db)
-
-			if err != nil {
-				fmt.Println("error setting player to inactive:", err)
-			}
-
-			break
 		}
 
 		// convery msg to json
