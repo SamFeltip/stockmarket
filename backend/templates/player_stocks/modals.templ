@@ -11,7 +11,7 @@ templ BuyModal(playerStockDisplay models.PlayerStockDisplay, playerStockPlayer m
 		<div class="modal-dialog">
 			<div class="modal-content">
                 <div class="modal-header d-flex justify-content-between flex-fill">
-				    @PlayerStockPreview(playerStockDisplay)
+				    @PlayerStockPreview(playerStockDisplay, true)
                 </div>
 
 				<div class="modal-body d-flex flex-column row-gap-3">
@@ -50,9 +50,9 @@ templ BuyModal(playerStockDisplay models.PlayerStockDisplay, playerStockPlayer m
 										readonly
 									/>
 								</div>
-								<div class="equals d-flex justify-content-center align-items-center flex-fill">
+								<p class="equals d-flex justify-content-center align-items-center flex-fill">
 									=
-								</div>
+								</p>
 								<div class="input-cash-group input-group mb-0">
 									<span class="input-group-text text-black bg-white pe-1 border-end-0" >
 										£
@@ -106,7 +106,7 @@ templ SellModal(playerStockDisplay models.PlayerStockDisplay, playerStockPlayer 
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header d-flex justify-content-between flex-fill">
-					@PlayerStockPreview(playerStockDisplay)
+					@PlayerStockPreview(playerStockDisplay, true)
 				</div>
 
 				<div class="modal-body d-flex flex-column row-gap-3">
@@ -145,9 +145,9 @@ templ SellModal(playerStockDisplay models.PlayerStockDisplay, playerStockPlayer 
 										readonly
 									/>
 								</div>
-								<div class="equals d-flex justify-content-center align-items-center flex-fill">
+								<p class="equals d-flex justify-content-center align-items-center flex-fill">
 									=
-								</div>
+								</p>
 								<div class="input-cash-group input-group mb-0">
 									<span class="input-group-text text-black bg-white pe-1 border-end-0">
 										£

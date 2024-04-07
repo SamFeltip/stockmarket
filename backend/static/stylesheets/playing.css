@@ -8,13 +8,16 @@
         "profile    now-playing header"
         "content    content     content";
 
-    grid-template-columns: 1fr 3fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: auto 1fr;
     grid-gap: 16px;
 }
 
 @media screen and (min-width: 992px) {
+
     #game-grid {
+        grid-template-columns: 1fr 3fr 1fr;
+
         grid-template-areas: 
         "profile    now-playing header"
         "content    content     feed";
@@ -95,7 +98,7 @@
         "buy-button sell-button";
 
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 120px 1fr auto auto;
+    grid-template-rows: auto 1fr auto auto; 
 }
 
 #game-stock-info.watching {
@@ -195,9 +198,19 @@
 
 
 
+#insightModalButton {
+    width: 4rem; height: 4rem;
+}
 
 #insightModalButton.wiggle-jump {
+    
     animation: exclaim 0.5s ease-in-out 2.5s 1;
+}
+
+@media screen and (min-width: 992px) {
+    #insightModalButton {
+        right: 2rem;
+    }
 }
 
 @keyframes exclaim {
@@ -228,7 +241,7 @@
 
 
 #play-notif {
-    animation: fadeout 0.5s ease-in-out 1s;
+    animation: fadeout 1.5s ease-in-out 1s;
     animation-fill-mode: forwards;
 }
 

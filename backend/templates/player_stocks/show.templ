@@ -10,47 +10,63 @@ templ TotalInsight(playerStockDisplay models.PlayerStockDisplay) {
 	if playerStockDisplay.TotalInsight > 0 {
 		<div class="total-insight text-success d-flex flex-row align-items-center">
 			<img height="6px" class="pe-2" src="/static/imgs/icons/stock_up.svg" alt="stock up arrow"/>
-			<p style="font-size: 0.75rem">
+			<p>
 				£{ fmt.Sprintf("%.2f", playerStockDisplay.TotalInsight) }
 			</p>
 		</div>
 	} else if playerStockDisplay.TotalInsight < 0 {
 		<div class="total-insight text-danger d-flex flex-row align-items-center">
 			<img height="6px" class="pe-2" src="/static/imgs/icons/stock_down.svg" alt="stock down arrow"/>
-			<p style="font-size: 0.75rem">
+			<p>
 				£{ fmt.Sprintf("%.2f", playerStockDisplay.TotalInsight) }
 			</p>
 		</div>
 	} else {
 		<div class="total-insight text-secondary">
-			<p style="font-size: 0.75rem">
+			<p>
 				boring!
 			</p>
 		</div>
 	}
 }
 
-templ PlayerStockPreview(playerStockDisplay models.PlayerStockDisplay) {
-	<div class="d-flex flex-row align-items-center">
-		<img class="img-primary" style="display: none; width: 100%; max-width: 30px;" src={ playerStockDisplay.StockImagePath } alt={ playerStockDisplay.StockName }/>
-		<img class="img-secondary" style="width: 100%; max-width: 30px;" src={ playerStockDisplay.StockSecondaryImagePath } alt={ playerStockDisplay.StockName }/>
-	</div>
-	<div class="text-end">
-		<p>
-			£{ fmt.Sprintf("%.2f", playerStockDisplay.GameStockValue) }
-		</p>
-		@TotalInsight(playerStockDisplay)
+templ PlayerStockPreview(playerStockDisplay models.PlayerStockDisplay, isLarge bool) {
+	<div class={ "flex-fill d-flex justify-content-between align-items-center", templ.KV("flex-row", isLarge), templ.KV("flex-column flex-xl-row", !isLarge)}>
+		<div class="d-flex flex-row align-items-center gap-2">
+			if isLarge {
+				<div>
+					<img class="img-primary w-100" style="max-width: 30px;" src={ playerStockDisplay.StockImagePath } alt={ playerStockDisplay.StockName }/>
+				</div>
+			} else {
+				<div>
+					<img class="img-primary w-100" style="display: none; max-width: 30px;" src={ playerStockDisplay.StockImagePath } alt={ playerStockDisplay.StockName }/>
+					<img class="img-secondary w-100" style="max-width: 30px;" src={ playerStockDisplay.StockSecondaryImagePath } alt={ playerStockDisplay.StockName }/>
+				</div>
+			}
+			<p class={templ.KV("d-none", !isLarge), templ.KV("d-block", isLarge)}>
+				{ playerStockDisplay.StockName }
+			</p>
+		</div>
+		<div class={ "text-end", templ.KV("d-xl-block d-none", !isLarge) }>
+			<p>
+				£{ fmt.Sprintf("%.2f", playerStockDisplay.GameStockValue) }
+			</p>
+			@TotalInsight(playerStockDisplay)
+		</div>
 	</div>
 }
 
-templ PlayerStockPlayer(playerStockPlayerResult models.PlayerStockPlayerResult) {
-	<div id="stocks" class="rounded bg-secondary p-2 d-flex flex-column text-center justify-content-center">
-		<p>
-			{ strconv.Itoa(playerStockPlayerResult.StocksHeld) } Shares held
-		</p>
-		<p>
-			£{ fmt.Sprintf("%.2f", playerStockPlayerResult.StockValue) } stock evaluation
-		</p>
+templ PlayerStockPlayer(playerStockDisplay models.PlayerStockDisplay, playerStockPlayerResult models.PlayerStockPlayerResult) {
+	<div id="stocks" class="rounded p-3 pb-5 d-flex flex-column gap-2 text-center" style="background-color: #EFEFEF">
+		@PlayerStockPreview(playerStockDisplay, true)
+		<div>
+			<h4 class="text-black">
+				{ strconv.Itoa(playerStockPlayerResult.StocksHeld) } Shares held
+			</h4>
+			<p>
+				£{ fmt.Sprintf("%.2f", playerStockPlayerResult.StockValue) } stock evaluation
+			</p>
+		</div>
 	</div>
 }
 
@@ -180,7 +196,7 @@ templ StockInfo(stockInfoResult models.StockInfoResult) {
 
 templ Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult, playerStockDisplay models.PlayerStockDisplay, investors []models.InvestorResult, insights []models.InsightDisplay, stockInfo models.StockInfoResult, isCurrentPlayer bool) {
 	<div id="game-stock-info" class={ "gap-3 flex-fill bg-white text-black rounded-bottom p-3", templ.KV("watching", !isCurrentPlayer) }>
-		@PlayerStockPlayer(playerStockPlayer)
+		@PlayerStockPlayer(playerStockDisplay, playerStockPlayer)
 		@Investors(investors)
 		<div id="insights" class="d-grid gap-2" style="grid-template-rows: auto 1fr;">
 			<div class="d-flex justify-content-between">

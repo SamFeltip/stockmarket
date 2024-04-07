@@ -111,14 +111,14 @@ func Feed(feed []models.FeedItem) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h3><p style=\"font-size: 0.75rem;\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h3><p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(feedItem.Message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/feed_items/show.templ`, Line: 24, Col: 65}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/feed_items/show.templ`, Line: 24, Col: 36}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {

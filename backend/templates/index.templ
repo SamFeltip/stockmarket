@@ -10,11 +10,11 @@ templ DeferedScripts() {
 }
 
 templ Scripts() {
-	<script src="https://unpkg.com/htmx.org@1.9.5" integrity="sha384-xcuj3WpfgjlKF+FXhSQFQ0ZNr39ln+hwjN3npfM9VBnUskLolQAcN80McRIVOPuO" crossorigin="anonymous"></script>
-	<script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
+	// <script src="https://unpkg.com/htmx.org@1.9.5" integrity="sha384-xcuj3WpfgjlKF+FXhSQFQ0ZNr39ln+hwjN3npfM9VBnUskLolQAcN80McRIVOPuO" crossorigin="anonymous"></script>
+	// <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
 
-	// <script src="/static/packages/htmx.min.js"></script>
-	// <script src="/static/packages/ws.js"></script>
+	<script src="/static/packages/htmx.min.js"></script>
+	<script src="/static/packages/ws.js"></script>
 
 	<script type="module" src="/static/js/playing/calculator.js"></script>
 	<script src="/static/js/marketClosed/game_stock_insights.js"></script>
@@ -82,7 +82,7 @@ templ Base(title string, body templ.Component, c *gin.Context) {
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
-			// <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<link rel="icon" type="" href="/static/imgs/logo.svg"/>
 			<link rel="manifest" href="/static/manifest.json"/>
 	

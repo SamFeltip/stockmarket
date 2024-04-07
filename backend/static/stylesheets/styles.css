@@ -28,9 +28,9 @@ h1#stockmarket-header.sh-small {
     font-size: 2.4vw;
 }
 
-p {
+p, h6, .form-control, .input-group-text {
     margin-bottom: 0;
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-style: normal;
     line-height: normal;
     letter-spacing: 0.04rem;
@@ -47,6 +47,10 @@ p {
 
     --bs-secondary-rgb: 217,217,217;
 
+}
+
+.text-secondary {
+    color: #a1a1a1 !important;
 }
 
 .nav {
@@ -84,6 +88,10 @@ p {
 .container, .container-fluid {
     background-color: var(--bs-container-bg);
 
+}
+
+.btn {
+    --bs-btn-font-size: 1.2rem;
 }
 
 .btn-primary {
@@ -128,6 +136,7 @@ p {
 .form-control {
     background-color: #fff;
     color: black;
+    padding: 0.5rem 1rem;
 }
 
 .form-control:focus {
@@ -141,6 +150,8 @@ p {
     --bs-modal-color: black;
     --bs-heading-color: black;
     --bs-modal-margin: 20vh;
+    --bs-modal-header-padding: 1.2rem 1.2rem;
+    --bs-modal-padding: 1.2rem;
 }
 
 .modal-title {
@@ -264,5 +275,11 @@ h2.primary {
 
     main {
         opacity: 0.1;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .position-sm-absolute {
+        position: absolute !important;
     }
 }
