@@ -83,22 +83,35 @@
     transition: transform 0.5s ease;
 }
 
-
-
-
-
-
-
 #game-stock-info {
     display: grid;
     grid-template-areas: 
+        "stocks stocks"
+        "investors investors"
+        "insights insights"
+        "stock-info stock-info"
+        "price-charts price-charts"
+        "buy-button sell-button";
+
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto; 
+}
+
+
+@media screen and (min-width: 992px) {
+    
+    #game-stock-info {
+        
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto 1fr auto auto; 
+        
+        grid-template-areas: 
         "stocks investors"
         "insights price-charts"
         "insights stock-info"
         "buy-button sell-button";
-
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto 1fr auto auto; 
+    }
+    
 }
 
 #game-stock-info.watching {
