@@ -110,7 +110,7 @@ func PlayerStockPreview(playerStockDisplay models.PlayerStockDisplay, isLarge bo
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var8 = []any{"flex-fill d-flex justify-content-between align-items-center", templ.KV("flex-row", isLarge), templ.KV("flex-column flex-xl-row", !isLarge)}
+		var templ_7745c5c3_Var8 = []any{"d-flex justify-content-between align-items-center", templ.KV("flex-row", isLarge), templ.KV("flex-fill flex-column flex-xl-row", !isLarge)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var8...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

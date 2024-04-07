@@ -31,7 +31,7 @@ templ TotalInsight(playerStockDisplay models.PlayerStockDisplay) {
 }
 
 templ PlayerStockPreview(playerStockDisplay models.PlayerStockDisplay, isLarge bool) {
-	<div class={ "flex-fill d-flex justify-content-between align-items-center", templ.KV("flex-row", isLarge), templ.KV("flex-column flex-xl-row", !isLarge)}>
+	<div class={ "d-flex justify-content-between align-items-center", templ.KV("flex-row", isLarge), templ.KV("flex-fill flex-column flex-xl-row", !isLarge)}>
 		<div class="d-flex flex-row align-items-center gap-2">
 			if isLarge {
 				<div>

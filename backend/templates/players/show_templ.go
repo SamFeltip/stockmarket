@@ -62,7 +62,7 @@ func NoPlayer(err error) templ.Component {
 	})
 }
 
-func PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models.InsightDisplay) templ.Component {
+func PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models.InsightDisplay, isCurrentPlayer bool) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -75,7 +75,7 @@ func PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var5 = []any{"flex-fill p-3 gap-3 ", templ.KV("is-current-player", len(insights) > 0)}
+		var templ_7745c5c3_Var5 = []any{"flex-fill p-3 ", templ.KV("is-current-player", len(insights) > 0)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var5...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -131,7 +131,17 @@ func PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if isCurrentPlayer {
+				templ_7745c5c3_Err = playerStockTempl.TotalInsight(ps).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

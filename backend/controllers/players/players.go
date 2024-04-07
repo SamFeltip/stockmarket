@@ -22,7 +22,7 @@ func Show(playerID uint, currentPlayerID uint, db *gorm.DB) templ.Component {
 	insights := []models.InsightDisplay{}
 	if playerID != currentPlayerID {
 		fmt.Println("not showing insights for other players")
-		pageComponent := templates.PlayerPortfolio(playerStockDisplays, insights)
+		pageComponent := templates.PlayerPortfolio(playerStockDisplays, insights, false)
 		return pageComponent
 	}
 
@@ -30,11 +30,11 @@ func Show(playerID uint, currentPlayerID uint, db *gorm.DB) templ.Component {
 	err = db.Table("player_insights as pi").
 		Select("i.value, s.name as stock_name, s.image_path as stock_image_path, s.display as stock_display").
 		Joins("inner join insights as i on i.id = pi.insight_id").
+		Joins("inner join player_stocks as ps ON pi.player_stock_id = ps.id").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 		Joins("inner join games as g on g.id = gs.game_id").
-		Joins("inner join player_stocks as ps ON (pi.player_stock_id = ps.id and pi.period = g.current_period)").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
-		Where("ps.player_id = ?", playerID).
+		Where("ps.player_id = ? and pi.period = g.current_period", playerID).
 		Order("s.Variation").
 		Scan(&insights).Error
 
@@ -42,6 +42,6 @@ func Show(playerID uint, currentPlayerID uint, db *gorm.DB) templ.Component {
 		fmt.Println("error loading insights:", err)
 	}
 
-	pageComponent := templates.PlayerPortfolio(playerStockDisplays, insights)
+	pageComponent := templates.PlayerPortfolio(playerStockDisplays, insights, true)
 	return pageComponent
 }

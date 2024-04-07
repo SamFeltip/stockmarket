@@ -306,7 +306,7 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 					id="stock-tabs"
 					class="h-100 tabs-display-center"
 				>
-					<ol class="h-100 w-100 position-absolute nav nav-tabs d-flex justify-content-between">
+					<ol class="h-100 w-100 position-absolute nav nav-tabs d-flex flex-nowrap justify-content-between">
 						for _, ps := range currentPlayerDisplay.PlayerStocks {
 							<li class="nav-item d-flex flex-fill">
 								<a
@@ -328,7 +328,7 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 					class="h-100 w-100 position-relative tabs-display-right"
 					style="top: -100%;"
 				>
-					<ol class="h-100 w-100 position-absolute  nav nav-tabs d-flex justify-content-between">
+					<ol class="h-100 w-100 position-absolute nav nav-tabs d-flex flex-nowrap justify-content-between">
 						for _, player := range players {
 							<li class="nav-item d-flex flex-fill">
 								<a
