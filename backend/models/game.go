@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"math"
 	"math/rand"
 	"strconv"
 
@@ -328,11 +329,14 @@ func (game *Game) UpdatePeriod(db *gorm.DB) error {
 
 	// loop through gameStockChanges and update gameStocks
 	for _, gameStockChange := range gameStockChanges {
+
+		newValue := math.Max(0, gameStockChange.Value+gameStockChange.TotalChange)
+
 		gameStock := GameStock{}
 		err = db.
 			Model(&gameStock).
 			Where("id = ?", gameStockChange.GameStockID).
-			Update("value", gameStockChange.Value+gameStockChange.TotalChange).Error
+			Update("value", newValue).Error
 
 		if err != nil {
 			fmt.Println("could not update game stock", err)
