@@ -93,11 +93,11 @@
     display: grid;
     grid-template-areas:
         "stocks stocks"
+        "buy-button sell-button"
         "investors investors"
         "insights insights"
         "stock-info stock-info"
-        "price-charts price-charts"
-        "buy-button sell-button";
+        "price-charts price-charts";
 
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto 1fr auto auto auto;
