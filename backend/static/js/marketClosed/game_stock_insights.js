@@ -30,7 +30,9 @@ function animateGameStocks() {
                         /** @type {NodeListOf<HTMLDivElement>} */
                         const gameInsights = document.querySelectorAll("div.game-insight")
                         gameInsights.forEach(gameInsight => {
-                            gameInsight.style.display = "none"
+                            gameInsight.classList.remove("d-sm-grid")
+                            gameInsight.classList.add("d-none")
+                            // gameInsight.style.display = "none"
                         })
 
                         const stockTotalInsightValue = gameStock.querySelector(".stock-total-insight-value")
@@ -47,9 +49,10 @@ function animateGameStocks() {
                         gameStockInsights.forEach(gsi => {
                             gsi.querySelector(".stock-total-insight-value").innerText = value.toFixed(2)
                         })
-
-
-                        gameStockInsight.style.display = "grid"
+                        
+                        gameStockInsight.classList.remove("d-none")
+                        gameStockInsight.classList.add("d-sm-grid")
+                        // gameStockInsight.style.display = "grid"
                         resolve()
                     }, index * 2000);
                 })

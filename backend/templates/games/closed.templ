@@ -14,11 +14,15 @@ templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []mode
 
 		<div id="insight-view" class="card card-green p-4 rounded border border-5 border-white">
 			for _, gameInsight := range gameInsights {
-				<div style="display: none; grid-template-columns: 2fr 1fr;" class={ "game-insight", "game-stock-insight-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10), "gap-3 h-100" } data-game-stock-id={ strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
-					<div style="background-color: #3C5F2F;" class="rounded d-flex flex-row justify-content-around align-items-center">
+				<div 
+					style="grid-template-columns: 2fr 1fr;" 
+					class={ "game-insight", "game-stock-insight-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10), "gap-3 h-100 d-none" } 
+					data-game-stock-id={ strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }
+				>
+					<div style="background-color: #3C5F2F;" class="p-4 gap-2 rounded d-flex flex-row justify-content-around align-items-center">
 						<div id={ "game-stock-view-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) } class="game-stock-view d-flex flex-column align-items-center">
 							<div>
-								<img height="120px" src={ gameInsight.ImagePath } alt={ gameInsight.Name }/>
+								<img class="w-100" src={ gameInsight.ImagePath } alt={ gameInsight.Name }/>
 							</div>
 							<h2 class="text-capitalize">
 								{ gameInsight.Name }
@@ -41,7 +45,7 @@ templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []mode
 							</div>
 						</div>
 					</div>
-					<div class="game-insight-card rounded bg-white text-black d-flex flex-column align-items-center justify-content-center">
+					<div class="game-insight-card p-4 gap-2  rounded bg-white text-black d-flex flex-column align-items-center justify-content-center">
 						<img height="120px" src={ gameInsight.ImagePath } alt={ gameInsight.Name }/>
 						<div class="d-flex flex-row gap-2 align-items-center">
 							if gameInsight.InsightValue > 0 {
@@ -61,7 +65,7 @@ templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []mode
 			}
 		</div>
 		
-		<div id="stock-view" class="card card-green p-4 rounded d-flex flex-row justify-content-between align-items-center border-5 border-white">
+		<div id="stock-view" class="card card-green p-4 rounded d-flex flex-sm-row flex-column gap-3 justify-content-between align-items-center border-5 border-white">
 			<h2>
 				Stock Values:
 			</h2>
@@ -79,11 +83,11 @@ templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []mode
 			}
 		</div>
 
-		<div id="player-view" class="card card-green p-4 rounded  d-flex flex-row justify-content-between align-items-center">
+		<div id="player-view" class="card card-green p-4 rounded  d-flex flex-sm-row flex-column justify-content-between align-items-center">
 			<h2>
 				Net Worth:
 			</h2>
-			<div class="d-flex w-100 gap-5 flex-row justify-content-center">
+			<div class="d-flex w-100 gap-5 flex-sm-row flex-column justify-content-center">
 			for _, player := range players {
 				<div class="d-flex flex-column align-items-center">
 					<img height="80px" width="80px" class="rounded" src={ player.UserProfileRoot } alt={ player.UserName }/>

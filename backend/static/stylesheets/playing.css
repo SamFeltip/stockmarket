@@ -96,11 +96,10 @@
         "buy-button sell-button"
         "investors investors"
         "insights insights"
-        "stock-info stock-info"
-        "price-charts price-charts";
+        "stock-info stock-info";
 
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto 1fr auto auto auto;
+    grid-template-rows: auto auto 1fr auto auto;
 }
 
 #game-stock-info.watching {
@@ -109,7 +108,6 @@
         "stocks stocks"
         "investors investors"
         "insights insights"
-        "price-charts price-charts"
         "stock-info stock-info";
 
 }
@@ -120,11 +118,10 @@
     #game-stock-info {
 
         grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto 1fr auto auto;
+        grid-template-rows: auto 1fr auto;
 
         grid-template-areas:
             "stocks investors"
-            "insights price-charts"
             "insights stock-info"
             "buy-button sell-button";
     }
@@ -133,9 +130,7 @@
 
         grid-template-areas:
             "stocks investors"
-            "insights price-charts"
             "insights stock-info";
-    
     }
 
 }
@@ -152,12 +147,6 @@
 
 #game-stock-info>#insights {
     grid-area: insights;
-}
-
-#game-stock-info>#price-charts {
-    grid-area: price-charts;
-    display: grid;
-    grid-template-rows: auto 1fr;
 }
 
 #game-stock-info>#stock-info {
@@ -302,7 +291,7 @@
 
 
 #play-notif {
-    animation: fadeout 1.5s ease-in-out 1s;
+    animation: fadeout 2.5s ease-in-out 1s;
     animation-fill-mode: forwards;
 }
 

@@ -205,14 +205,6 @@ templ Show(playerStockID uint, playerStockPlayer models.PlayerStockPlayerResult,
 			</div>
 			@Insights(insights)
 		</div>
-		<div id="price-charts" class="gap-2">
-			<h4 class="text-black">Price chart</h4>
-			<div class="card flex-fill">
-				<div id="graph" class="card-body d-flex justify-content-center align-items-center">
-					GRAPH!
-				</div>
-			</div>
-		</div>
 		@StockInfo(stockInfo)
 		if isCurrentPlayer {
 			<button id="buy-button" class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#buyModal">

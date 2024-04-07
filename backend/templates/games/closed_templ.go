@@ -43,12 +43,12 @@ func Closed(gameID string, gameInsights []models.GameInsight, gameStocks []model
 			return templ_7745c5c3_Err
 		}
 		for _, gameInsight := range gameInsights {
-			var templ_7745c5c3_Var3 = []any{"game-insight", "game-stock-insight-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10), "gap-3 h-100"}
+			var templ_7745c5c3_Var3 = []any{"game-insight", "game-stock-insight-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10), "gap-3 h-100 d-none"}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div style=\"display: none; grid-template-columns: 2fr 1fr;\" class=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div style=\"grid-template-columns: 2fr 1fr;\" class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -64,7 +64,7 @@ func Closed(gameID string, gameInsights []models.GameInsight, gameStocks []model
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div style=\"background-color: #3C5F2F;\" class=\"rounded d-flex flex-row justify-content-around align-items-center\"><div id=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div style=\"background-color: #3C5F2F;\" class=\"p-4 gap-2 rounded d-flex flex-row justify-content-around align-items-center\"><div id=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -72,7 +72,7 @@ func Closed(gameID string, gameInsights []models.GameInsight, gameStocks []model
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"game-stock-view d-flex flex-column align-items-center\"><div><img height=\"120px\" src=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"game-stock-view d-flex flex-column align-items-center\"><div><img class=\"w-100\" src=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -95,7 +95,7 @@ func Closed(gameID string, gameInsights []models.GameInsight, gameStocks []model
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(gameInsight.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/closed.templ`, Line: 23, Col: 26}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/closed.templ`, Line: 27, Col: 26}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -191,13 +191,13 @@ func Closed(gameID string, gameInsights []models.GameInsight, gameStocks []model
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", gameInsight.InsightValue))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/closed.templ`, Line: 38, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/closed.templ`, Line: 42, Col: 56}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div></div></div><div class=\"game-insight-card rounded bg-white text-black d-flex flex-column align-items-center justify-content-center\"><img height=\"120px\" src=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div></div></div><div class=\"game-insight-card p-4 gap-2  rounded bg-white text-black d-flex flex-column align-items-center justify-content-center\"><img height=\"120px\" src=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -240,7 +240,7 @@ func Closed(gameID string, gameInsights []models.GameInsight, gameStocks []model
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", gameInsight.InsightValue))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/closed.templ`, Line: 52, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/closed.templ`, Line: 56, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -253,7 +253,7 @@ func Closed(gameID string, gameInsights []models.GameInsight, gameStocks []model
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(gameInsight.Description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/closed.templ`, Line: 56, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/closed.templ`, Line: 60, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -264,7 +264,7 @@ func Closed(gameID string, gameInsights []models.GameInsight, gameStocks []model
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div id=\"stock-view\" class=\"card card-green p-4 rounded d-flex flex-row justify-content-between align-items-center border-5 border-white\"><h2>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div id=\"stock-view\" class=\"card card-green p-4 rounded d-flex flex-sm-row flex-column gap-3 justify-content-between align-items-center border-5 border-white\"><h2>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -344,7 +344,7 @@ func Closed(gameID string, gameInsights []models.GameInsight, gameStocks []model
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", gameStock.Value))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/closed.templ`, Line: 75, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/closed.templ`, Line: 79, Col: 73}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -355,7 +355,7 @@ func Closed(gameID string, gameInsights []models.GameInsight, gameStocks []model
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div id=\"player-view\" class=\"card card-green p-4 rounded  d-flex flex-row justify-content-between align-items-center\"><h2>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div id=\"player-view\" class=\"card card-green p-4 rounded  d-flex flex-sm-row flex-column justify-content-between align-items-center\"><h2>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -364,7 +364,7 @@ func Closed(gameID string, gameInsights []models.GameInsight, gameStocks []model
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2><div class=\"d-flex w-100 gap-5 flex-row justify-content-center\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2><div class=\"d-flex w-100 gap-5 flex-sm-row flex-column justify-content-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -397,7 +397,7 @@ func Closed(gameID string, gameInsights []models.GameInsight, gameStocks []model
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(player.Cash))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/closed.templ`, Line: 89, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/closed.templ`, Line: 93, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {

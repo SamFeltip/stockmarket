@@ -865,7 +865,7 @@ func PlayNotification(feedItem models.FeedItem) templ.Component {
 				})
 
 				document.querySelector("main").style.opacity = 1;
-			}, 1500);
+			}, 2500);
 		`
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var45)
 		if templ_7745c5c3_Err != nil {

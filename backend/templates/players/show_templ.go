@@ -97,12 +97,12 @@ func PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><div class=\"p-4 d-flex flex-row justify-content-between flex-wrap\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><div class=\"p-4 p-sm-0 d-flex flex-row justify-content-between flex-wrap\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, ps := range playerStocks {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex flex-column align-items-center p-4\"><img height=\"50px\" src=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex flex-column align-items-center px-4\"><img height=\"50px\" src=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -182,7 +182,7 @@ func PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []models
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><div id=\"graph\" class=\"d-grid gap-3\"><div class=\"card flex-fill\"><div class=\"card-body text-center d-flex flex-column justify-content-center align-items-center\"><p class=\"\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><div id=\"graph\" class=\"d-flex flex-row gap-3\"><div class=\"card flex-fill\"><div class=\"card-body text-center d-flex flex-column justify-content-center align-items-center\"><p class=\"\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
