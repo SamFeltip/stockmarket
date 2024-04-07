@@ -428,7 +428,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			}
 		}
 		if len(specialInsights) > 0 {
-			var templ_7745c5c3_Var18 = []any{"btn btn-primary position-relative position-sm-absolute", templ.KV("wiggle-jump", showNotif)}
+			var templ_7745c5c3_Var18 = []any{"btn btn-primary position-relative position-lg-absolute", templ.KV("wiggle-jump", showNotif)}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var18...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -577,7 +577,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"p-2 position-absolute end-0 top-0\"><button class=\"btn btn-primary \"><svg height=\"16px\" width=\"16px\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><!--")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"p-2 position-absolute end-0 top-0\"><button id=\"feedAsideButton\" class=\"btn btn-primary d-block d-lg-none\" data-bs-toggle=\"offcanvas\" data-bs-target=\"#offcanvasResponsive\" aria-controls=\"offcanvasResponsive\"><svg height=\"16px\" width=\"16px\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><!--")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -672,7 +672,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			var templ_7745c5c3_Var35 string
 			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(player.UserName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 340, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 346, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 			if templ_7745c5c3_Err != nil {
@@ -690,7 +690,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 			var templ_7745c5c3_Var37 string
 			templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(player.Cash))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 343, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 349, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 			if templ_7745c5c3_Err != nil {
@@ -717,7 +717,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div></div><aside class=\"rounded bg-white text-black p-3 d-none d-lg-grid\"><div class=\"d-grid\" style=\"grid-template-rows: auto 1fr;\"><h2 class=\"text-black\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div></div><aside id=\"offcanvasResponsive\" class=\"rounded-start rounded-lg bg-white text-black p-3 d-lg-grid offcanvas-lg offcanvas-end\" tabindex=\"-1\" aria-labelledby=\"offcanvasResponsiveLabel\"><div class=\"d-grid\" style=\"grid-template-rows: auto 1fr;\"><div class=\"d-flex flex-row justify-content-between\"><h2 class=\"text-black\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -726,7 +726,7 @@ func Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerD
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2><div class=\"d-flex\"><div id=\"feed-body\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2><button type=\"button\" class=\"btn-close d-block d-lg-none\" data-bs-dismiss=\"offcanvas\" data-bs-target=\"#offcanvasResponsive\" aria-label=\"Close\"></button></div><div class=\"d-flex\"><div id=\"feed-body\" hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -825,7 +825,7 @@ func PlayNotification(feedItem models.FeedItem) templ.Component {
 		var templ_7745c5c3_Var42 string
 		templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinStringErrs(feedItem.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 412, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 427, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var42))
 		if templ_7745c5c3_Err != nil {
@@ -838,7 +838,7 @@ func PlayNotification(feedItem models.FeedItem) templ.Component {
 		var templ_7745c5c3_Var43 string
 		templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.JoinStringErrs(feedItem.Message)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 413, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/games/playing.templ`, Line: 428, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var43))
 		if templ_7745c5c3_Err != nil {

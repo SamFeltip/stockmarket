@@ -279,7 +279,12 @@ h2.primary {
 }
 
 @media screen and (min-width: 992px) {
-    .position-sm-absolute {
+    .position-lg-absolute {
         position: absolute !important;
+    }
+
+
+    .rounded-lg {
+        border-radius: var(--bs-border-radius)!important;
     }
 }
