@@ -17,9 +17,9 @@ templ PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []model
 	<div id="player-portfolio" class={ "flex-fill p-3 gap-3", templ.KV("is-current-player", len(insights) > 0) }>
 		<div id="portfolio">
 			<h4 class="text-black">Portfolio</h4>
-			<div class="d-flex flex-row justify-content-between flex-wrap">
+			<div class="p-4 d-flex flex-row justify-content-between flex-wrap">
 				for _, ps := range playerStocks {
-					<div class="d-flex flex-column align-items-center p-2">
+					<div class="d-flex flex-column align-items-center p-4">
 						<img height="50px" src={ ps.StockImagePath } alt={ ps.StockName }/>
 						<p class="text-black">{ strconv.Itoa(ps.PlayerStockQuantity) }</p>
 						if isCurrentPlayer {
@@ -62,7 +62,7 @@ templ PlayerPortfolio(playerStocks []models.PlayerStockDisplay, insights []model
 		</div>
 		<div id="player-info" class="d-flex flex-column gap-2">
 			<h4 class="text-black">Info</h4>
-			<div id="info-details" class="d-grid gap-3">
+			<div id="info-details" class="d-flex flex-column d-sm-grid gap-3">
 				<div class="card flex-fill">
 					<div class="card-body text-center">
 						<p class="">
