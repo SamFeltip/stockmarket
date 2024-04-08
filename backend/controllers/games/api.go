@@ -132,7 +132,9 @@ func PlayAction(gameID string, current_user models.User, db *gorm.DB) (templ.Com
 		return templates.Error(err), err
 	}
 
-	return templates.Loading(), nil
+	route := templ.SafeURL(fmt.Sprintf("/game/show/%s", game.ID))
+
+	return templates.Loading(route), nil
 }
 
 func NextPeriod(gameID string, db *gorm.DB) (templ.Component, error) {
@@ -158,7 +160,9 @@ func NextPeriod(gameID string, db *gorm.DB) (templ.Component, error) {
 		return templates.Error(err), err
 	}
 
-	return templates.Loading(), nil
+	route := templ.SafeURL(fmt.Sprintf("/game/show/%s", game.ID))
+
+	return templates.Loading(route), nil
 }
 
 func NextPeriodAnimate(gameID string, db *gorm.DB) (templ.Component, error) {
@@ -186,10 +190,18 @@ func NextPeriodAnimate(gameID string, db *gorm.DB) (templ.Component, error) {
 		return templates.Error(err), err
 	}
 
-	return templates.Loading(), nil
+	route := templ.SafeURL(fmt.Sprintf("/game/show/%s", game.ID))
+	return templates.Loading(route), nil
 }
 
 func HoldStock(gameID string, oldInsightId uint, db *gorm.DB) (templ.Component, error) {
+
+	err := models.DeletePlayerInsights(gameID, oldInsightId, db)
+
+	if err != nil {
+		fmt.Println("could not delete player insights", err)
+		return templates.Error(err), err
+	}
 
 	nextInsightValue, err := models.GetNextInsightValue(gameID, oldInsightId, db)
 
@@ -204,9 +216,8 @@ func HoldStock(gameID string, oldInsightId uint, db *gorm.DB) (templ.Component, 
 		return temp, err
 	}
 
-	err = models.DeletePlayerInsights(gameID, oldInsightId, db)
-
 	BroadcastStockHold(gameID, nextInsightValue, db)
 
-	return templates.Loading(), nil
+	route := templ.SafeURL(fmt.Sprintf("/game/show/%s", gameID))
+	return templates.Loading(route), nil
 }

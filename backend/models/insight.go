@@ -132,12 +132,16 @@ func GetNextInsightValue(gameID string, oldInsightId uint, db *gorm.DB) (uint, e
 
 func DeletePlayerInsights(gameID string, oldInsightId uint, db *gorm.DB) error {
 
+	fmt.Println("deleting player insights for ", oldInsightId, " in game ", gameID)
+
 	insight := Insight{}
 	err := db.Model(insight).Where(oldInsightId).Error
 
 	if err != nil {
 		return err
 	}
+
+	playerInsights := []PlayerInsight{}
 
 	err = db.Table("player_insights as pi").
 		Joins("inner join insights as i on i.id = pi.insight_id").
@@ -146,7 +150,19 @@ func DeletePlayerInsights(gameID string, oldInsightId uint, db *gorm.DB) error {
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 		Joins("inner join games as g on g.id = gs.game_id").
 		Where("gs.game_id = ? AND i.stock_id = ? AND g.current_period = pi.period", gameID, insight.StockID).
-		Delete(&PlayerInsight{}).Error
+		Scan(&playerInsights).Error
 
-	return err
+	if err != nil {
+		fmt.Println("could not find player insights to delete")
+		return err
+	}
+
+	err = db.Table("player_insights").Where("insight_id = ?", oldInsightId).Delete(&playerInsights).Error
+
+	if err != nil {
+		fmt.Println("could not delete player insights", err)
+		return err
+	}
+
+	return nil
 }
