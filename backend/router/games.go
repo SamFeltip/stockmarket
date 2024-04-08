@@ -39,7 +39,7 @@ func CreateGameRoutes() {
 			pageComponent := controllers.Show(gameID, current_user, db)
 			gameWrapper := templates.Base(pageComponent, gameID)
 
-			RenderWithTemplate(gameWrapper, "Game - id", c)
+			RenderWithTemplate(gameWrapper, "Game - "+gameID, c)
 
 		})
 
@@ -203,7 +203,34 @@ func CreateGameRoutes() {
 			pageComponent.Render(ctx, c.Writer)
 		})
 
-	r.POST("/api/games/next",
+	r.POST("/api/games/next_animate",
+		func(c *gin.Context) { middleware.AuthIsPlaying(c) },
+		func(c *gin.Context) {
+			db := database.GetDb()
+			gameID := c.PostForm("gameID")
+
+			if gameID == "" {
+				fmt.Println("no gameID in post request")
+				pageComponent := templates.Error(fmt.Errorf("no gameID in post request"))
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
+
+			fmt.Println("form data gathered", "gameID:", gameID)
+
+			pageComponent, err := controllers.NextPeriodAnimate(gameID, db)
+
+			if err != nil {
+				fmt.Println("error editing player stock", err)
+				return
+			}
+
+			ctx := context.Background()
+			pageComponent.Render(ctx, c.Writer)
+		})
+
+	r.POST("/api/games/next_period",
 		func(c *gin.Context) { middleware.AuthIsPlaying(c) },
 		func(c *gin.Context) {
 			db := database.GetDb()
@@ -223,6 +250,62 @@ func CreateGameRoutes() {
 
 			if err != nil {
 				fmt.Println("error editing player stock", err)
+				return
+			}
+
+			ctx := context.Background()
+			pageComponent.Render(ctx, c.Writer)
+		})
+
+	r.POST("/games/hold_stock",
+		func(ctx *gin.Context) { middleware.AuthIsPlaying(ctx) },
+		func(c *gin.Context) {
+			fmt.Println("hold stock posted")
+
+			db := database.GetDb()
+			gameID := c.PostForm("gameID")
+
+			if gameID == "" {
+				fmt.Println("no gameID in post request")
+				return
+			}
+
+			oldInsightIdString := c.PostForm("insightID")
+
+			if oldInsightIdString == "" {
+				fmt.Println("no playerInsightId in post request")
+				return
+			}
+
+			oldInsightId64, err := strconv.ParseUint(oldInsightIdString, 10, 64)
+
+			if err != nil {
+				fmt.Println("could not convert playerInsightId to int", oldInsightIdString)
+				return
+			}
+
+			oldInsightId := uint(oldInsightId64)
+
+			stockIdString := c.PostForm("stockID")
+
+			if stockIdString == "" {
+				fmt.Println("no stockID in post request")
+				return
+			}
+
+			stockId64, err := strconv.ParseUint(stockIdString, 10, 64)
+
+			if err != nil {
+				fmt.Println("could not convert stockId to int", stockIdString)
+				return
+			}
+
+			stockId := uint(stockId64)
+
+			pageComponent, err := controllers.HoldStock(gameID, oldInsightId, stockId, db)
+
+			if err != nil {
+				fmt.Println("error holding stock", err)
 				return
 			}
 

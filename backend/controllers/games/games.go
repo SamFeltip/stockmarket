@@ -69,7 +69,14 @@ func Show(gameID string, current_user models.User, db *gorm.DB) templ.Component 
 			return gameWrapper
 		}
 
-		pageComponent := templates.Playing(gameDisplay, currentPlayerDisplay, players)
+		specialPlayerInsights, err := models.LoadSpecialPlayerInsights(current_player.ID, db)
+
+		if err != nil {
+			fmt.Println("error loading special insights:", err)
+			return templates.Error(err)
+		}
+
+		pageComponent := templates.Playing(gameDisplay, currentPlayerDisplay, players, specialPlayerInsights, true)
 		return pageComponent
 	case string(models.Closed):
 		gameInsights, err := models.GetGameInsights(game.ID, db)
@@ -79,7 +86,7 @@ func Show(gameID string, current_user models.User, db *gorm.DB) templ.Component 
 			return templates.Error(err)
 		}
 
-		gameStockDisplays, err := models.LoadGameStockDisplays(gameID, db)
+		gameStockDisplays, err := models.LoadGameStockDisplays(gameID, true, db)
 
 		if err != nil {
 			fmt.Println("error loading game stock displays:", err)
@@ -95,6 +102,39 @@ func Show(gameID string, current_user models.User, db *gorm.DB) templ.Component 
 
 		pageComponent := templates.Closed(gameID, gameInsights, gameStockDisplays, playerDisplays)
 		return pageComponent
+	case string(models.SpecialInsights):
+		gameInsights, err := models.LoadSpecialInsights(game.ID, db)
+
+		if err != nil {
+			fmt.Println("error getting game insights:", err)
+			return templates.Error(err)
+		}
+
+		hiddenGameStocks, err := models.LoadGameStockDisplays(gameID, false, db)
+		displayGameStocks, err := models.LoadGameStockDisplays(gameID, true, db)
+
+		if err != nil {
+			fmt.Println("error loading game stock displays:", err)
+			return templates.Error(err)
+		}
+
+		playerDisplays, err := models.LoadPlayerDisplays(gameID, db)
+
+		if err != nil {
+			fmt.Println("error loading player displays:", err)
+			return templates.Error(err)
+		}
+
+		currentPlayerDisplay, err := models.LoadPlayerDisplay(current_player.ID, db)
+
+		if err != nil {
+			fmt.Println("error loading current player display:", err)
+			return templates.Error(err)
+		}
+
+		pageComponent := templates.SpecialInsights(gameID, gameInsights, hiddenGameStocks, displayGameStocks, playerDisplays, currentPlayerDisplay)
+		return pageComponent
+
 	default:
 		fmt.Println("players length", len(players))
 		pageComponent := templates.Waiting(game, players, current_user.ID)

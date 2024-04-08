@@ -16,6 +16,17 @@ script Form() {
 templ Index() {
 	
 	<main class="d-flex flex-column justify-content-center p-2">
+		<style>
+			#home-screen {
+				grid-template-columns: 1fr;
+			}
+
+			@media screen and (min-width: 768px) {
+				#home-screen {
+					grid-template-columns: 1fr 1fr;
+				}
+			}
+		</style>
 		<div class="container-fluid rounded d-flex justify-content-center card card-green" style="max-width: 40rem">
 			<header class="card-header text-center">
 				<h1 id="stockmarket-header">Stockmarket!</h1>
@@ -23,10 +34,8 @@ templ Index() {
 				<a href="/logout"><em>/logout ({templates.GetCurrentUser(ctx).Name})</em></a>
 			</header>
 			<div
-				class="card-body"
-				style="display: grid;
-					grid-template-columns: 1fr 1fr;
-					gap: 10px;"
+				id="home-screen"
+				class="card-body d-grid gap-3"
 			>
 				<form action="/games/show" class="bg-dark rounded text-center p-5">
 					<h3>Join game</h3>

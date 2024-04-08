@@ -14,8 +14,13 @@ script SetTabListeners() {
         stock.addEventListener("click", function(event){
             document.querySelectorAll(".player-stock-tab").forEach((stock) => {
                 stock.classList.remove("active");
+				stock.querySelector(".img-primary").style.display = "none";
+				stock.querySelector(".img-secondary").style.display = "block";
             });
             event.target.classList.add("active");
+
+			stock.querySelector(".img-primary").style.display = "block";
+			stock.querySelector(".img-secondary").style.display = "none";
         });
 
 
@@ -90,6 +95,9 @@ templ SwapDisplayButton() {
 				console.error("current player id or player stock id is null")
 				return
 			}
+
+			const contentWrapper = document.querySelector("#content-wrapper");
+
 			console.log("htmx ajaxing", current_player_id, player_stock_id)
 			const fetchPlayersShow = () => {
 				htmx.ajax(
@@ -122,9 +130,9 @@ templ SwapDisplayButton() {
 			}
 
 			if(showImage === "stocks") {
-				document.startViewTransition ? document.startViewTransition(fetchPlayersShow) : fetchPlayersShow();
+				contentWrapper.startViewTransition ? contentWrapper.startViewTransition(fetchPlayersShow) : fetchPlayersShow();
 			} else if (showImage === "users"){
-				document.startViewTransition ? document.startViewTransition(fetchPlayerStockShow) : fetchPlayerStockShow();
+				contentWrapper.startViewTransition ? contentWrapper.startViewTransition(fetchPlayerStockShow) : fetchPlayerStockShow();
 			}
 		}		
 	</script>
@@ -163,7 +171,7 @@ templ MoveDisplayTabs() {
 	</script>
 }
 
-templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay, players []models.PlayerDisplay) {
+templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay, players []models.PlayerDisplay, specialInsights []models.InsightDisplay, showNotif bool) {
 	<div id="game-grid" class="p-3">
 		<div id="profile" class="card card-green d-grid align-items-center align-items-center py-2 px-4 gap-2" style="grid-template-columns: 60px auto; background-color: var(--bs-card-bg);">
 			@SwapDisplayButton()
@@ -189,34 +197,65 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 					player-stock-id={ strconv.FormatUint(uint64(currentPlayerDisplay.PlayerStocks[0].ID), 10) }
 				/>
 			</div>
-			<div>
+			<div class="d-none d-sm-block">
 				<h2 class="text-capitalize mb-0" style="font-size: 1.5rem;">
 					{ currentPlayerDisplay.UserName }
 				</h2>
 				<p>
 					Cash £{ strconv.Itoa(currentPlayerDisplay.Cash) }
 				</p>
-				<p style="font-size: 0.75rem;">
+				<p>
 					Net £{ strconv.FormatFloat((currentPlayerDisplay.TotalValue + float64(currentPlayerDisplay.Cash)), 'f', -1, 64) }
 				</p>
 			</div>
 		</div>
-		<div id="now-playing" class="card card-green p-2 rounded d-flex flex-column align-items-center justify-content-center" style="background-color: var(--bs-card-bg);">
+		<div class="modal fade" id="insightModal" tabindex="-1" aria-labelledby="insightModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="insightModalLabel">Special Insights - { game.ID }</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						@playerStockTempl.Insights(specialInsights)
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="now-playing" class="position-relative card card-green p-3 rounded d-flex flex-row align-items-center justify-content-center" style="background-color: var(--bs-card-bg);">
 			if game.CurrentUserID == currentPlayerDisplay.UserID {
-				<h3 class="primary">
-					It's your turn
-				</h3>
-				<p>
-					Buy, sell, use or pass
-				</p>
+				<div class="text-center">
+					<h3 class="primary">
+						It's your turn
+					</h3>
+					<p class="d-none d-sm-block">
+						Buy, sell, use or pass
+					</p>
+				</div>
 			} else {
 				<h3>
 					It's { game.CurrentUserName }'s turn!
 				</h3>
 			}
+			if len(specialInsights) > 0 {
+				<button
+					id="insightModalButton"
+					data-bs-toggle="modal"
+					data-bs-target="#insightModal"
+					aria-hidden="true"
+					type="button"
+					class={ "btn btn-primary position-relative position-lg-absolute", templ.KV("wiggle-jump", showNotif) }
+				>
+					<img height="35px" src="/static/imgs/icons/special-insight.svg" alt="special insight"/>
+					<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+						{ strconv.Itoa(len(specialInsights)) }
+						<span class="visually-hidden">unread messages</span>
+					</span>
+				</button>
+			}
 		</div>
 		<div class="modal fade" id="gameModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
+			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="modal-header">
 						<h1 class="modal-title fs-5" id="exampleModalLabel">Stockmarket! - { game.ID }</h1>
@@ -229,10 +268,17 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 				</div>
 			</div>
 		</div>
-		<header data-bs-toggle="modal" data-bs-target="#gameModal" class="d-flex flex-column justify-content-center card card-green rounded p-3 d-flex flex-row justify-content-center" style="background-color: var(--bs-card-bg);">
-			<div>
-				<h1 id="stockmarket-header" class="sh-small">Stockmarket!</h1>
-				<div class="d-flex justify-content-between">
+		<header class="d-flex flex-column justify-content-center card card-green rounded p-3 d-flex flex-row justify-content-center" style="background-color: var(--bs-card-bg);">
+			<div class="d-flex flex-column">
+				<h1
+					id="stockmarket-header"
+					class="sh-small d-none d-sm-block"
+					data-bs-toggle="modal"
+					data-bs-target="#gameModal"
+				>
+					Stockmarket!
+				</h1>
+				<div class="d-flex flex-sm-row flex-column justify-content-between">
 					<div>
 						Turn { strconv.Itoa(game.CurrentTurn) }/{ strconv.Itoa(game.PlayerCount * 3) }
 					</div>
@@ -240,28 +286,49 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 						Period { strconv.Itoa(game.CurrentPeriod + 1) }/{ strconv.Itoa(game.PeriodCount + 1) }
 					</div>
 				</div>
+				<div class="p-0 p-sm-2 position-static position-sm-absolute end-0 top-0 gap-1 d-flex flex-row justify-content-between">
+					<button
+						id="feedAsideButton"
+						class="btn btn-primary d-block d-lg-none flex-fill"
+						data-bs-toggle="offcanvas"
+						data-bs-target="#offcanvasResponsive"
+						aria-controls="offcanvasResponsive"
+					>
+						<svg height="16px" width="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+<path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"></path></svg>
+					</button>
+
+					<button
+						id="feedAsideButton"
+						class="btn btn-primary d-block d-sm-none flex-fill"
+						data-bs-toggle="modal"
+						data-bs-target="#gameModal"
+					>
+						<svg height="16px" width="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
+					</button>
+
+				</div>
 			</div>
 		</header>
 		<div id="content" class="d-grid" style="grid-template-rows: auto 1fr">
-			
 			@MoveDisplayTabs()
 			<div id="tabs" class="overflow-hidden" style="height:  65px;">
 				<div
 					id="stock-tabs"
 					class="h-100 tabs-display-center"
 				>
-					<ol class="h-100 w-100 position-absolute nav nav-tabs d-flex justify-content-between">
+					<ol class="h-100 w-100 position-absolute nav nav-tabs d-flex flex-nowrap justify-content-between">
 						for _, ps := range currentPlayerDisplay.PlayerStocks {
 							<li class="nav-item d-flex flex-fill">
 								<a
 									id={ fmt.Sprintf("player-stock-tab-%s", strconv.FormatUint(uint64(ps.ID), 10)) }
-									class="flex-fill player-stock-tab nav-link d-flex flex-row align-items-center justify-content-between gap-1"
+									class="flex-fill player-stock-tab nav-link d-flex flex-row align-items-center justify-content-between"
 									hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(ps.ID), 10)) }
 									hx-trigger="click"
 									hx-target="#content-wrapper"
 									hx-swap="innerHTML transition:true"
 								>
-									@playerStockTempl.PlayerStockPreview(ps)
+									@playerStockTempl.PlayerStockPreview(ps, false)
 								</a>
 							</li>
 						}
@@ -272,12 +339,12 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 					class="h-100 w-100 position-relative tabs-display-right"
 					style="top: -100%;"
 				>
-					<ol class="h-100 w-100 position-absolute  nav nav-tabs d-flex justify-content-between">
+					<ol class="h-100 w-100 position-absolute nav nav-tabs d-flex flex-nowrap justify-content-between">
 						for _, player := range players {
 							<li class="nav-item d-flex flex-fill">
 								<a
 									id={ fmt.Sprintf("player-tab-%s", strconv.FormatUint(uint64(player.PlayerID), 10)) }
-									class="flex-fill player-tab player nav-link d-flex flex-row gap-2 flex-left align-items-center justify-content-between gap-1"
+									class="player-tab player nav-link d-flex flex-column flex-sm-row flex-fill align-items-center justify-content-between gap-1"
 									hx-get={ fmt.Sprintf("/players/show/%s", strconv.FormatUint(uint64(player.PlayerID), 10)) }
 									hx-trigger="click"
 									hx-swap="innerHTML transition:true"
@@ -286,11 +353,11 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 									<div class="d-flex flex-row align-items-center gap-1">
 										<img class="rounded" width="40px" src={ player.UserProfileRoot } alt={ player.UserName }/>
 									</div>
-									<div>
+									<div class="d-none d-sm-block">
 										<p>
 											{ player.UserName }
 										</p>
-										<p style="font-size: 0.75rem;">
+										<p>
 											£{ strconv.Itoa(player.Cash) }
 										</p>
 									</div>
@@ -309,11 +376,19 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 				hx-get={ fmt.Sprintf("/player_stocks/show/%s", strconv.FormatUint(uint64(currentPlayerDisplay.PlayerStocks[0].ID), 10)) }
 			></div>
 		</div>
-		<aside class="rounded bg-white text-black p-3">
+		<aside
+			id="offcanvasResponsive"
+			class="rounded-start rounded-lg bg-white text-black p-3 d-lg-grid offcanvas-lg offcanvas-end"
+			tabindex="-1"
+			aria-labelledby="offcanvasResponsiveLabel"
+		>
 			<div class="d-grid" style="grid-template-rows: auto 1fr;">
-				<h2 class="text-black">
-					Feed
-				</h2>
+				<div class="d-flex flex-row justify-content-between">
+					<h2 class="text-black">
+						Feed
+					</h2>
+					<button type="button" class="btn-close d-block d-lg-none" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasResponsive" aria-label="Close"></button>
+				</div>
 				<div class="d-flex">
 					<div id="feed-body" hx-get={ fmt.Sprintf("/feed_items/show/%s", game.ID) } hx-swap="outerHTML" hx-trigger="load"></div>
 				</div>
@@ -340,8 +415,46 @@ templ Playing(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayer
 	</div>
 }
 
-templ PlayingSocket(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay, players []models.PlayerDisplay) {
-	<div hx-swap-oob="innerHTML:main">
-		@Playing(game, currentPlayerDisplay, players)
+templ PlayNotification(feedItem models.FeedItem) {
+	<div id="play-notif" hx-swap-oob="outerHTML:#play-notif">
+		<div
+			class="p-3 d-flex justify-content-center flex-column align-items-center"
+			style="
+					position: absolute;
+					left:  0;
+					right:  0;
+					top:  0;
+					bottom:  0;
+				"
+		>
+			<img
+				class={ "rounded bg-secondary", templ.KV("p-2", (feedItem.Colour == "grey")) }
+				src={ feedItem.ImageRoot }
+				height="300px"
+				width="300px"
+				alt="profile"
+			/>
+			<div class="text-center">
+				<h1>{ feedItem.Title }</h1>
+				<p>{ feedItem.Message }</p>
+			</div>
+		</div>
+		<script>
+			document.querySelector("main").style.opacity = 0.2;
+			setTimeout(() => {
+				document.querySelectorAll("#play-notif").forEach(playNotification => {
+					playNotification.style.display = "none";
+				})
+
+				document.querySelector("main").style.opacity = 1;
+			}, 2500);
+		</script>
 	</div>
+}
+
+templ PlayingSocket(game models.GameDisplay, currentPlayerDisplay models.CurrentPlayerDisplay, players []models.PlayerDisplay, specialInsights []models.InsightDisplay, latestFeedItem models.FeedItem) {
+	<div hx-swap-oob="innerHTML:main">
+		@Playing(game, currentPlayerDisplay, players, specialInsights, false)
+	</div>
+	@PlayNotification(latestFeedItem)
 }

@@ -4,34 +4,46 @@
 
     display: grid;
 
-    grid-template-areas: 
+    grid-template-areas:
         "profile    now-playing header"
-        "content    content     feed";
+        "content    content     content";
 
-    grid-template-columns: 1fr 3fr 1fr;
-    grid-template-rows: 120px 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto 1fr;
     grid-gap: 16px;
 }
 
-#game-grid > #profile {
+@media screen and (min-width: 992px) {
+
+    #game-grid {
+        grid-template-columns: 1fr 3fr 1fr;
+
+        grid-template-areas:
+            "profile    now-playing header"
+            "content    content     feed";
+    }
+
+}
+
+#game-grid>#profile {
     grid-area: profile;
 }
 
-#game-grid > #now-playing {
+#game-grid>#now-playing {
     grid-area: now-playing;
 }
 
-#game-grid > header {
+#game-grid>header {
     grid-area: header;
 }
 
-#game-grid > aside {
+#game-grid>aside {
     grid-area: feed;
     display: grid;
     grid-template-rows: 1fr auto;
 }
 
-#game-grid > #content{
+#game-grid>#content {
     grid-area: content;
 }
 
@@ -79,44 +91,65 @@
 
 #game-stock-info {
     display: grid;
-    grid-template-areas: 
-        "stocks investors"
-        "insights price-charts"
-        "insights stock-info"
-        "buy-button sell-button";
+    grid-template-areas:
+        "stocks stocks"
+        "buy-button sell-button"
+        "investors investors"
+        "insights insights"
+        "stock-info stock-info";
 
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 120px 1fr auto auto;
+    grid-template-rows: auto auto 1fr auto auto;
 }
 
 #game-stock-info.watching {
 
-    grid-template-areas: 
-        "stocks investors"
-        "insights price-charts"
-        "insights stock-info";
-    
+    grid-template-areas:
+        "stocks stocks"
+        "investors investors"
+        "insights insights"
+        "stock-info stock-info";
+
 }
 
-#game-stock-info > #stocks {
+
+@media screen and (min-width: 992px) {
+
+    #game-stock-info {
+
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto 1fr auto;
+
+        grid-template-areas:
+            "stocks investors"
+            "insights stock-info"
+            "buy-button sell-button";
+    }
+
+    #game-stock-info.watching {
+
+        grid-template-areas:
+            "stocks investors"
+            "insights stock-info";
+    }
+
+}
+
+
+
+#game-stock-info>#stocks {
     grid-area: stocks;
 }
 
-#game-stock-info > #investors {
+#game-stock-info>#investors {
     grid-area: investors;
 }
 
-#game-stock-info > #insights {
+#game-stock-info>#insights {
     grid-area: insights;
 }
 
-#game-stock-info > #price-charts {
-    grid-area: price-charts;
-    display: grid;
-    grid-template-rows: auto 1fr;
-}
-
-#game-stock-info > #stock-info {
+#game-stock-info>#stock-info {
     grid-area: stock-info;
 }
 
@@ -127,31 +160,55 @@
 
 #player-portfolio {
     display: grid;
-    grid-template-columns: 75% auto;
-    grid-template-rows: auto 1fr auto;
 
     row-gap: 2rem;
+    column-gap: 1rem;
 
-    grid-template-areas: 
-        "portfolio portfolio"
-        "net-worth info";
+    grid-template-areas:
+        "portfolio"
+        "net-worth"
+        "info";
 }
+
 
 #player-portfolio.is-current-player {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 120px 1fr auto auto;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
     grid-template-areas:
-        "portfolio portfolio"
-        "insights net-worth"
-        "insights info";
+        "portfolio"
+        "net-worth"
+        "insights"
+        "info";
 }
 
-#player-portfolio > #insights {
+@media screen and (min-width: 992px) {
+    #player-portfolio {
+        grid-template-areas:
+            "portfolio portfolio"
+            "net-worth info";
+
+        grid-template-columns: 75% auto;
+        grid-template-rows: auto 1fr auto;
+    }
+
+    #player-portfolio.is-current-player {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 120px 1fr auto auto;
+        grid-template-areas:
+            "portfolio portfolio"
+            "insights net-worth"
+            "insights info";
+    }
+
+}
+
+
+#player-portfolio>#insights {
     display: none;
 }
 
 
-#player-portfolio.is-current-player > #insights {
+#player-portfolio.is-current-player>#insights {
     display: flex;
 }
 
@@ -166,7 +223,7 @@
 
 }
 
-#player-portfolio > #insights {
+#player-portfolio>#insights {
     grid-area: insights;
 }
 
@@ -174,12 +231,76 @@
     grid-area: info;
 }
 
-#player-portfolio:not(.is-current-player) #info-details{
-    
+#player-portfolio:not(.is-current-player) #info-details {
+
     grid-template-rows: 1fr 1fr 1fr;
 }
 
 #player-portfolio.is-current-player #info-details {
-    
+
     grid-template-columns: 1fr 1fr 1fr;
+}
+
+
+
+#insightModalButton {
+    width: 4rem;
+    height: 4rem;
+}
+
+#insightModalButton.wiggle-jump {
+
+    animation: exclaim 0.5s ease-in-out 2.5s 1;
+}
+
+@media screen and (min-width: 992px) {
+    #insightModalButton {
+        right: 2rem;
+    }
+}
+
+@keyframes exclaim {
+    0% {
+        transform: translateY(0);
+    }
+
+    30% {
+        transform: translateY(-10px);
+    }
+
+    40% {
+        transform: translateY(-10px) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(5deg);
+    }
+
+    60% {
+        transform: translateY(-10px) rotate(-5deg);
+    }
+
+    70% {
+        transform: translateY(-10px) rotate(0deg);
+    }
+
+    90% {
+        transform: translateY(0);
+    }
+}
+
+
+#play-notif {
+    animation: fadeout 2.5s ease-in-out 1s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeout {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }

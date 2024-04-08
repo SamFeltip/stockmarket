@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"math"
 	"math/rand"
 	"strconv"
 
@@ -29,6 +30,7 @@ var Waiting GameStatus = "waiting"
 var Playing GameStatus = "playing"
 var Closed GameStatus = "closed"
 var Finished GameStatus = "finished"
+var SpecialInsights GameStatus = "special_insights"
 
 /*
 creates a new game and all possible game stocks
@@ -199,7 +201,8 @@ func (game *Game) GeneratePlayerInsights(players []Player, db *gorm.DB) error {
 			// get player_stock for player of top_insights[i].Stock
 			player_stock := PlayerStock{}
 			err = db.Joins("INNER JOIN game_stocks on player_stocks.game_stock_id = game_stocks.id").
-				Where("game_stocks.stock_id = ? AND player_id = ?", top_insights[i].Stock.ID, player.ID).First(&player_stock).Error
+				Where("game_stocks.stock_id = ? AND player_id = ?", top_insights[i].Stock.ID, player.ID).
+				First(&player_stock).Error
 
 			if err != nil {
 				fmt.Println("could not get player stock", err)
@@ -210,6 +213,7 @@ func (game *Game) GeneratePlayerInsights(players []Player, db *gorm.DB) error {
 			player_insight := PlayerInsight{
 				PlayerStock: player_stock,
 				Insight:     top_insights[i],
+				Period:      game.CurrentPeriod,
 			}
 
 			err = db.Create(&player_insight).Error
@@ -245,7 +249,7 @@ func UpdateCurrentUser(gameID string, db *gorm.DB) (uint, error) {
 	err = db.
 		Table("players").
 		Select("players.id as player_id, players.user_id as user_id").
-		Where("game_id = ? AND active = ?", gameID, true).
+		Where("game_id = ?", gameID).
 		Order("players.id").
 		Find(&players).Error
 
@@ -289,7 +293,18 @@ func UpdateCurrentUser(gameID string, db *gorm.DB) (uint, error) {
 	return next_user_id, nil
 }
 
+/*
+update game stocks
+
+create new insights
+
+update player cash according to insights
+
+update the game period
+*/
 func (game *Game) UpdatePeriod(db *gorm.DB) error {
+
+	fmt.Println("updating period for game:", game.ID)
 
 	type GameStockChange struct {
 		TotalChange float64
@@ -300,12 +315,13 @@ func (game *Game) UpdatePeriod(db *gorm.DB) error {
 	var gameStockChanges []GameStockChange
 
 	err := db.Table("player_stocks as ps").
-		Select("sum(i.value) as total_change, gs.id as game_stock_id, gs.value").
-		Joins("left join player_insights as pi on pi.player_stock_id = ps.id").
-		Joins("left join insights as i on i.id = pi.insight_id").
+		Select("COALESCE(sum(i.value),0) as total_change, gs.id as game_stock_id, gs.value").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
-		Where("gs.game_id = ?", game.ID).
+		Joins("inner join games as g on g.id = gs.game_id").
+		Joins("left join player_insights as pi on (pi.player_stock_id = ps.id and pi.period = g.current_period)").
+		Joins("left join insights as i on i.id = pi.insight_id").
+		Where("gs.game_id = ? and s.display = true", game.ID).
 		Group("gs.id, gs.value").
 		Scan(&gameStockChanges).Error
 
@@ -316,16 +332,39 @@ func (game *Game) UpdatePeriod(db *gorm.DB) error {
 
 	// loop through gameStockChanges and update gameStocks
 	for _, gameStockChange := range gameStockChanges {
+
+		newValue := math.Max(0, gameStockChange.Value+gameStockChange.TotalChange)
+
+		fmt.Println("updating game stock:", gameStockChange.GameStockID, "old value:", gameStockChange.Value, "new value:", newValue)
+
 		gameStock := GameStock{}
+
 		err = db.
 			Model(&gameStock).
 			Where("id = ?", gameStockChange.GameStockID).
-			Update("value", gameStockChange.Value+gameStockChange.TotalChange).Error
+			Update("value", newValue).Error
 
 		if err != nil {
 			fmt.Println("could not update game stock", err)
 			return err
 		}
+	}
+
+	err = game.UpdatePlayerCash(db)
+
+	if err != nil {
+		fmt.Println("could not update player cash")
+		return err
+	}
+
+	game.CurrentPeriod++
+	game.Status = string(Playing)
+
+	err = db.Save(&game).Error
+
+	if err != nil {
+		fmt.Println("could not update game", err)
+		return err
 	}
 
 	players, err := GetPlayers(game.ID, db)
@@ -339,16 +378,6 @@ func (game *Game) UpdatePeriod(db *gorm.DB) error {
 
 	if err != nil {
 		fmt.Println("could not generate player insights", err)
-		return err
-	}
-
-	game.CurrentPeriod++
-	game.Status = string(Playing)
-
-	err = db.Save(&game).Error
-
-	if err != nil {
-		fmt.Println("could not update game", err)
 		return err
 	}
 
@@ -368,6 +397,52 @@ func (game *Game) UpdatePeriod(db *gorm.DB) error {
 	if err != nil {
 		fmt.Println("could not create feed item", err)
 		return err
+	}
+
+	return nil
+}
+
+func (game *Game) UpdatePlayerCash(db *gorm.DB) error {
+
+	type new_cash_result struct {
+		PlayerID   uint
+		StockID    uint
+		OldCash    int
+		CashChange float64
+		NewCash    float64
+	}
+
+	new_cash_results := []new_cash_result{}
+
+	err := db.Table("player_insights as pi").
+		Select("p.id as player_id, s.id as stock_id, p.cash as old_cash, (1 + sum(i.value)) as cash_change, p.cash * (1 + sum(i.value)) as new_cash").
+		Joins("inner join player_stocks as ps on pi.player_stock_id = ps.id").
+		Joins("inner join players as p on p.id = ps.player_id").
+		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+		Joins("inner join stocks as s on s.id = gs.stock_id").
+		Joins("inner join insights as i on i.id = pi.insight_id").
+		Where("p.game_id = ? and s.name = ?", game.ID, "currency").
+		Group("p.id, s.id").
+		Scan(&new_cash_results).Error
+
+	if err != nil {
+		fmt.Println("could not get player insights", err)
+		return err
+	}
+
+	// loop through players and update cash
+	for _, new_cash_result := range new_cash_results {
+
+		err := db.
+			Model(Player{}).
+			Where("id = ?", new_cash_result.PlayerID).
+			Update("cash", new_cash_result.NewCash).
+			Error
+
+		if err != nil {
+			fmt.Println("could not update player cash", err)
+			return err
+		}
 	}
 
 	return nil

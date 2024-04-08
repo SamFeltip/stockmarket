@@ -12,7 +12,14 @@ func CreateWebsocketRoutes() {
 	r.GET("/connected-game/:gameID",
 		func(c *gin.Context) { middleware.RequireAuthWebsocket(c) },
 		func(c *gin.Context) {
-			httpResponseCode, response := controllers.ServeWs(c)
+			httpResponseCode, response := controllers.ServeWGames(c)
+			c.JSON(httpResponseCode, response)
+		})
+
+	r.GET("/hold-stock-waiting/:gameID",
+		func(c *gin.Context) { middleware.RequireAuthWebsocket(c) },
+		func(c *gin.Context) {
+			httpResponseCode, response := controllers.ServeWInsights(c)
 			c.JSON(httpResponseCode, response)
 		})
 }

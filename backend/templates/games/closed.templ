@@ -7,83 +7,26 @@ import (
 )
 
 templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []models.GameStockDisplay, players []models.PlayerDisplay){
-	<div class="gap-3 p-4" style="height: 100vh; max-height: -webkit-fill-available; display: grid; grid-template-rows: 100px 1fr auto auto;">
+	<div class="gap-3 p-4" style="height: 100vh; max-height: -webkit-fill-available; display: grid; grid-template-rows: auto 1fr auto auto;">
 		<div class="d-flex align-items-center justify-content-center">
 			<h1>End of round</h1>
 		</div>
-		<style>
-			@keyframes popIn {
-				0% { opacity: 0; }
-			}
-			@keyframes glideIn {
-				0% {
-					opacity: 0;
-					/* transform: translateY(100px); */
-				}
-				30% {
-					opacity: 1;
-					/*transform: translateY(0px);*/
-				}
-				70% {
-					opacity: 1;
-					transform: translateY(0px);
-				}
-				100% {
-					opacity: 0;
-					transform: translateY(-100px);
-				}
-				
-			}
 
-			@keyframes glideInMini {
-				0% {
-					opacity: 0;
-					/*transform: translateY(20px);*/
-				}
-				30% {
-					opacity: 1;
-					/*transform: translateY(0px);*/
-				}
-				70% {
-					opacity: 1;
-					transform: translateY(0px);
-				}
-				100% {
-					opacity: 0;
-					transform: translateY(-20px);
-				}
-			}
-
-			.price-modifier-display {
-				animation-name: glideInMini;
-				animation-duration: 2s;
-				animation-fill-mode: both;
-			}
-
-			.game-insight-card {
-				animation-name: glideIn;
-				animation-duration: 2s;
-				animation-fill-mode: both;
-			}
-
-			div.game-stock-view.first {
-				animation-name: popIn;
-				animation-duration: 1s;
-				animation-fill-mode: both;
-			}
-
-
-
-		</style>
-		<div id="insight-view" class="card card-green p-4 rounded border border-white">
+		<div id="insight-view" class="card card-green p-4 rounded border border-5 border-white">
 			for _, gameInsight := range gameInsights {
-				<div style="display: none; grid-template-columns: 2fr 1fr;" class={ "game-insight", "game-stock-insight-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10), "gap-3 h-100" } data-game-stock-id={ strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
-					<div style="background-color: #3C5F2F;" class="rounded d-flex flex-row justify-content-around align-items-center">
+				<div 
+					style="grid-template-columns: 2fr 1fr;" 
+					class={ "game-insight", "game-stock-insight-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10), "gap-3 h-100 d-none" } 
+					data-game-stock-id={ strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }
+				>
+					<div 
+						style="background-color: #3C5F2F;" 
+						class="p-4 gap-2 rounded d-flex flex-column flex-sm-row justify-content-around align-items-center"
+					>
 						<div id={ "game-stock-view-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) } class="game-stock-view d-flex flex-column align-items-center">
-							<div>
-								<img height="120px" src={ gameInsight.ImagePath } alt={ gameInsight.Name }/>
-							</div>
-							<h2>
+							<img class="w-100 p-3" src={ gameInsight.ImagePath } alt={ gameInsight.Name }/>
+							
+							<h2 class="text-capitalize">
 								{ gameInsight.Name }
 							</h2>
 						</div>
@@ -91,7 +34,7 @@ templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []mode
 							<p>
 								Sum
 							</p>
-							<h1 class={ "stock-total-insight-value-display-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
+							<h1 class={ "fw-bolder", "stock-total-insight-value-display-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
 								£<span class={ "stock-total-insight-value", "stock-total-insight-value-" + strconv.FormatUint(uint64(gameInsight.GameStockID), 10) }>
 									0
 								</span>
@@ -104,7 +47,7 @@ templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []mode
 							</div>
 						</div>
 					</div>
-					<div class="game-insight-card rounded bg-white text-black d-flex flex-column align-items-center justify-content-center">
+					<div class="game-insight-card p-4 gap-2  rounded bg-white text-black d-flex flex-column align-items-center justify-content-center">
 						<img height="120px" src={ gameInsight.ImagePath } alt={ gameInsight.Name }/>
 						<div class="d-flex flex-row gap-2 align-items-center">
 							if gameInsight.InsightValue > 0 {
@@ -123,28 +66,40 @@ templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []mode
 				</div>
 			}
 		</div>
-		<div class="card card-green p-4 rounded d-flex flex-row justify-content-between align-items-center">
+		
+		<div 
+			id="stock-view" 
+			class="card card-green px-5 py-4 rounded border-5 border-white flex-sm-row align-items-center"
+		>
 			<h2>
 				Stock Values:
 			</h2>
-			for _, gameStock := range gameStocks {
-				<div id={ "game-stock-" + strconv.FormatUint(uint64(gameStock.ID), 10) } class="game-stock d-flex flex-column align-items-center" data-game-stock-id={ strconv.FormatUint(uint64(gameStock.ID), 10) }>
-					<img height="80px" src={ gameStock.ImagePath } alt={ gameStock.Name }/>
-					<!-- used for changing value display-->
-					<span class="d-none stock-total-insight-value">
-						0
-					</span>
-					<div>
-						£<span class="stock-value">{ fmt.Sprintf("%.2f", gameStock.Value ) }</span>
+			<div class="gap-3 flex-fill d-flex flex-nowrap flex-column flex-sm-row justify-content-between align-items-center">
+			
+				for _, gameStock := range gameStocks {
+					<div 
+						id={ "game-stock-" + strconv.FormatUint(uint64(gameStock.ID), 10) } 
+						class="game-stock d-flex flex-column align-items-center" 
+						data-game-stock-id={ strconv.FormatUint(uint64(gameStock.ID), 10) }
+					>
+						<img class="w-100 p-3 object-fit-contain" style="max-height: 100px;" src={ gameStock.SecondaryImagePath } alt={ gameStock.Name }/>
+						<!-- used for changing value display-->
+						<span class="d-none stock-total-insight-value">
+							0
+						</span>
+						<div>
+							£<span class="stock-value">{ fmt.Sprintf("%.2f", gameStock.Value ) }</span>
+						</div>
 					</div>
-				</div>
-			}
+				}
+			</div>
 		</div>
-		<div class="card card-green p-4 rounded  d-flex flex-row justify-content-between align-items-center">
+
+		<div id="player-view" class="card card-green p-4 rounded  d-flex flex-sm-row flex-column justify-content-between align-items-center">
 			<h2>
 				Net Worth:
 			</h2>
-			<div class="d-flex w-100 gap-5 flex-row justify-content-center">
+			<div class="d-flex w-100 gap-5 flex-sm-row flex-column justify-content-center">
 			for _, player := range players {
 				<div class="d-flex flex-column align-items-center">
 					<img height="80px" width="80px" class="rounded" src={ player.UserProfileRoot } alt={ player.UserName }/>
@@ -155,36 +110,21 @@ templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []mode
 			</div>
 		</div>
 	</div>
-	<style>
-
-		@keyframes slideInFromRight {
-			0% { right: -200px; }
-			100% { right: 0; }
-		}
-
-		#next-step-wrapper {
-			animation-name: slideInFromRight;
-			animation-duration: 1s;
-			animation-fill-mode: both;
-			animation-delay: 2s;
-		}
-
-	</style>
-	<div id="next-step-wrapper" class="position-absolute bottom-0 p-3" style="right: 0;">
-		<form hx-post="/api/games/next">
+	<div id="next-step-wrapper" class="position-absolute bottom-0 end-0 p-3">
+		<form hx-post="/api/games/next_animate">
 			<input type="hidden" value={ gameID } name="gameID"/>
 
 			<button
 				class="btn btn-primary d-flex flex-row gap-2 align-items-center"
 			>
-				Start Next Round
+				Show Special Insights
 				<svg height="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg>
 			</button>
 		</form>
-		
 	</div>
 
-	<script src="/static/js/marketClosed/animate.js"></script>
+	<link rel="stylesheet" href="/static/stylesheets/closed.css"/>
+	<script>animateGameStocks();</script>
 }
 
 templ ClosedSocket(gameID string, gameInsights []models.GameInsight, gameStocks []models.GameStockDisplay, players []models.PlayerDisplay){

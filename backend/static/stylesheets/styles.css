@@ -8,8 +8,8 @@
     src: url("/static/fonts/BigCaslonRom.otf");
 }
 
-body {
-    
+main {
+    transition: opacity 0.5s ease; /* Apply the transition */
 }
 
 h1#stockmarket-header {
@@ -18,6 +18,7 @@ h1#stockmarket-header {
     color: #fff;
     text-align: center;
     font-style: normal;
+    font-size: 2rem;
     font-weight: 500;
     line-height: 125%; /* 50px */
     letter-spacing: 1.6px;
@@ -25,16 +26,19 @@ h1#stockmarket-header {
 }
 
 h1#stockmarket-header.sh-small {
-    font-size: 2.5vw;
-
+    font-size: 2.4vw;
 }
 
-p {
+p, a, h6, .form-control, .input-group-text, span {
     margin-bottom: 0;
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-style: normal;
     line-height: normal;
     letter-spacing: 0.04rem;
+}
+
+h1 > * {
+    font-size: inherit;
 }
 
 :root {
@@ -48,6 +52,10 @@ p {
 
     --bs-secondary-rgb: 217,217,217;
 
+}
+
+.text-secondary {
+    color: #a1a1a1 !important;
 }
 
 .nav {
@@ -87,6 +95,10 @@ p {
 
 }
 
+.btn {
+    --bs-btn-font-size: 1.2rem;
+}
+
 .btn-primary {
     --bs-btn-color: #000;
     --bs-btn-bg: #FFF284;
@@ -109,11 +121,27 @@ p {
     --bs-btn-hover-color: #black;
     --bs-btn-active-color: #black;
     --bs-btn-disabled-color: #black;
+
+    --bs-btn-bg: #BABABA;
+    --bs-btn-border-color: #BABABA;
+
+    --bs-btn-active-border-color: #BBB;
+    --bs-btn-hover-border-color: #BBB;
+}
+
+.btn-outline-secondary {
+    --bs-btn-color: #black;
+    
+    --bs-btn-active-bg: #E3E3E3;
+    --bs-btn-active-color: #black;
+
+    --bs-border-width: 0;
 }
 
 .form-control {
     background-color: #fff;
     color: black;
+    padding: 0.5rem 1rem;
 }
 
 .form-control:focus {
@@ -126,7 +154,9 @@ p {
     --bs-modal-bg: white;
     --bs-modal-color: black;
     --bs-heading-color: black;
-    --bs-modal-margin: 20vh;
+    /* --bs-modal-margin: 20vh; */
+    --bs-modal-header-padding: 1.2rem 1.2rem;
+    --bs-modal-padding: 1.2rem;
 }
 
 .modal-title {
@@ -232,7 +262,8 @@ h2.primary {
         font-size: 2vw;
     } */
 }
-@media (orientation: portrait) and (max-width: 500px) {
+
+/* @media (orientation: portrait) and (max-width: 500px) {
   
     #orientation-warning {
 
@@ -250,5 +281,23 @@ h2.primary {
 
     main {
         opacity: 0.1;
+    }
+} */
+
+@media screen and (min-width: 576px) {
+    .position-sm-absolute {
+        position: absolute !important;
+    }
+    
+}
+
+@media screen and (min-width: 992px) {
+    .position-lg-absolute {
+        position: absolute !important;
+    }
+
+
+    .rounded-lg {
+        border-radius: var(--bs-border-radius)!important;
     }
 }

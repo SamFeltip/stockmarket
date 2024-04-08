@@ -10,20 +10,20 @@ import (
 	gameTempl "stockmarket/templates/games"
 )
 
-var hub *websocketModels.Hub
+var gameHub *websocketModels.Hub
 
-func RunHub() {
+func RunGameHub() {
 	for {
 		select {
-		case client := <-hub.Register:
-			hub.Clients[client] = true
-		case client := <-hub.Unregister:
-			if _, ok := hub.Clients[client]; ok {
+		case client := <-gameHub.Register:
+			gameHub.Clients[client] = true
+		case client := <-gameHub.Unregister:
+			if _, ok := gameHub.Clients[client]; ok {
 				fmt.Println("client unregistered, deleting and closing", client.CurrentPlayerID)
-				delete(hub.Clients, client)
+				delete(gameHub.Clients, client)
 				close(client.Send)
 			}
-		case broadcastMessage := <-hub.Broadcast:
+		case broadcastMessage := <-gameHub.Broadcast:
 
 			buffer := broadcastMessage.Buffer
 			broadcast_game_id := broadcastMessage.GameID
@@ -33,7 +33,9 @@ func RunHub() {
 
 			db := database.GetDb()
 
-			for client := range hub.Clients {
+			fmt.Println("client length: ", len(gameHub.Clients))
+
+			for client := range gameHub.Clients {
 				fmt.Println("checking", client.CurrentPlayerID)
 				// only send message to clients in the same game
 				if client.GameID != broadcast_game_id {
@@ -44,15 +46,19 @@ func RunHub() {
 
 				// buffer == nil when the template broadcast requires user context.
 				// these requests reference the DB so should be used sparingly
+				buffer = broadcastMessage.Buffer
 				if buffer == nil {
-					fmt.Println("creating unique buffer for each client and updating client user")
+					fmt.Println("creating unique buffer for the client and updating client user")
 
+					fmt.Println("loading game display...", client.GameID)
 					game, err := models.LoadGameDisplay(client.GameID, db)
 
 					if err != nil {
 						fmt.Println("could not update game in client")
 						continue
 					}
+
+					fmt.Println("loading current player display:", client.CurrentPlayerID, "...")
 
 					current_player, err := models.LoadCurrentPlayerDisplay(client.CurrentPlayerID, db)
 
@@ -78,19 +84,130 @@ func RunHub() {
 							continue
 						}
 
-						boardDisplay := gameTempl.PlayingSocket(game, current_player, players)
+						specialPlayerInsights, err := models.LoadSpecialPlayerInsights(current_player.ID, db)
+
+						if err != nil {
+							fmt.Println("error loading special insights:", err)
+							continue
+						}
+
+						latestFeedItem, err := models.LoadLatestFeedItem(game.ID, db)
+
+						if err != nil {
+							fmt.Println("error loading latest insight:", err)
+							continue
+						}
+
+						boardDisplay := gameTempl.PlayingSocket(game, current_player, players, specialPlayerInsights, latestFeedItem)
 
 						buffer = &bytes.Buffer{}
 						boardDisplay.Render(context.Background(), buffer)
 
+					} else if message == "special insights" {
+						fmt.Println("broadcasting show special insights")
+
+						fmt.Println("loading special insights...")
+						specialInsights, err := models.LoadSpecialInsights(game.ID, db)
+
+						if err != nil {
+							fmt.Println("could not get game insights", err)
+							continue
+						}
+
+						fmt.Println("loading game stock displays: gameID: ", game.ID, "(false) ...")
+						gameStockDisplays, err := models.LoadGameStockDisplays(game.ID, false, db)
+
+						if err != nil {
+							fmt.Println("could not load game stock displays", err)
+							continue
+						}
+
+						fmt.Println("loading game stock displays: gameID: ", game.ID, "(true) ...")
+
+						displayGameStocks, err := models.LoadGameStockDisplays(game.ID, true, db)
+
+						if err != nil {
+							fmt.Println("could not load game stock displays", err)
+							continue
+						}
+
+						fmt.Println("loading player displays...")
+
+						playerDisplays, err := models.LoadPlayerDisplays(game.ID, db)
+
+						if err != nil {
+							fmt.Println("could not load player displays", err)
+							continue
+						}
+
+						fmt.Println("loading current player display...")
+						currentPlayerDisplay, err := models.LoadPlayerDisplay(current_player.ID, db)
+
+						if err != nil {
+							fmt.Println("could not load current player display", err)
+							continue
+						}
+
+						fmt.Println("rendering special insights socket...", game.ID, len(specialInsights), len(gameStockDisplays), len(displayGameStocks), len(playerDisplays), currentPlayerDisplay.UserName)
+
+						specialInsightsDisplay := gameTempl.SpecialInsightsSocket(game.ID, specialInsights, gameStockDisplays, displayGameStocks, playerDisplays, currentPlayerDisplay)
+
+						buffer = &bytes.Buffer{}
+						specialInsightsDisplay.Render(context.Background(), buffer)
+
 					}
 				}
+
+				fmt.Println("sending buffer...")
+
+				select {
+				case client.Send <- buffer:
+				default:
+					fmt.Println("closing client!...")
+					close(client.Send)
+					delete(gameHub.Clients, client)
+				}
+
+			}
+		}
+	}
+}
+
+var playerInsightHub *websocketModels.Hub
+
+func RunPlayerInsightHub() {
+	for {
+		select {
+		case client := <-playerInsightHub.Register:
+			playerInsightHub.Clients[client] = true
+		case client := <-playerInsightHub.Unregister:
+			if _, ok := playerInsightHub.Clients[client]; ok {
+				fmt.Println("client unregistered, deleting and closing", client.CurrentPlayerID)
+				delete(playerInsightHub.Clients, client)
+				close(client.Send)
+			}
+		case broadcastMessage := <-playerInsightHub.Broadcast:
+
+			buffer := broadcastMessage.Buffer
+			broadcast_game_id := broadcastMessage.GameID
+			message := broadcastMessage.Message
+
+			fmt.Println("broadcasted! ", broadcast_game_id, message)
+
+			for client := range playerInsightHub.Clients {
+				fmt.Println("checking", client.CurrentPlayerID)
+				// only send message to clients in the same game
+				if client.GameID != broadcast_game_id {
+					fmt.Println("client not in game", broadcast_game_id, "instead in", client.GameID)
+					continue
+				}
+				fmt.Println("client in game", broadcast_game_id)
 
 				select {
 				case client.Send <- buffer:
 				default:
 					close(client.Send)
-					delete(hub.Clients, client)
+					delete(playerInsightHub.Clients, client)
 				}
 
 				buffer = broadcastMessage.Buffer
@@ -100,25 +217,48 @@ func RunHub() {
 	}
 }
 
-func NewHub() *websocketModels.Hub {
+func NewGameHub() *websocketModels.Hub {
 
-	hub = &websocketModels.Hub{
+	gameHub = &websocketModels.Hub{
 		Broadcast:  make(chan *websocketModels.BroadcastMessage),
 		Register:   make(chan *websocketModels.Client),
 		Unregister: make(chan *websocketModels.Client),
 		Clients:    make(map[*websocketModels.Client]bool),
 	}
+	return gameHub
+}
+
+func NewPlayerInsightHub() *websocketModels.Hub {
+
+	playerInsightHub = &websocketModels.Hub{
+		Broadcast:  make(chan *websocketModels.BroadcastMessage),
+		Register:   make(chan *websocketModels.Client),
+		Unregister: make(chan *websocketModels.Client),
+		Clients:    make(map[*websocketModels.Client]bool),
+	}
+	return playerInsightHub
+}
+
+func InitializeGameHub() *websocketModels.Hub {
+	hub := NewGameHub()
+
+	go RunGameHub()
+
 	return hub
 }
 
-func InitializeHub() *websocketModels.Hub {
-	hub := NewHub()
+func InitializeGameClosedHub() *websocketModels.Hub {
+	hub := NewPlayerInsightHub()
 
-	go RunHub()
+	go RunPlayerInsightHub()
 
 	return hub
 }
 
-func GetHub() *websocketModels.Hub {
-	return hub
+func GetGameHub() *websocketModels.Hub {
+	return gameHub
+}
+
+func GetPlayerInsightHub() *websocketModels.Hub {
+	return playerInsightHub
 }

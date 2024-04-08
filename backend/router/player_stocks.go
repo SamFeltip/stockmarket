@@ -51,14 +51,15 @@ func CreatePlayerStockRoutes() {
 
 			fmt.Println("getting total insights for player stock")
 			// total insights for player stock
-			err = db.Table("player_stocks as ps").
-				Select("ps.ID, gs.game_id, sum(i.value) as total_insight, gs.value as game_stock_value, gs.game_id, s.name as stock_name, s.image_path as stock_image_path").
-				Joins("left join player_insights as pi on pi.player_stock_id = ps.id").
+			err = db.Table("game_stocks as gs").
+				Select("ps.ID, sum(i.value) as total_insight, gs.game_id, gs.value as game_stock_value, gs.game_id, s.name as stock_name, s.image_path as stock_image_path, s.secondary_image_path as stock_secondary_image_path").
+				Joins("inner join player_stocks as ps on gs.id = ps.game_stock_id").
+				Joins("inner join games as g on g.id = gs.game_id").
+				Joins("left join player_insights as pi on pi.player_stock_id = ps.id and pi.period = g.current_period").
 				Joins("left join insights as i on i.id = pi.insight_id").
-				Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 				Joins("inner join stocks as s on s.id = gs.stock_id").
 				Where("ps.id = ?", playerStockIDString).
-				Group("ps.id, gs.value, s.name, s.image_path, gs.game_id").
+				Group("ps.id, gs.value, s.name, s.image_path, s.secondary_image_path, gs.game_id").
 				Scan(&playerStockDisplay).Error
 
 			if err != nil {
@@ -81,14 +82,17 @@ func CreatePlayerStockRoutes() {
 				Order("p.ID").
 				Scan(&investors)
 
-			var insightResults []models.InsightResult
+			var insightResults []models.InsightDisplay
 
 			// my insights
 			db.Table("player_insights as pi").
-				Select("i.description, i.value").
-				Joins("inner join player_stocks as ps on ps.id = pi.player_stock_id").
+				Select("i.description, i.value, s.display as stock_display").
 				Joins("inner join insights as i on pi.insight_id = i.id").
-				Where("ps.id = ?", playerStockIDString).
+				Joins("inner join stocks as s on s.id = i.stock_id").
+				Joins("inner join player_stocks as ps ON pi.player_stock_id = ps.id").
+				Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+				Joins("inner join games as g on g.id = gs.game_id").
+				Where("ps.id = ? and pi.period = g.current_period", playerStockIDString).
 				Scan(&insightResults)
 
 			var stockInfoResult models.StockInfoResult
@@ -153,6 +157,14 @@ func CreatePlayerStockRoutes() {
 			gameID := c.PostForm("gameID")
 			mode := c.PostForm("mode")
 
+			if gameID == "" || mode == "" {
+				fmt.Println("no gameID or mode in form")
+				pageComponent := gameTemplates.Error(fmt.Errorf("no gameID or mode"))
+				ctx := context.Background()
+				pageComponent.Render(ctx, c.Writer)
+				return
+			}
+
 			playerStockID64, err := strconv.ParseUint(playerStockIDString, 10, 32)
 
 			if err != nil {
@@ -176,6 +188,9 @@ func CreatePlayerStockRoutes() {
 			}
 
 			multiplier, err := strconv.Atoi(mode)
+
+			fmt.Println("mode:", mode, ", multiplier:", multiplier)
+
 			if err != nil {
 				fmt.Println("could not parse mode to int", err)
 				pageComponent := gameTemplates.Error(err)

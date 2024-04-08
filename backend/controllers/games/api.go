@@ -87,6 +87,7 @@ func StartGame(gameID string) (templ.Component, error) {
 }
 
 func PlayAction(gameID string, current_user models.User, db *gorm.DB) (templ.Component, error) {
+	fmt.Println("play action")
 
 	game, err := models.FindGame(gameID, db)
 
@@ -131,7 +132,9 @@ func PlayAction(gameID string, current_user models.User, db *gorm.DB) (templ.Com
 		return templates.Error(err), err
 	}
 
-	return templates.Loading(), nil
+	route := templ.SafeURL(fmt.Sprintf("/games/show/%s", game.ID))
+
+	return templates.Loading(route), nil
 }
 
 func NextPeriod(gameID string, db *gorm.DB) (templ.Component, error) {
@@ -157,5 +160,64 @@ func NextPeriod(gameID string, db *gorm.DB) (templ.Component, error) {
 		return templates.Error(err), err
 	}
 
-	return templates.Loading(), nil
+	route := templ.SafeURL(fmt.Sprintf("/games/show/%s", game.ID))
+
+	return templates.Loading(route), nil
+}
+
+func NextPeriodAnimate(gameID string, db *gorm.DB) (templ.Component, error) {
+
+	game, err := models.FindGame(gameID, db)
+
+	if err != nil {
+		fmt.Println("could not find game", err)
+		return templates.Error(err), err
+	}
+
+	game.Status = string(models.SpecialInsights)
+
+	err = db.Save(&game).Error
+
+	if err != nil {
+		fmt.Println("could not update game status", err)
+		return templates.Error(err), err
+	}
+
+	err = BroadcastShowSpecialInsights(game.ID)
+
+	if err != nil {
+		fmt.Println("could not broadcast period update", err)
+		return templates.Error(err), err
+	}
+
+	route := templ.SafeURL(fmt.Sprintf("/games/show/%s", game.ID))
+	return templates.Loading(route), nil
+}
+
+func HoldStock(gameID string, oldInsightId uint, stockId uint, db *gorm.DB) (templ.Component, error) {
+
+	err := models.DeletePlayerInsights(gameID, stockId, db)
+
+	if err != nil {
+		fmt.Println("could not delete player insights", err)
+		return templates.Error(err), err
+	}
+
+	nextInsightValue, err := models.GetNextInsightValue(gameID, oldInsightId, db)
+
+	if err != nil {
+		fmt.Println("could not get next insight value", err)
+		return templates.Error(err), err
+	}
+
+	if nextInsightValue == 0 {
+		fmt.Println("next insight value is 0")
+		temp, err := NextPeriod(gameID, db)
+		return temp, err
+	}
+
+	BroadcastStockHold(gameID, nextInsightValue, db)
+
+	route := templ.SafeURL(fmt.Sprintf("/games/show/%s", gameID))
+	return templates.Loading(route), nil
 }

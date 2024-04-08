@@ -1,0 +1,102 @@
+@keyframes popIn {
+    0% { opacity: 0; }
+}
+
+
+@keyframes glideIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+    
+}
+
+@keyframes glideInOut {
+    0% {
+        opacity: 0;
+        /* transform: translateY(100px); */
+    }
+    30% {
+        opacity: 1;
+        /*transform: translateY(0px);*/
+    }
+    70% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+    
+}
+
+@keyframes glideInMini {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+
+@keyframes glideInOutMini {
+    0% {
+        opacity: 0;
+        /*transform: translateY(20px);*/
+    }
+    30% {
+        opacity: 1;
+        /*transform: translateY(0px);*/
+    }
+    70% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+.price-modifier-display {
+    animation-name: glideInOutMini;
+    animation-duration: 2s;
+    animation-fill-mode: both;
+}
+
+.game-insight-card {
+    animation-name: glideInOut;
+    animation-duration: 2s;
+    animation-fill-mode: both;
+}
+
+.game-insight-card.sticky {
+    animation-name: glideIn;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
+div.game-stock-view.first {
+    animation-name: popIn;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
+
+@keyframes slideInFromRight {
+    0% { transform: translateX(300px); }
+    100% { transform: translateX(0); }
+}
+
+#next-step-wrapper {
+    animation-name: slideInFromRight;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-delay: 4s;
+}

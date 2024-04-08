@@ -13,6 +13,7 @@ type PlayerDisplay struct {
 	UserProfileRoot string
 	Cash            int
 	Active          bool
+	TotalValue      float64
 }
 
 type CurrentPlayerDisplay struct {
@@ -88,19 +89,36 @@ func LoadCurrentPlayerDisplay(playerID uint, db *gorm.DB) (CurrentPlayerDisplay,
 
 func LoadPlayerDisplay(id uint, db *gorm.DB) (PlayerDisplay, error) {
 
-	var player Player
-	err := db.Preload("User").First(&player, id).Error
+	var currentPlayerResult struct {
+		GameID          string
+		UserID          uint
+		UserName        string
+		UserProfileRoot string
+		Active          bool
+		Cash            int
+		NetValue        float64
+	}
+
+	err := db.Table("players as p").
+		Select("p.game_id, p.user_id, u.name as user_name, u.profile_root as user_profile_root, p.active, p.cash, sum(ps.quantity * gs.value) as net_value").
+		Joins("inner join users as u on p.user_id = u.id").
+		Joins("inner join player_stocks as ps on ps.player_id = p.id").
+		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+		Where("p.id = ?", id).
+		Group("p.game_id, p.user_id, u.name, u.profile_root, p.cash, p.active").
+		First(&currentPlayerResult).Error
 
 	if err != nil {
+		fmt.Println("could not load current player display", err)
 		return PlayerDisplay{}, err
 	}
 
-	playerDisplay := PlayerDisplay{
-		PlayerID:        player.ID,
-		UserID:          player.User.ID,
-		UserName:        player.User.Name,
-		UserProfileRoot: player.User.ProfileRoot,
-	}
-
-	return playerDisplay, err
+	return PlayerDisplay{
+		PlayerID:        id,
+		UserID:          currentPlayerResult.UserID,
+		UserName:        currentPlayerResult.UserName,
+		UserProfileRoot: currentPlayerResult.UserProfileRoot,
+		Cash:            currentPlayerResult.Cash,
+		TotalValue:      currentPlayerResult.NetValue,
+	}, nil
 }

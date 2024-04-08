@@ -13,6 +13,27 @@ import (
 	"gorm.io/gorm"
 )
 
+func BroadcastStockHold(gameID string, newInsightId uint, db *gorm.DB) error {
+	fmt.Println("broadcasting stock hold...")
+
+	buffer := &bytes.Buffer{}
+
+	str := fmt.Sprintf(`{"nextInsight": "%d"}`, newInsightId)
+
+	buffer.WriteString(str)
+
+	broadcastMessage := websocketModels.BroadcastMessage{
+		GameID:  gameID,
+		Buffer:  buffer,
+		Message: "hold stock",
+	}
+
+	hub := websockets.GetPlayerInsightHub()
+	hub.Broadcast <- &broadcastMessage
+
+	return nil
+}
+
 func BroadcastUpdatePlayersList(gameID string, userCardList templ.Component) error {
 
 	buffer := &bytes.Buffer{}
@@ -23,7 +44,7 @@ func BroadcastUpdatePlayersList(gameID string, userCardList templ.Component) err
 		Buffer: buffer,
 	}
 
-	hub := websockets.GetHub()
+	hub := websockets.GetGameHub()
 	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 
 	return nil
@@ -41,7 +62,7 @@ func BroadcastUpdatePeriodCount(game models.Game) error {
 		Buffer: buffer,
 	}
 
-	hub := websockets.GetHub()
+	hub := websockets.GetGameHub()
 	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 
 	return nil
@@ -49,7 +70,7 @@ func BroadcastUpdatePeriodCount(game models.Game) error {
 
 func BroadcastUpdatePlayBoard(gameID string) error {
 
-	fmt.Println("broadcasting show board: capturing playing socket template")
+	fmt.Println("broadcasting show board: capturing playing socket template, game", gameID)
 
 	broadcastMessage := websocketModels.BroadcastMessage{
 		GameID:  gameID,
@@ -58,7 +79,7 @@ func BroadcastUpdatePlayBoard(gameID string) error {
 	}
 
 	fmt.Println("broadcasting show board: sending playing socket template")
-	hub := websockets.GetHub()
+	hub := websockets.GetGameHub()
 	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 	return nil
 }
@@ -66,7 +87,7 @@ func BroadcastUpdatePlayBoard(gameID string) error {
 func BroadcastGameClosed(gameInsights []models.GameInsight, gameID string, db *gorm.DB) error {
 	fmt.Println("broadcasting market closed")
 
-	displayGameStocks, err := models.LoadGameStockDisplays(gameID, db)
+	displayGameStocks, err := models.LoadGameStockDisplays(gameID, true, db)
 
 	if err != nil {
 		fmt.Println("could not load game stock displays", err)
@@ -91,9 +112,24 @@ func BroadcastGameClosed(gameInsights []models.GameInsight, gameID string, db *g
 		Message: "market closed",
 	}
 
-	hub := websockets.GetHub()
+	hub := websockets.GetGameHub()
 	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 
+	return nil
+}
+
+func BroadcastShowSpecialInsights(gameID string) error {
+
+	fmt.Println("broadcasting show special insights game:", gameID)
+	broadcastMessage := websocketModels.BroadcastMessage{
+		GameID:  gameID,
+		Buffer:  nil,
+		Message: "special insights",
+	}
+
+	fmt.Println("broadcasting show special board: sending playing socket template")
+	hub := websockets.GetGameHub()
+	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
 	return nil
 }
 
@@ -132,5 +168,6 @@ func CheckForMarketClose(gameID string, db *gorm.DB) (templ.Component, error) {
 		return templates.Error(err), err
 	}
 
-	return templates.Loading(), nil
+	route := templ.SafeURL(fmt.Sprintf("/games/show/%s", game.ID))
+	return templates.Loading(route), nil
 }
