@@ -18,7 +18,7 @@ var wsupgrader = websocket.Upgrader{
 }
 
 // serveWs handles websocket requests from the peer.
-func ServeWs(c *gin.Context) (int, gin.H) {
+func ServeWGames(c *gin.Context) (int, gin.H) {
 
 	w := c.Writer
 	r := c.Request

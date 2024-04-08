@@ -88,10 +88,10 @@ func Edit(playerStockID uint, gameID string, quantityAdd int, multiplier int, db
 
 	fmt.Println("updated game current user", userID)
 
+	gameController.BroadcastUpdatePlayBoard(gameID)
+
 	// get game loading template
 	loadingComponent := gameTemplates.Loading()
-
-	gameController.BroadcastUpdatePlayBoard(gameID)
 
 	return loadingComponent, nil
 }

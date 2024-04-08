@@ -179,7 +179,7 @@ func NextPeriodAnimate(gameID string, db *gorm.DB) (templ.Component, error) {
 		return templates.Error(err), err
 	}
 
-	err = BroadcastShowSpecialInsights(gameID, db)
+	err = BroadcastShowSpecialInsights(game.ID)
 
 	if err != nil {
 		fmt.Println("could not broadcast period update", err)

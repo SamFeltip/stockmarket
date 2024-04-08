@@ -33,6 +33,8 @@ func RunGameHub() {
 
 			db := database.GetDb()
 
+			fmt.Println("client length: ", len(gameHub.Clients))
+
 			for client := range gameHub.Clients {
 				fmt.Println("checking", client.CurrentPlayerID)
 				// only send message to clients in the same game
@@ -44,15 +46,19 @@ func RunGameHub() {
 
 				// buffer == nil when the template broadcast requires user context.
 				// these requests reference the DB so should be used sparingly
+				buffer = broadcastMessage.Buffer
 				if buffer == nil {
-					fmt.Println("creating unique buffer for each client and updating client user")
+					fmt.Println("creating unique buffer for the client and updating client user")
 
+					fmt.Println("loading game display...", client.GameID)
 					game, err := models.LoadGameDisplay(client.GameID, db)
 
 					if err != nil {
 						fmt.Println("could not update game in client")
 						continue
 					}
+
+					fmt.Println("loading current player display:", client.CurrentPlayerID, "...")
 
 					current_player, err := models.LoadCurrentPlayerDisplay(client.CurrentPlayerID, db)
 
@@ -100,6 +106,7 @@ func RunGameHub() {
 					} else if message == "special insights" {
 						fmt.Println("broadcasting show special insights")
 
+						fmt.Println("loading special insights...")
 						specialInsights, err := models.LoadSpecialInsights(game.ID, db)
 
 						if err != nil {
@@ -107,12 +114,15 @@ func RunGameHub() {
 							continue
 						}
 
+						fmt.Println("loading game stock displays: gameID: ", game.ID, "(false) ...")
 						gameStockDisplays, err := models.LoadGameStockDisplays(game.ID, false, db)
 
 						if err != nil {
 							fmt.Println("could not load game stock displays", err)
 							continue
 						}
+
+						fmt.Println("loading game stock displays: gameID: ", game.ID, "(true) ...")
 
 						displayGameStocks, err := models.LoadGameStockDisplays(game.ID, true, db)
 
@@ -121,6 +131,8 @@ func RunGameHub() {
 							continue
 						}
 
+						fmt.Println("loading player displays...")
+
 						playerDisplays, err := models.LoadPlayerDisplays(game.ID, db)
 
 						if err != nil {
@@ -128,6 +140,7 @@ func RunGameHub() {
 							continue
 						}
 
+						fmt.Println("loading current player display...")
 						currentPlayerDisplay, err := models.LoadPlayerDisplay(current_player.ID, db)
 
 						if err != nil {
@@ -135,22 +148,25 @@ func RunGameHub() {
 							continue
 						}
 
+						fmt.Println("rendering special insights socket...", game.ID, len(specialInsights), len(gameStockDisplays), len(displayGameStocks), len(playerDisplays), currentPlayerDisplay.UserName)
+
 						specialInsightsDisplay := gameTempl.SpecialInsightsSocket(game.ID, specialInsights, gameStockDisplays, displayGameStocks, playerDisplays, currentPlayerDisplay)
 
-						buffer := &bytes.Buffer{}
+						buffer = &bytes.Buffer{}
 						specialInsightsDisplay.Render(context.Background(), buffer)
 
 					}
 				}
 
+				fmt.Println("sending buffer...")
+
 				select {
 				case client.Send <- buffer:
 				default:
+					fmt.Println("closing client!...")
 					close(client.Send)
 					delete(gameHub.Clients, client)
 				}
-
-				buffer = broadcastMessage.Buffer
 
 			}
 		}

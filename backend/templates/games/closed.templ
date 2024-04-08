@@ -67,22 +67,32 @@ templ Closed(gameID string, gameInsights []models.GameInsight, gameStocks []mode
 			}
 		</div>
 		
-		<div id="stock-view" class="card card-green p-4 rounded d-flex flex-sm-row flex-column gap-3 justify-content-between align-items-center border-5 border-white">
+		<div 
+			id="stock-view" 
+			class="card card-green px-5 py-4 rounded border-5 border-white flex-sm-row align-items-center"
+		>
 			<h2>
 				Stock Values:
 			</h2>
-			for _, gameStock := range gameStocks {
-				<div id={ "game-stock-" + strconv.FormatUint(uint64(gameStock.ID), 10) } class="game-stock d-flex flex-column align-items-center" data-game-stock-id={ strconv.FormatUint(uint64(gameStock.ID), 10) }>
-					<img height="80px" src={ gameStock.SecondaryImagePath } alt={ gameStock.Name }/>
-					<!-- used for changing value display-->
-					<span class="d-none stock-total-insight-value">
-						0
-					</span>
-					<div>
-						£<span class="stock-value">{ fmt.Sprintf("%.2f", gameStock.Value ) }</span>
+			<div class="gap-3 flex-fill d-flex flex-nowrap flex-column flex-sm-row justify-content-between align-items-center">
+			
+				for _, gameStock := range gameStocks {
+					<div 
+						id={ "game-stock-" + strconv.FormatUint(uint64(gameStock.ID), 10) } 
+						class="game-stock d-flex flex-column align-items-center" 
+						data-game-stock-id={ strconv.FormatUint(uint64(gameStock.ID), 10) }
+					>
+						<img class="w-100 p-3 object-fit-contain" style="max-height: 100px;" src={ gameStock.SecondaryImagePath } alt={ gameStock.Name }/>
+						<!-- used for changing value display-->
+						<span class="d-none stock-total-insight-value">
+							0
+						</span>
+						<div>
+							£<span class="stock-value">{ fmt.Sprintf("%.2f", gameStock.Value ) }</span>
+						</div>
 					</div>
-				</div>
-			}
+				}
+			</div>
 		</div>
 
 		<div id="player-view" class="card card-green p-4 rounded  d-flex flex-sm-row flex-column justify-content-between align-items-center">

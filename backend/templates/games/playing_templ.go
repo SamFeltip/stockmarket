@@ -802,7 +802,7 @@ func PlayNotification(feedItem models.FeedItem) templ.Component {
 			templ_7745c5c3_Var41 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"play-notif\" hx-swap-oob=\"outerHTML:#play-notif\"><div class=\"d-flex justify-content-center flex-column align-items-center\" style=\"\n					position: absolute;\n					left:  0;\n					right:  0;\n					top:  0;\n					bottom:  0;\n				\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"play-notif\" hx-swap-oob=\"outerHTML:#play-notif\"><div class=\"p-3 d-flex justify-content-center flex-column align-items-center\" style=\"\n					position: absolute;\n					left:  0;\n					right:  0;\n					top:  0;\n					bottom:  0;\n				\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

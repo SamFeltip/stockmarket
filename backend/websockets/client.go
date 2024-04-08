@@ -109,7 +109,14 @@ func WritePump(c *websocketModels.Client) {
 				c.Conn.WriteMessage(gorrilaws.CloseMessage, []byte{})
 				return
 			}
+
+			if messageBuffer == nil {
+				fmt.Println("message buffer is nil")
+				continue
+			}
+
 			fmt.Println("sending message")
+
 			err := c.Conn.WriteMessage(gorrilaws.TextMessage, messageBuffer.Bytes())
 
 			if err != nil {

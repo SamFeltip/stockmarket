@@ -70,7 +70,7 @@ func BroadcastUpdatePeriodCount(game models.Game) error {
 
 func BroadcastUpdatePlayBoard(gameID string) error {
 
-	fmt.Println("broadcasting show board: capturing playing socket template")
+	fmt.Println("broadcasting show board: capturing playing socket template, game", gameID)
 
 	broadcastMessage := websocketModels.BroadcastMessage{
 		GameID:  gameID,
@@ -118,17 +118,18 @@ func BroadcastGameClosed(gameInsights []models.GameInsight, gameID string, db *g
 	return nil
 }
 
-func BroadcastShowSpecialInsights(gameID string, db *gorm.DB) error {
+func BroadcastShowSpecialInsights(gameID string) error {
 
+	fmt.Println("broadcasting show special insights game:", gameID)
 	broadcastMessage := websocketModels.BroadcastMessage{
 		GameID:  gameID,
 		Buffer:  nil,
 		Message: "special insights",
 	}
 
+	fmt.Println("broadcasting show special board: sending playing socket template")
 	hub := websockets.GetGameHub()
 	hub.Broadcast <- &broadcastMessage //send a html template on the hub's broadcast channel
-
 	return nil
 }
 

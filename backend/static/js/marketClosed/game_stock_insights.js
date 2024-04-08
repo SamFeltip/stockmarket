@@ -248,10 +248,7 @@ function animateHoldStocks() {
 
     let insightId = stockHoldInsight.getAttribute("data-insight-id")
 
-    const firstStockHoldModal = new bootstrap.Modal(`#stock-hold-modal-${insightId}`, {
-        keyboard: false,
-        focus: true,
-    })
+    const firstStockHoldModal = new bootstrap.Modal(`#stock-hold-modal-${insightId}`)
 
     firstStockHoldModal.show();
 
@@ -281,9 +278,7 @@ function animateHoldStocks() {
 
         newGameInsight.style.display = "grid";
 
-        const stockHoldModal = new bootstrap.Modal(`#stock-hold-modal-${message.nextInsight}`, {
-            keyboard: false
-        })
+        const stockHoldModal = new bootstrap.Modal(`#stock-hold-modal-${message.nextInsight}`)
 
         stockHoldModal.show();
 
