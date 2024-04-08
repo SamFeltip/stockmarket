@@ -286,7 +286,23 @@ func CreateGameRoutes() {
 
 			oldInsightId := uint(oldInsightId64)
 
-			pageComponent, err := controllers.HoldStock(gameID, oldInsightId, db)
+			stockIdString := c.PostForm("stockID")
+
+			if stockIdString == "" {
+				fmt.Println("no stockID in post request")
+				return
+			}
+
+			stockId64, err := strconv.ParseUint(stockIdString, 10, 64)
+
+			if err != nil {
+				fmt.Println("could not convert stockId to int", stockIdString)
+				return
+			}
+
+			stockId := uint(stockId64)
+
+			pageComponent, err := controllers.HoldStock(gameID, oldInsightId, stockId, db)
 
 			if err != nil {
 				fmt.Println("error holding stock", err)

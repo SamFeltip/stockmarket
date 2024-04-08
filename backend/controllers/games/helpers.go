@@ -168,6 +168,6 @@ func CheckForMarketClose(gameID string, db *gorm.DB) (templ.Component, error) {
 		return templates.Error(err), err
 	}
 
-	route := templ.SafeURL(fmt.Sprintf("/game/show/%s", game.ID))
+	route := templ.SafeURL(fmt.Sprintf("/games/show/%s", game.ID))
 	return templates.Loading(route), nil
 }

@@ -36,7 +36,7 @@ func SetupDevDb() *gorm.DB {
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_NAME"),
 		os.Getenv("DB_PORT"))
-	return SetupDb(dsn, logger.Error)
+	return SetupDb(dsn, logger.Info)
 }
 
 func SetupProdDb() *gorm.DB {

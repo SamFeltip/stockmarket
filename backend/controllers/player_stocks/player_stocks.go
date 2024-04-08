@@ -90,7 +90,7 @@ func Edit(playerStockID uint, gameID string, quantityAdd int, multiplier int, db
 
 	gameController.BroadcastUpdatePlayBoard(gameID)
 
-	route := templ.SafeURL(fmt.Sprintf("/game/show/%s", gameID))
+	route := templ.SafeURL(fmt.Sprintf("/games/show/%s", gameID))
 	// get game loading template
 	loadingComponent := gameTemplates.Loading(route)
 

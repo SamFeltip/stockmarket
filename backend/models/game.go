@@ -304,6 +304,8 @@ update the game period
 */
 func (game *Game) UpdatePeriod(db *gorm.DB) error {
 
+	fmt.Println("updating period for game:", game.ID)
+
 	type GameStockChange struct {
 		TotalChange float64
 		GameStockID uint
@@ -313,11 +315,12 @@ func (game *Game) UpdatePeriod(db *gorm.DB) error {
 	var gameStockChanges []GameStockChange
 
 	err := db.Table("player_stocks as ps").
-		Select("sum(i.value) as total_change, gs.id as game_stock_id, gs.value").
-		Joins("left join player_insights as pi on pi.player_stock_id = ps.id").
-		Joins("left join insights as i on i.id = pi.insight_id").
+		Select("COALESCE(sum(i.value),0) as total_change, gs.id as game_stock_id, gs.value").
 		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
 		Joins("inner join stocks as s on s.id = gs.stock_id").
+		Joins("inner join games as g on g.id = gs.game_id").
+		Joins("left join player_insights as pi on (pi.player_stock_id = ps.id and pi.period = g.current_period)").
+		Joins("left join insights as i on i.id = pi.insight_id").
 		Where("gs.game_id = ? and s.display = true", game.ID).
 		Group("gs.id, gs.value").
 		Scan(&gameStockChanges).Error
@@ -332,7 +335,10 @@ func (game *Game) UpdatePeriod(db *gorm.DB) error {
 
 		newValue := math.Max(0, gameStockChange.Value+gameStockChange.TotalChange)
 
+		fmt.Println("updating game stock:", gameStockChange.GameStockID, "old value:", gameStockChange.Value, "new value:", newValue)
+
 		gameStock := GameStock{}
+
 		err = db.
 			Model(&gameStock).
 			Where("id = ?", gameStockChange.GameStockID).

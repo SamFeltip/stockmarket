@@ -31,11 +31,11 @@ templ GameStockModal(displayGameStocks []models.GameStockDisplay, gameID string,
 				<div class="modal-body d-grid" style="grid-template-columns: 1fr 1fr 1fr;">
 					for _, gameStock := range displayGameStocks {
 						<input
-							id={ strconv.FormatUint(uint64(gameStock.ID), 10) }
+							id={ strconv.FormatUint(uint64(gameStock.StockId), 10) }
 							class="btn-check hold-game-stock"
 							type="radio"
-							name="hold-game-stock"
-							value={ strconv.FormatUint(uint64(gameStock.ID), 10) }
+							name="stockID"
+							value={ strconv.FormatUint(uint64(gameStock.StockId), 10) }
 							autocomplete="off"
 						/>
 						<div
@@ -43,7 +43,7 @@ templ GameStockModal(displayGameStocks []models.GameStockDisplay, gameID string,
 							class="game-stock-value-change btn btn-outline-secondary"
 							data-game-stock-id={ strconv.FormatUint(uint64(gameStock.ID), 10) }
 						>
-							<label for={ strconv.FormatUint(uint64(gameStock.ID), 10) }>
+							<label for={ strconv.FormatUint(uint64(gameStock.StockId), 10) }>
 								<img height="64px" src={ gameStock.ImagePath } alt={ gameStock.Name }/>
 							</label>
 							<div class="fw-bolder">
