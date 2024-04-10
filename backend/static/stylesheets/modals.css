@@ -53,3 +53,32 @@
 .modal .total-insight img {
     height: 8px;
 }
+
+@keyframes angry-reveal {
+    0% {
+        opacity: 0;
+        transform: translateX(0px);
+    }
+
+    25% {
+        transform: translateX(10px);
+    }
+    50% {
+        transform: translateX(-10px);
+    
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.modal .purchase-warning {
+    animation: angry-reveal 0.3s ease;
+    transition: opacity 0.5s;
+}

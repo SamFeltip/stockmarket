@@ -146,6 +146,11 @@ func NextPeriod(gameID string, db *gorm.DB) (templ.Component, error) {
 		return templates.Error(err), err
 	}
 
+	if game.Status != string(models.SpecialInsights) {
+		fmt.Println("cannot go to next period unless a game is in special insights")
+		return templates.Error(err), err
+	}
+
 	err = game.UpdatePeriod(db)
 
 	if err != nil {
@@ -171,6 +176,11 @@ func NextPeriodAnimate(gameID string, db *gorm.DB) (templ.Component, error) {
 
 	if err != nil {
 		fmt.Println("could not find game", err)
+		return templates.Error(err), err
+	}
+
+	if game.Status != string(models.Closed) {
+		fmt.Println("cannot go to special insights unless a game is closed")
 		return templates.Error(err), err
 	}
 

@@ -134,6 +134,10 @@ export class StockCalculator extends HTMLElement {
     // screw you, im not using OR statements it will make this code unreadable as hell, Idgaf
     PlayerCanBuyStockQuantity(stocks_to_buy) {
 
+        if(this.gameStockValue <= 0) {
+            return [false, "you may not pull a Sol"]
+        }
+
         console.log({fn: "buy", mode: this.mode, playerStockQuantity: this.playerStockQuantity, addPlayerStockQuantity: this.addPlayerStockQuantity, newStockQuantity: stocks_to_buy})
 
         if(this.mode == "sell" && stocks_to_buy > 0) {return [false, "cannot sell positive stocks"]}
@@ -142,16 +146,21 @@ export class StockCalculator extends HTMLElement {
         if(this.gameStockSharesAvailable - stocks_to_buy < 0) {return [false, "not enough stocks available"]}
         // if (quantity > this.gameStockSharesAvailable) { return [false, "not enough shares available"] }
 
-        return [true, ""]
+        return [true, "purchase"]
     }
 
     PlayerCanSellStockQuantity(stocks_to_sell) {
+
+        if(this.gameStockValue <= 0) {
+            return [false, "you may not pull a Sol"]
+        }
+
         let newStockQuantity = this.playerStockQuantity + stocks_to_sell
         console.log({playerStockQuantity: this.playerStockQuantity, addPlayerStockQuantity: this.addPlayerStockQuantity, stocks_to_sell, newStockQuantity})
         
-        if(this.mode == "buy" && stocks_to_sell < 0) {return [false, "cannot buy negative stocks"]}
-        if(newStockQuantity < 0) {return [false, "cannot sell stocks you do not have"]}
-        return [true, ""]
+        if(this.mode == "buy" && stocks_to_sell < 0) {return [false, "you can't buy negative stocks"]}
+        if(newStockQuantity < 0) {return [false, "you can't sell stocks you don't have"]}
+        return [true, "purchase"]
     }
 
     constructor() {
@@ -227,6 +236,26 @@ export class StockCalculator extends HTMLElement {
 
                 if(!can_buy){
                     console.error(`cannot purchase: ${err}`)
+                    /** @type {HTMLParagraphElement?} */
+                    const purchase_warning = this.querySelector("p.purchase-warning");
+                   
+                    if(purchase_warning == null){
+                        console.error("purchase-warning element is required")
+                        return
+                    }
+
+                    purchase_warning.innerHTML = err.toString();
+                
+                    purchase_warning.style.display = "block";
+                    purchase_warning.style.opacity = "1";
+                    setTimeout(() => {
+                        purchase_warning.style.opacity = "0";
+                    }, 2000)
+
+                    setTimeout(() => {
+                        purchase_warning.style.display = "none";
+                    }, 2500)
+
                     return
                 }
 
@@ -241,6 +270,26 @@ export class StockCalculator extends HTMLElement {
 
                 if(!can_buy){
                     console.error(`cannot purchase: ${err}`)
+                    /** @type {HTMLParagraphElement?} */
+                    const purchase_warning = this.querySelector("p.purchase-warning");
+                   
+                    if(purchase_warning == null){
+                        console.error("purchase-warning element is required")
+                        return
+                    }
+
+                    purchase_warning.innerHTML = err.toString();
+                    
+                    purchase_warning.style.display = "block";
+                    purchase_warning.style.opacity = "1";
+                    setTimeout(() => {
+                        purchase_warning.style.opacity = "0";
+                    }, 2000)
+
+                    setTimeout(() => {
+                        purchase_warning.style.display = "none";
+                    }, 2500)
+
                     return
                 }
 

@@ -262,4 +262,9 @@ templ SpecialInsightsSocket(gameID string, insights []models.GameInsight, hidden
 	<div hx-swap-oob="innerHTML:main">
 		@SpecialInsights(gameID, insights, hiddenGameStocks, displayGameStocks, players, currentPlayer)
 	</div>
+	<script>
+		console.log("remove modal backdrop")
+		document.querySelector(".modal-backdrop") && document.querySelector(".modal-backdrop").remove();
+		
+	</script>
 }

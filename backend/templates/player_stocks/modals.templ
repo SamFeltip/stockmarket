@@ -16,13 +16,19 @@ templ BuyModal(playerStockDisplay models.PlayerStockDisplay, playerStockPlayer m
 
 				<div class="modal-body d-flex flex-column row-gap-3">
 					<stock-calculator
-						class="d-flex flex-row gap-1"
+						class="d-flex flex-column gap-1"
 						playerStock-quantity={ strconv.Itoa(playerStockPlayer.StocksHeld) }
 						gameStock-value={ strconv.FormatFloat(playerStockDisplay.GameStockValue, 'f', -1, 64) }
 						gameStock-sharesAvailable={ strconv.Itoa(stockInfo.SharesAvailable) }
 						player-cash={ strconv.Itoa(playerStockPlayer.Cash) }
 						mode="buy"
 					>
+						<p 
+							class="purchase-warning bg-danger-subtle border border-2 rounded border-danger p-2 mb-1"
+							style="display: none;" 
+						>
+							default text
+						</p>
 						<form 
 							id="buyStock" 
 							hx-post="/player_stocks/edit"
@@ -111,13 +117,20 @@ templ SellModal(playerStockDisplay models.PlayerStockDisplay, playerStockPlayer 
 
 				<div class="modal-body d-flex flex-column row-gap-3">
 					<stock-calculator
-						class="d-flex flex-row gap-1"
+						class="d-flex flex-column gap-1"
 						playerStock-quantity={ strconv.Itoa(playerStockPlayer.StocksHeld) }
 						gameStock-value={ strconv.FormatFloat(playerStockDisplay.GameStockValue, 'f', -1, 64) }
 						gameStock-sharesAvailable={ strconv.Itoa(stockInfo.SharesAvailable) }
 						player-cash={ strconv.Itoa(playerStockPlayer.Cash) }
 						mode="sell"
 					>
+
+						<p 
+							class="purchase-warning bg-danger-subtle border border-2 rounded border-danger p-2 mb-1"
+							style="display: none;"
+						>
+							default text
+						</p>
 						<form 
 							id="sellStock" 
 							hx-post="/player_stocks/edit"
