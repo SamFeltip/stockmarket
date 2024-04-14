@@ -85,7 +85,7 @@ func fillSilver() templ.CSSClass {
 
 func fillBronze() templ.CSSClass {
 	var templ_7745c5c3_CSSBuilder strings.Builder
-	templ_7745c5c3_CSSBuilder.WriteString(`fill:#AD8A56;`)
+	templ_7745c5c3_CSSBuilder.WriteString(`fill:#a55b0f;`)
 	templ_7745c5c3_CSSID := templ.CSSID(`fillBronze`, templ_7745c5c3_CSSBuilder.String())
 	return templ.ComponentCSSClass{
 		ID:    templ_7745c5c3_CSSID,

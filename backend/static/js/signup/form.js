@@ -28,7 +28,7 @@ signupForm.addEventListener("submit", (event) => {
     let form_password_elem = target.querySelector("input#password")
 
     /** @type {HTMLSelectElement?} */
-    let form_profile_elem = target.querySelector("select#profile")
+    let form_profile_elem = target.querySelector('input[type="radio"]:checked')
     
     if (form_name_elem == null || form_password_elem == null || form_profile_elem == null) {
         throw new Error("form is missing elements")

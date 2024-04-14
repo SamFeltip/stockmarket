@@ -10,16 +10,46 @@ templ Signup() {
 					<h1>Sign up</h1>
 				</div>
 				<div class="card-body">
+					<style>
+						.img-label {
+							border: #204712 2px solid;
+						}
+						.img-label:has(input[type="radio"]:checked) {
+							border: white 2px solid;
+						}
+					</style>
 					<form id="signup">
-						<label for="profile">Image</label>
+						<div class="d-grid gap-2 mb-2" style="grid-template-columns: repeat(5, 1fr);">
+							<label class="img-label rounded overflow-hidden" for="image1">
+								<input class="image d-none" type="radio" id="image1" name="profile" value="1"/>
+								<img class="w-100" src="/static/imgs/1profile.png" alt="Image 1"/>
+							</label>
+							<label class="img-label rounded overflow-hidden" for="image2">
+								<input class="image d-none" type="radio" id="image2" name="profile" value="2"/>
+								<img class="w-100" src="/static/imgs/2profile.png" alt="Image 2"/>
+							</label>
+							<label class="img-label rounded overflow-hidden" for="image3">
+								<input class="image d-none" type="radio" id="image3" name="profile" value="3"/>
+								<img class="w-100" src="/static/imgs/3profile.png" alt="Image 3"/>
+							</label>
+							<label class="img-label rounded overflow-hidden" for="image4">
+								<input class="image d-none" type="radio" id="image4" name="profile" value="4"/>
+								<img class="w-100" src="/static/imgs/4profile.png" alt="Image 4"/>
+							</label>
+							<label class="img-label rounded overflow-hidden" for="image5">
+								<input class="image d-none" type="radio" id="image5" name="profile" value="5"/>
+								<img class="w-100" src="/static/imgs/5profile.png" alt="Image 5"/>
+							</label>
+						</div>
 						<!-- 5 pictures to click on (select) -->
-						<select class="form-control mb-2" id="profile" name="profile" required>
-							<option value="1" selected>1</option>
-							<option value="2">2</option>
-							<option value="3">3</option>
-							<option value="4">4</option>
-							<option value="5">5</option>
-						</select>
+						// <select class="form-control mb-2" id="profile" name="profile" required>
+						// 	<option value="1" selected>1</option>
+						// 	<option value="2">2</option>
+						// 	<option value="3">3</option>
+						// 	<option value="4">4</option>
+						// 	<option value="5">5</option>
+						// </select>
+
 						<input class="form-control mb-2" type="text" id="name" name="name" placeholder="Username" required/>
 						<input class="form-control mb-4" type="password" id="password" name="password" placeholder="Password" required/>
 

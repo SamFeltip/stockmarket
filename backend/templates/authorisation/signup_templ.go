@@ -32,16 +32,23 @@ func Signup() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h1></div><div class=\"card-body\"><form id=\"signup\"><label for=\"profile\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h1></div><div class=\"card-body\"><style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var3 := `Image`
+		templ_7745c5c3_Var3 := `
+						.img-label {
+							border: #204712 2px solid;
+						}
+						.img-label:has(input[type="radio"]:checked) {
+							border: white 2px solid;
+						}
+					`
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</label><!--")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</style><form id=\"signup\"><div class=\"d-grid gap-2 mb-2\" style=\"grid-template-columns: repeat(5, 1fr);\"><label class=\"img-label rounded overflow-hidden\" for=\"image1\"><input class=\"image d-none\" type=\"radio\" id=\"image1\" name=\"profile\" value=\"1\"> <img class=\"w-100\" src=\"/static/imgs/1profile.png\" alt=\"Image 1\"></label> <label class=\"img-label rounded overflow-hidden\" for=\"image2\"><input class=\"image d-none\" type=\"radio\" id=\"image2\" name=\"profile\" value=\"2\"> <img class=\"w-100\" src=\"/static/imgs/2profile.png\" alt=\"Image 2\"></label> <label class=\"img-label rounded overflow-hidden\" for=\"image3\"><input class=\"image d-none\" type=\"radio\" id=\"image3\" name=\"profile\" value=\"3\"> <img class=\"w-100\" src=\"/static/imgs/3profile.png\" alt=\"Image 3\"></label> <label class=\"img-label rounded overflow-hidden\" for=\"image4\"><input class=\"image d-none\" type=\"radio\" id=\"image4\" name=\"profile\" value=\"4\"> <img class=\"w-100\" src=\"/static/imgs/4profile.png\" alt=\"Image 4\"></label> <label class=\"img-label rounded overflow-hidden\" for=\"image5\"><input class=\"image d-none\" type=\"radio\" id=\"image5\" name=\"profile\" value=\"5\"> <img class=\"w-100\" src=\"/static/imgs/5profile.png\" alt=\"Image 5\"></label></div><!--")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -50,57 +57,12 @@ func Signup() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("--><select class=\"form-control mb-2\" id=\"profile\" name=\"profile\" required><option value=\"1\" selected>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("--><input class=\"form-control mb-2\" type=\"text\" id=\"name\" name=\"name\" placeholder=\"Username\" required> <input class=\"form-control mb-4\" type=\"password\" id=\"password\" name=\"password\" placeholder=\"Password\" required><div style=\"display: grid;\n						grid-template-columns: 1fr 1fr;\n						gap: 1rem;\"><a href=\"/login\" class=\"btn btn-secondary\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var5 := `1`
+		templ_7745c5c3_Var5 := `Log in`
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option> <option value=\"2\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Var6 := `2`
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option> <option value=\"3\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Var7 := `3`
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option> <option value=\"4\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Var8 := `4`
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option> <option value=\"5\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Var9 := `5`
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option></select> <input class=\"form-control mb-2\" type=\"text\" id=\"name\" name=\"name\" placeholder=\"Username\" required> <input class=\"form-control mb-4\" type=\"password\" id=\"password\" name=\"password\" placeholder=\"Password\" required><div style=\"display: grid;\n						grid-template-columns: 1fr 1fr;\n						gap: 1rem;\"><a href=\"/login\" class=\"btn btn-secondary\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Var10 := `Log in`
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -108,8 +70,8 @@ func Signup() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var11 := `Sign up`
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
+		templ_7745c5c3_Var6 := `Sign up`
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -117,8 +79,8 @@ func Signup() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var12 := ``
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
+		templ_7745c5c3_Var7 := ``
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
