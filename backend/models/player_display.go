@@ -35,6 +35,7 @@ func LoadPlayerDisplays(gameID string, db *gorm.DB) ([]PlayerDisplay, error) {
 		Select("players.ID as player_id, u.ID as user_id, u.name as user_name, u.profile_root as user_profile_root, cash, active").
 		Joins("inner join users as u on u.id = players.user_id").
 		Where("game_id = ?", gameID).
+		Order("players.id").
 		Scan(&players).
 		Error
 
