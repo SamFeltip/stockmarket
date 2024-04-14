@@ -14,6 +14,7 @@ type PlayerDisplay struct {
 	Cash            int
 	Active          bool
 	TotalValue      float64
+	Ranking         int
 }
 
 type CurrentPlayerDisplay struct {
@@ -113,6 +114,36 @@ func LoadPlayerDisplay(id uint, db *gorm.DB) (PlayerDisplay, error) {
 		return PlayerDisplay{}, err
 	}
 
+	type PlayerPositionResponse struct {
+		Place      int
+		ID         uint
+		TotalValue float64
+	}
+
+	player_positions := []PlayerPositionResponse{}
+
+	error := db.Table("players as p").
+		Select("ROW_NUMBER() OVER () AS place, p.id, (p.cash + sum(ps.quantity * gs.value)) as total_value").
+		Joins("inner join player_stocks as ps on ps.player_id = p.id").
+		Joins("inner join game_stocks as gs on gs.id = ps.game_stock_id").
+		Where("p.game_id = ?", currentPlayerResult.GameID).
+		Group("p.id, p.game_id, p.user_id, p.cash").
+		Order("total_value").
+		Scan(&player_positions).Error
+
+	if error != nil {
+		fmt.Println("could not load player positions", error)
+		return PlayerDisplay{}, error
+	}
+
+	ranking := 0
+
+	for _, player := range player_positions {
+		if player.ID == id {
+			ranking = len(player_positions) - player.Place + 1
+		}
+	}
+
 	return PlayerDisplay{
 		PlayerID:        id,
 		UserID:          currentPlayerResult.UserID,
@@ -120,5 +151,14 @@ func LoadPlayerDisplay(id uint, db *gorm.DB) (PlayerDisplay, error) {
 		UserProfileRoot: currentPlayerResult.UserProfileRoot,
 		Cash:            currentPlayerResult.Cash,
 		TotalValue:      currentPlayerResult.NetValue,
+		Ranking:         ranking,
 	}, nil
+}
+
+func (playerDisplay *PlayerDisplay) TotalShares(playerStocks []PlayerStockDisplay) int {
+	totalShares := 0
+	for _, playerStock := range playerStocks {
+		totalShares += playerStock.PlayerStockQuantity
+	}
+	return totalShares
 }
