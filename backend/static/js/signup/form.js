@@ -1,7 +1,7 @@
 //@ts-check
 
 /** @type {HTMLFormElement?} */
-signupForm = document.querySelector("form#signup")
+const signupForm = document.querySelector("form#signup")
 
 if (signupForm == null) {
     throw new Error("form#signup element is not present")

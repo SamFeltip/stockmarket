@@ -78,7 +78,7 @@ func Scripts() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</script><script type=\"module\" src=\"/static/js/playing/calculator.js\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</script><script type=\"module\" src=\"/static/js/playing/calculator.js?version=2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -87,7 +87,7 @@ func Scripts() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</script><script src=\"/static/js/marketClosed/game_stock_insights.js\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</script><script src=\"/static/js/marketClosed/game_stock_insights.js?version=2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -120,7 +120,7 @@ func Styles() templ.Component {
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css?family=Inter\"><link rel=\"stylesheet\" href=\"/static/packages/bootstrap.min.css\"><link rel=\"stylesheet\" href=\"/static/stylesheets/styles.css\"><link rel=\"stylesheet\" href=\"/static/stylesheets/playing.css\"><link rel=\"stylesheet\" href=\"/static/stylesheets/modals.css\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css?family=Inter\"><link rel=\"stylesheet\" href=\"/static/packages/bootstrap.min.css\"><link rel=\"stylesheet\" href=\"/static/stylesheets/styles.css?version=2\"><link rel=\"stylesheet\" href=\"/static/stylesheets/playing.css?version=2\"><link rel=\"stylesheet\" href=\"/static/stylesheets/modals.css?version=2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
