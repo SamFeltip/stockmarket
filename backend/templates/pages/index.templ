@@ -15,7 +15,7 @@ script Form() {
 
 templ Index() {
 	
-	<main class="d-flex flex-column justify-content-center p-2">
+	<main class="d-flex flex-column justify-content-center p-2 position-relative">
 		<style>
 			#home-screen {
 				grid-template-columns: 1fr;
@@ -27,11 +27,16 @@ templ Index() {
 				}
 			}
 		</style>
+		<div class="position-absolute p-3 top-0 start-0">
+			<a href="/logout" class="d-flex flex-row align-items-center gap-2 text-decoration-none">
+				<img height="64em" class="rounded-circle" src={ templates.GetCurrentUser(ctx).ProfileRoot } alt={ templates.GetCurrentUser(ctx).Name }/>
+				<span class="text-white">{ templates.GetCurrentUser(ctx).Name }</span>
+			</a>
+        </div>
 		<div class="container-fluid rounded d-flex justify-content-center card card-green" style="max-width: 40rem">
 			<header class="card-header text-center">
 				<h1 id="stockmarket-header">Stockmarket!</h1>
 				<h2>Welcome to stockmarket</h2>
-				<a href="/logout"><em>/logout ({templates.GetCurrentUser(ctx).Name})</em></a>
 			</header>
 			<div
 				id="home-screen"
