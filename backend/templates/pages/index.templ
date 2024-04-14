@@ -30,7 +30,7 @@ templ Index() {
 		<div class="position-absolute p-3 top-0 start-0">
 			<a href="/logout" class="d-flex flex-row align-items-center gap-2 text-decoration-none">
 				<img height="64em" class="rounded-circle" src={ templates.GetCurrentUser(ctx).ProfileRoot } alt={ templates.GetCurrentUser(ctx).Name }/>
-				<span class="text-white">{ templates.GetCurrentUser(ctx).Name }</span>
+				<span class="text-white text-capitalize">{ templates.GetCurrentUser(ctx).Name }</span>
 			</a>
         </div>
 		<div class="container-fluid rounded d-flex justify-content-center card card-green" style="max-width: 40rem">
