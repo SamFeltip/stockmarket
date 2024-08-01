@@ -12,7 +12,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
     networks:
       - default
-      - nginx-proxy-manager_default
+      - nginx-manager_default
   db:
     image: postgres:latest
     volumes:
