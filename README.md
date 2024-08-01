@@ -63,3 +63,9 @@ Images are kept out of git for the skae of push/pull performance. locally these 
 ### seeding
 
 `setup.sql` contains the seeding for the database. this includes insight templates and stocks.
+
+### logging in
+
+Visit `stockmarket.samfelton.com/login`, and login as `user` with password `password`.
+
+There is a game created with the gameID `game` if you would like to see the game in action.
