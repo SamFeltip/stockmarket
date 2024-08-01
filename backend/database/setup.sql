@@ -1,10 +1,10 @@
 
-INSERT INTO public.stocks (id, created_at, updated_at, deleted_at, name, starting_value, image_path, variation) VALUES (8, NULL, NULL, NULL, 'UB', 2.5, '/static/imgs/stocks/ub.png', NULL);
-INSERT INTO public.stocks (id, created_at, updated_at, deleted_at, name, starting_value, image_path, variation) VALUES (10, NULL, NULL, NULL, 'Thames', 5.5, '/static/imgs/stocks/thames.png', NULL);
-INSERT INTO public.stocks (id, created_at, updated_at, deleted_at, name, starting_value, image_path, variation) VALUES (12, NULL, NULL, NULL, 'Natwest', 9.0, '/static/imgs/stocks/natwest.png', NULL);
-INSERT INTO public.stocks (id, created_at, updated_at, deleted_at, name, starting_value, image_path, variation) VALUES (7, NULL, NULL, NULL, 'Trusthouse Forte', 2.0, '/static/imgs/stocks/thf.png', NULL);
-INSERT INTO public.stocks (id, created_at, updated_at, deleted_at, name, starting_value, image_path, variation) VALUES (11, NULL, NULL, NULL, 'Saatchi & Saatchi', 7.5, '/static/imgs/stocks/S_and_S.png', NULL);
-INSERT INTO public.stocks (id, created_at, updated_at, deleted_at, name, starting_value, image_path, variation) VALUES (9, NULL, NULL, NULL, 'Legal & General', 4.0, '/static/imgs/stocks/legal_and_general.svg', NULL);
+INSERT INTO public.stocks (id, created_at, updated_at, deleted_at, name, starting_value, image_path, secondary_image_path, variation) VALUES (8, NULL, NULL, NULL, 'UB', 2.5, '/static/imgs/stocks/ub.png', '/static/imgs/stocks/ub.png', 1);
+INSERT INTO public.stocks (id, created_at, updated_at, deleted_at, name, starting_value, image_path, secondary_image_path, variation) VALUES (10, NULL, NULL, NULL, 'Thames', 5.5, '/static/imgs/stocks/thames.png', '/static/imgs/stocks/thames.png', 2);
+INSERT INTO public.stocks (id, created_at, updated_at, deleted_at, name, starting_value, image_path, secondary_image_path, variation) VALUES (12, NULL, NULL, NULL, 'Natwest', 9.0, '/static/imgs/stocks/natwest.png', '/static/imgs/stocks/natwest.png', 6);
+INSERT INTO public.stocks (id, created_at, updated_at, deleted_at, name, starting_value, image_path, secondary_image_path, variation) VALUES (7, NULL, NULL, NULL, 'Trusthouse Forte', 2.0, '/static/imgs/stocks/thf.png', '/static/imgs/stocks/thf.png', 4);
+INSERT INTO public.stocks (id, created_at, updated_at, deleted_at, name, starting_value, image_path, secondary_image_path, variation) VALUES (11, NULL, NULL, NULL, 'Saatchi & Saatchi', 7.5, '/static/imgs/stocks/S_and_S.png', '/static/imgs/stocks/S_and_S_secondary.png', 5);
+INSERT INTO public.stocks (id, created_at, updated_at, deleted_at, name, starting_value, image_path, secondary_image_path, variation) VALUES (9, NULL, NULL, NULL, 'Legal & General', 4.0, '/static/imgs/stocks/legal_and_general.svg', '/static/imgs/stocks/legal_and_general_secondary.svg', 3);
 
 INSERT INTO public.insights (id, created_at, updated_at, deleted_at, stock_id, description, value) VALUES (59, NULL, NULL, NULL, 7, 'Trusthouse Forte Insight 1.0', 1.0);
 INSERT INTO public.insights (id, created_at, updated_at, deleted_at, stock_id, description, value) VALUES (60, NULL, NULL, NULL, 7, 'Trusthouse Forte Insight 0.5', 0.5);
